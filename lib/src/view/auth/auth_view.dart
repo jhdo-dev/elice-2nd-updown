@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:up_down/src/view/auth/pages/sign_up_page.dart';
-import 'package:up_down/src/view/auth/pages/welcome_page.dart';
 
 class SignInPage extends StatefulWidget {
   const SignInPage({super.key});
