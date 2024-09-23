@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:up_down/src/view/auth/auth_view.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:up_down/util/router/route_path.dart';
 import 'firebase_options.dart';
