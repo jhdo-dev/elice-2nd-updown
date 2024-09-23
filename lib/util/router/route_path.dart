@@ -5,6 +5,7 @@ import 'package:up_down/component/page_not_found.dart';
 import 'package:up_down/component/scaffold_with_nav_bar.dart';
 import 'package:up_down/src/view/auth/auth_view.dart';
 import 'package:up_down/src/view/auth/pages/sign_up_page.dart';
+import 'package:up_down/src/view/auth/pages/welcome_page.dart';
 import 'package:up_down/util/router/route_names.dart';
 
 part 'route_path.g.dart';
@@ -21,7 +22,7 @@ GoRouter route(RouteRef ref) {
           path: '/auth',
           name: RouteNames.auth,
           builder: (context, state) {
-            return const Placeholder();
+            return const WelcomePage();
           },
         ),
         GoRoute(

@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:up_down/src/view/auth/pages/sign_up_page.dart';
 import 'package:up_down/src/view/auth/pages/welcome_page.dart';
@@ -16,16 +17,6 @@ class _SignInPageState extends State<SignInPage> {
   final _passwordController = TextEditingController();
   final _auth = FirebaseAuth.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn();
-
-  @override
-  void initState() {
-    super.initState();
-
-    // Firebase 인증 상태 변경을 감지하여 _user 상태를 업데이트합니다.
-    _auth.authStateChanges().listen((User? user) {
-      setState(() {});
-    });
-  }
 
   Future<void> _signInWithGoogle() async {
     try {
@@ -49,9 +40,7 @@ class _SignInPageState extends State<SignInPage> {
       // Firebase에 로그인합니다.
       await _auth.signInWithCredential(credential);
 
-      Navigator.of(context).pushReplacement(MaterialPageRoute(
-        builder: (context) => const WelcomePage(),
-      ));
+      context.go('/auth');
     } catch (e) {
       // 오류 메시지를 출력합니다.
       print('Error signing in with Google: $e');
@@ -92,11 +81,11 @@ class _SignInPageState extends State<SignInPage> {
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () {},
-                child: const Text('Sign in'),
+                child: const Text('LOG IN'),
               ),
               TextButton(
                 onPressed: () {},
-                child: const Text('Forgot password?'),
+                child: const Text('Forgot your password?'),
               ),
               const Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -114,24 +103,30 @@ class _SignInPageState extends State<SignInPage> {
                   ),
                 ],
               ),
-              ElevatedButton.icon(
-                onPressed: _signInWithGoogle,
-                icon: Image.asset(
-                  "assets/icons/google.png",
-                  width: 16,
-                  fit: BoxFit.cover,
-                ),
-                label: const Text("Sign up with Google"),
-              ),
-              ElevatedButton.icon(
-                onPressed: () {},
-                icon: Image.asset(
-                  "assets/icons/facebook.png",
-                  width: 16,
-                  fit: BoxFit.cover,
-                  color: const Color(0xFF0966FF),
-                ),
-                label: const Text("Sign up with Facebook"),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ElevatedButton(
+                    onPressed: _signInWithGoogle,
+                    child: Image.asset(
+                      "assets/icons/google.png",
+                      width: 25,
+                      fit: BoxFit.fill,
+                    ),
+                  ),
+                  const SizedBox(
+                    width: 20,
+                  ),
+                  ElevatedButton(
+                    onPressed: () {},
+                    child: Image.asset(
+                      "assets/icons/facebook.png",
+                      width: 25,
+                      fit: BoxFit.fill,
+                      color: const Color(0xFF0966FF),
+                    ),
+                  ),
+                ],
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
