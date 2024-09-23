@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "364848733451",
+    "project_id": "up-down-app",
+    "storage_bucket": "up-down-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:364848733451:android:0838305979c13afe9fd60e",
+        "android_client_info": {
+          "package_name": "com.example.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCHBCKbJ0Yrfd4U0JzY3g1hio3OdwrY34Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
