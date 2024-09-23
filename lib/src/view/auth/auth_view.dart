@@ -123,6 +123,16 @@ class _SignInPageState extends State<SignInPage> {
                 ),
                 label: const Text("Sign up with Google"),
               ),
+              ElevatedButton.icon(
+                onPressed: () {},
+                icon: Image.asset(
+                  "assets/icons/facebook.png",
+                  width: 16,
+                  fit: BoxFit.cover,
+                  color: const Color(0xFF0966FF),
+                ),
+                label: const Text("Sign up with Facebook"),
+              ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
