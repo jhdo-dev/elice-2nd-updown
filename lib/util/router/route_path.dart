@@ -4,6 +4,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:up_down/component/page_not_found.dart';
 import 'package:up_down/component/scaffold_with_nav_bar.dart';
 import 'package:up_down/src/view/auth/auth_view.dart';
+import 'package:up_down/src/view/home/home_view.dart';
 import 'package:up_down/src/view/result/result_view.dart';
 import 'package:up_down/util/router/route_names.dart';
 
@@ -49,7 +50,7 @@ GoRouter route(RouteRef ref) {
                   path: '/home',
                   name: RouteNames.home,
                   builder: (context, state) {
-                    return const Placeholder();
+                    return const HomeView();
                   },
                 ),
               ],
