@@ -15,7 +15,7 @@ final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>();
 GoRouter route(RouteRef ref) {
   return GoRouter(
       navigatorKey: _rootNavigatorKey,
-      initialLocation: '/signin',
+      initialLocation: '/result',
       routes: [
         GoRoute(
           path: '/auth',
