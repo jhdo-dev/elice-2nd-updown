@@ -72,7 +72,7 @@ class ChatRoomListPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey,
+      backgroundColor: Colors.white,
       body: ListView.builder(
         itemCount: chatRooms.length,
         itemBuilder: (context, index) {
