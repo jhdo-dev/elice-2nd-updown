@@ -22,6 +22,20 @@ GoRouter route(RouteRef ref) {
             return const Placeholder();
           },
         ),
+        GoRoute(
+          path: '/signin',
+          name: RouteNames.signin,
+          builder: (context, state) {
+            return const Placeholder();
+          },
+        ),
+        GoRoute(
+          path: '/signup',
+          name: RouteNames.signup,
+          builder: (context, state) {
+            return const Placeholder();
+          },
+        ),
         StatefulShellRoute.indexedStack(
           builder: (context, state, navigationShell) {
             return ScaffoldWithNavBar(navigationShell: navigationShell);
