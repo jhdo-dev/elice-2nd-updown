@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:up_down/src/view/auth/auth_view.dart';
+import 'package:go_router/go_router.dart';
 
 class WelcomePage extends StatefulWidget {
   const WelcomePage({super.key});
@@ -21,9 +21,7 @@ class _WelcomePageState extends State<WelcomePage> {
         const SnackBar(content: Text('Successfully signed out!')),
       );
 
-      Navigator.of(context).pushReplacement(MaterialPageRoute(
-        builder: (context) => SignInPage(),
-      ));
+      context.go('/signin');
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Sign out failed: $e')),
