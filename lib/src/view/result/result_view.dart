@@ -106,11 +106,11 @@ class VoteResultCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: isWinner ? Colors.green : Colors.red,
+        color: isWinner ? Colors.red : Colors.blue,
         borderRadius: BorderRadius.circular(20),
       ),
       child: Text(
-        isWinner ? '승' : '패',
+        isWinner ? '나락' : '구원',
         style:
             const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
       ),
