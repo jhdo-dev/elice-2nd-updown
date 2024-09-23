@@ -3,6 +3,8 @@ import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:up_down/component/page_not_found.dart';
 import 'package:up_down/component/scaffold_with_nav_bar.dart';
+import 'package:up_down/src/view/auth/auth_view.dart';
+import 'package:up_down/src/view/auth/pages/sign_up_page.dart';
 import 'package:up_down/util/router/route_names.dart';
 
 part 'route_path.g.dart';
@@ -13,7 +15,7 @@ final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>();
 GoRouter route(RouteRef ref) {
   return GoRouter(
       navigatorKey: _rootNavigatorKey,
-      initialLocation: '/home',
+      initialLocation: '/signin',
       routes: [
         GoRoute(
           path: '/auth',
@@ -26,14 +28,14 @@ GoRouter route(RouteRef ref) {
           path: '/signin',
           name: RouteNames.signin,
           builder: (context, state) {
-            return const Placeholder();
+            return const SignInPage();
           },
         ),
         GoRoute(
           path: '/signup',
           name: RouteNames.signup,
           builder: (context, state) {
-            return const Placeholder();
+            return const SignUpPage();
           },
         ),
         StatefulShellRoute.indexedStack(
