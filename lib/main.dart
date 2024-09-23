@@ -1,7 +1,11 @@
-import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+<<<<<<< HEAD
+=======
+import 'package:flutter/material.dart';
+>>>>>>> 0eabb68fd77b0e0e46f47a28dcbd5a29a0630427
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:up_down/util/router/route_path.dart';
+
 import 'firebase_options.dart';
 
 void main() async {
