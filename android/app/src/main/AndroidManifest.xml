@@ -1,4 +1,4 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.example.up_down_app">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <application
         android:label="up_down_app"
         android:name="${applicationName}"
@@ -30,9 +30,6 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
-        <meta-data
-        android:name="com.google.android.gms.auth.api.credentials.CREDENTIAL_PICKER"
-        android:value="true" />
     </application>
     <!-- Required to query activities that can process text, see:
          https://developer.android.com/training/package-visibility and
