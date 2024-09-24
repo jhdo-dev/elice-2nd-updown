@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:up_down/src/view/home/widgets/room_list.dart';
+import 'package:go_router/go_router.dart'; // 추가
 
 class HomeView extends StatelessWidget {
   const HomeView({super.key});
@@ -29,6 +30,12 @@ class HomeView extends StatelessWidget {
           // 방 리스트
           const Expanded(child: RoomListPage()),
         ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          context.go('/create-room'); // 방 생성 페이지로 이동
+        },
+        child: const Icon(Icons.add), // 플로팅 버튼에 + 아이콘
       ),
     );
   }

@@ -6,6 +6,7 @@ import 'package:up_down/component/scaffold_with_nav_bar.dart';
 import 'package:up_down/src/view/auth/auth_view.dart';
 import 'package:up_down/src/view/auth/pages/welcome_page.dart';
 import 'package:up_down/src/view/home/home_view.dart';
+import 'package:up_down/src/view/home/create_room_view.dart';
 import 'package:up_down/src/view/result/result_view.dart';
 import 'package:up_down/util/router/route_names.dart';
 
@@ -52,6 +53,13 @@ GoRouter route(RouteRef ref) {
                   name: RouteNames.home,
                   builder: (context, state) {
                     return const HomeView();
+                  },
+                ),
+                GoRoute(
+                  path: '/create-room', // 방 생성 페이지 경로
+                  name: RouteNames.createRoom,
+                  builder: (context, state) {
+                    return CreateRoomView(); // 방 생성 페이지
                   },
                 ),
               ],
