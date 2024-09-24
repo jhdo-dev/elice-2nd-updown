@@ -7,6 +7,8 @@ import 'result_view_state.dart';
 class ResultView extends ConsumerWidget {
   const ResultView({Key? key}) : super(key: key);
 
+  //알림 토큰
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(resultViewModelProvider);
