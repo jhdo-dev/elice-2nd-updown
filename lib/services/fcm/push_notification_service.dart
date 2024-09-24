@@ -1,3 +1,5 @@
+//파이어베이스 콘솔과 내 앱의 연결이 안되는거 같음
+
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
