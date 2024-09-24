@@ -40,11 +40,11 @@ class ChatRoom extends StatelessWidget {
                 width: 70,
                 height: 70,
                 child: CircleAvatar(
-                  backgroundColor: Colors.grey[300], // 아이콘 배경색
+                  backgroundColor: Colors.grey[300],
                   child: const Icon(
-                    Icons.person, // 기본 아이콘
-                    size: 30, // 아이콘 크기
-                    color: Colors.white, // 아이콘 색상
+                    Icons.person,
+                    size: 30,
+                    color: Colors.white,
                   ),
                 ),
               ),
@@ -52,9 +52,9 @@ class ChatRoom extends StatelessWidget {
           ),
           const SizedBox(width: 14.0),
           Container(
-            width: 1, // 선의 두께
-            height: 75, // 선의 높이
-            color: Colors.deepPurple, // 선의 색상
+            width: 1,
+            height: 75,
+            color: Colors.deepPurple,
           ),
           const SizedBox(width: 14.0),
           Expanded(
