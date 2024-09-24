@@ -72,20 +72,13 @@ class ChatRoom extends StatelessWidget {
                 Text(
                   roomName,
                   style: const TextStyle(
-                    fontSize: 16.0,
+                    fontSize: 15.0,
                     color: Colors.black,
                   ),
                 ),
                 const SizedBox(height: 5.0),
                 Text(
-                  '시작: $roomStartDate',
-                  style: const TextStyle(
-                    fontSize: 14.0,
-                    color: Colors.grey,
-                  ),
-                ),
-                Text(
-                  '종료: $roomStartDate',
+                  '$roomStartDate ~ $roomEndDate',
                   style: const TextStyle(
                     fontSize: 14.0,
                     color: Colors.grey,
@@ -99,8 +92,8 @@ class ChatRoom extends StatelessWidget {
             children: [
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                    // fixedSize: const Size(60, 40),
-                    ),
+                  fixedSize: const Size(69, 40),
+                ),
                 onPressed: () {},
                 child: const Text(
                   '입장',
