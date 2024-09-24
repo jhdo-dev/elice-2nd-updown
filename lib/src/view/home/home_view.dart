@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:up_down/src/view/home/widget/room_list.dart';
+import 'package:up_down/src/view/home/widgets/room_list.dart';
 
 class HomeView extends StatelessWidget {
   const HomeView({super.key});
