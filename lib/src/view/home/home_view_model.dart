@@ -11,9 +11,13 @@ class HomeViewModel {
   }
 
   // Firestore에 새로운 채팅방 추가
-  Future<void> createRoom(String roomName) async {
+  Future<void> createRoom(String roomName, String personName,
+      String roomStartDate, String roomEndDate) async {
     await _firestore.collection('rooms').add({
       'roomName': roomName,
+      'personName': personName,
+      'roomStartDate': roomStartDate,
+      'roomEndDate': roomEndDate,
       'createdAt': Timestamp.now(),
     });
   }
