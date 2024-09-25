@@ -1,58 +1,41 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-
-// Room 모델에 imageUrl 추가
-class Room {
-  final String personName; // 인물 이름
-  final String roomName; // 방 이름
-  final Timestamp roomStartDate; // 방 시작 날짜 (타임스탬프)
-  final Timestamp roomEndDate; // 방 종료 날짜 (타임스탬프)
-  final String imageUrl; // 인물 프로필 사진 URL
-
-  Room({
-    required this.personName,
-    required this.roomName,
-    required this.roomStartDate,
-    required this.roomEndDate,
-    required this.imageUrl,
-  });
-}
 
 class HomeViewModel {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   // Firestore에서 채팅방 목록 가져오기
-  Future<List<Room>> fetchChatRooms() async {
+  Future<List<Map<String, dynamic>>> fetchChatRooms() async {
     final snapshot = await _firestore.collection('rooms').get();
-    // Map에서 Room 객체로 변환
-    return snapshot.docs.map((doc) {
-      final data = doc.data();
-      return Room(
-        personName: data['personName'],
-        roomName: data['roomName'],
-        roomStartDate: data['roomStartDate'], // 변경된 부분
-        roomEndDate: data['roomEndDate'], // 변경된 부분
-        imageUrl: data['imageUrl'], // 추가된 부분
-      );
-    }).toList();
+    return snapshot.docs.map((doc) => doc.data()).toList();
   }
 
-  // Firestore에 새로운 채팅방 추가
+  // Firestore에 새로운 채팅방 추가 (문서 ID 랜덤 생성)
   Future<void> createRoom(String roomName, String personName,
-      Timestamp roomStartDate, Timestamp roomEndDate, String imageUrl) async {
-    // 이미지 URL 추가
-    await _firestore.collection('rooms').add({
+      String roomStartDate, String roomEndDate, String imageUrl) async {
+    final roomRef = _firestore.collection('rooms').doc(); // 랜덤 문서 ID 생성
+    final roomId = roomRef.id;
+
+    await roomRef.set({
+      'roomId': roomId, // 랜덤 생성된 roomId
       'roomName': roomName,
       'personName': personName,
       'roomStartDate': roomStartDate,
       'roomEndDate': roomEndDate,
-      'imageUrl': imageUrl, // 추가된 부분
+      'imageUrl': imageUrl,
       'createdAt': Timestamp.now(),
+    });
+
+    // 방 생성 후 participants 서브 컬렉션에 참여자 추가 (예시)
+    await roomRef.collection('participants').add({
+      'userId': 'exampleUserId', // 실제 사용자 ID를 넣어야 함
+      'joinedAt': Timestamp.now(),
+    });
+
+    // 방 생성 후 messages 서브 컬렉션에 메시지 추가 (예시)
+    await roomRef.collection('messages').add({
+      'userId': 'exampleUserId', // 실제 사용자 ID를 넣어야 함
+      'message': 'Hello, world!',
+      'sentAt': Timestamp.now(),
     });
   }
 }
-
-// HomeViewModel Provider
-final homeViewModelProvider = Provider<HomeViewModel>((ref) {
-  return HomeViewModel();
-});
