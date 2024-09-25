@@ -4,18 +4,18 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:up_down/src/view/auth/widgets/password_reset_dialog.dart';
 
+import 'package:up_down/src/view/auth/widgets/password_reset_dialog.dart';
 import 'widgets/sign_up_dialog.dart';
 
-class SignInPage extends StatefulWidget {
-  const SignInPage({super.key});
+class AuthView extends StatefulWidget {
+  const AuthView({super.key});
 
   @override
-  _SignInPageState createState() => _SignInPageState();
+  _AuthViewState createState() => _AuthViewState();
 }
 
-class _SignInPageState extends State<SignInPage> {
+class _AuthViewState extends State<AuthView> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _auth = FirebaseAuth.instance;
@@ -36,7 +36,7 @@ class _SignInPageState extends State<SignInPage> {
       try {
         final user = _auth.currentUser;
         if (user != null && user.uid == userId) {
-          context.go('/auth');
+          context.go('/home');
         }
       } catch (e) {
         print('Error during auto login: $e');
@@ -62,7 +62,7 @@ class _SignInPageState extends State<SignInPage> {
       }
 
       if (newUser.user != null) {
-        context.go('/auth');
+        context.go('/home');
       }
     } catch (e) {
       print(e);
@@ -105,7 +105,7 @@ class _SignInPageState extends State<SignInPage> {
         // 'photo': photo.url,
       });
 
-      context.go('/auth');
+      context.go('/home');
     } catch (e) {
       print('Error signing in with Google: $e');
 
