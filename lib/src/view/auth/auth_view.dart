@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -16,6 +17,7 @@ class _SignInPageState extends State<SignInPage> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _auth = FirebaseAuth.instance;
+  final _firestore = FirebaseFirestore.instance;
   final _googleSignIn = GoogleSignIn();
   bool _rememberMe = false;
 
@@ -87,6 +89,15 @@ class _SignInPageState extends State<SignInPage> {
 
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString('userId', newUser.user?.uid ?? '');
+
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(newUser.user!.uid)
+          .set({
+        'name': newUser.user!.displayName,
+        'email': newUser.user!.email,
+        // 'photo': photo.url,
+      });
 
       context.go('/auth');
     } catch (e) {
