@@ -17,7 +17,6 @@ class _SignInPageState extends State<SignInPage> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _auth = FirebaseAuth.instance;
-  final _firestore = FirebaseFirestore.instance;
   final _googleSignIn = GoogleSignIn();
   bool _rememberMe = false;
 
@@ -114,7 +113,7 @@ class _SignInPageState extends State<SignInPage> {
     final user = _auth.currentUser;
 
     return GestureDetector(
-      onTap: () => FocusScope.of(context).unfocus,
+      onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
         appBar: AppBar(
           title: const Text('Sign In Page'),
@@ -153,7 +152,9 @@ class _SignInPageState extends State<SignInPage> {
                 child: const Text('SIGN IN'),
               ),
               TextButton(
-                onPressed: () {},
+                onPressed: () {
+                  context.push('/password');
+                },
                 child: const Text('Forgot your password?'),
               ),
               const Row(
@@ -203,11 +204,7 @@ class _SignInPageState extends State<SignInPage> {
                   const Text('Don\'t have an account?'),
                   TextButton(
                     onPressed: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => const SignUpPage(),
-                        ),
-                      );
+                      context.push('/signup');
                     },
                     child: const Text('Sign Up'),
                   ),
@@ -220,108 +217,3 @@ class _SignInPageState extends State<SignInPage> {
     );
   }
 }
-
-/*
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:google_sign_in/google_sign_in.dart';
-import 'package:flutter/material.dart';
-
-final FirebaseAuth _auth = FirebaseAuth.instance;
-final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-final GoogleSignIn _googleSignIn = GoogleSignIn();
-
-final TextEditingController _emailController = TextEditingController();
-final TextEditingController _passwordController = TextEditingController();
-
-Future<void> _signUpWithEmail() async {
-  final email = _emailController.text;
-  final password = _passwordController.text;
-
-  if (email.isNotEmpty && password.isNotEmpty) {
-    try {
-      // Firebase Authentication을 사용하여 회원가입을 구현합니다.
-      UserCredential userCredential =
-          await _auth.createUserWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
-
-      // Firestore에 사용자 정보를 저장합니다.
-      await _firestore.collection('users').doc(userCredential.user!.uid).set({
-        'displayName': userCredential.user!.displayName,
-        'email': userCredential.user!.email,
-        'photoURL': userCredential.user!.photoURL,
-        'lastSignInTime': userCredential.user!.metadata.lastSignInTime,
-        'creationTime': userCredential.user!.metadata.creationTime,
-      });
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Sign Up Successful! Welcome, ${userCredential.user?.email}',
-          ),
-        ),
-      );
-
-      _emailController.clear();
-      _passwordController.clear();
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Sign Up Failed: $e')),
-      );
-    }
-  } else {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Please enter both email and password')),
-    );
-  }
-}
-
-Future<void> _signInWithGoogle() async {
-  try {
-    final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
-
-    if (googleUser == null) {
-      return;
-    }
-
-    final GoogleSignInAuthentication googleAuth =
-        await googleUser.authentication;
-
-    final credential = GoogleAuthProvider.credential(
-      accessToken: googleAuth.accessToken,
-      idToken: googleAuth.idToken,
-    );
-
-    UserCredential userCredential =
-        await _auth.signInWithCredential(credential);
-
-    final User? user = userCredential.user;
-
-    if (user != null) {
-      // Firestore에 사용자 정보를 저장합니다.
-      final userDoc = _firestore.collection('users').doc(user.uid);
-      final docSnapshot = await userDoc.get();
-
-      if (!docSnapshot.exists) {
-        await userDoc.set({
-          'displayName': user.displayName,
-          'email': user.email,
-          'photoURL': user.photoURL,
-          'lastSignInTime': user.metadata.lastSignInTime,
-          'creationTime': user.metadata.creationTime,
-        });
-      }
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Sign In Successful! Welcome, ${user.displayName}')),
-      );
-    }
-  } catch (e) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Sign In Failed: $e')),
-    );
-  }
-}
- */
