@@ -131,9 +131,10 @@ class _AuthViewState extends State<AuthView> {
         final OAuthCredential credential =
             FacebookAuthProvider.credential(accessToken.tokenString);
 
-        await _auth.signInWithCredential(credential);
+        final UserCredential userCredential =
+            await _auth.signInWithCredential(credential);
 
-        context.go('/auth');
+        context.go('/home');
       } else {
         throw Exception('Facebook login failed');
       }
