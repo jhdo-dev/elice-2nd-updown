@@ -2,9 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:up_down/src/view/auth/auth_view.dart';
-
-import 'welcome_page.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
@@ -19,6 +16,7 @@ class _SignUpPageState extends State<SignUpPage> {
   final _nameController = TextEditingController();
   final _auth = FirebaseAuth.instance;
   final _firestore = FirebaseFirestore.instance;
+  bool _isLoading = false;
 
   @override
   void initState() {
@@ -31,6 +29,11 @@ class _SignUpPageState extends State<SignUpPage> {
   }
 
   Future<void> _signUp() async {
+    FocusScope.of(context).unfocus();
+    setState(() {
+      _isLoading = true; // 로딩 상태 시작
+    });
+
     final email = _emailController.text;
     final password = _passwordController.text;
     final name = _nameController.text;
@@ -62,9 +65,6 @@ class _SignUpPageState extends State<SignUpPage> {
           ),
         );
 
-        _emailController.clear();
-        _passwordController.clear();
-
         context.go('/auth');
       } catch (e) {
         print('Error: $e');
@@ -78,6 +78,9 @@ class _SignUpPageState extends State<SignUpPage> {
         const SnackBar(content: Text('Please enter both email and password.')),
       );
     }
+    setState(() {
+      _isLoading = false;
+    });
   }
 
   @override
@@ -110,10 +113,12 @@ class _SignUpPageState extends State<SignUpPage> {
                 decoration: const InputDecoration(labelText: 'Name'),
               ),
               const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: _signUp,
-                child: const Text('Sign Up'),
-              ),
+              _isLoading
+                  ? const CircularProgressIndicator()
+                  : ElevatedButton(
+                      onPressed: _signUp,
+                      child: const Text('Sign Up'),
+                    ),
             ],
           ),
         ),
