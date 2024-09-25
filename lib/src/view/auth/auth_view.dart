@@ -3,7 +3,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:up_down/src/view/auth/pages/sign_up_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SignInPage extends StatefulWidget {
@@ -19,6 +18,7 @@ class _SignInPageState extends State<SignInPage> {
   final _auth = FirebaseAuth.instance;
   final _googleSignIn = GoogleSignIn();
   bool _rememberMe = false;
+  bool _isLoading = false; // 로딩 상태 추가
 
   @override
   void initState() {
@@ -45,6 +45,11 @@ class _SignInPageState extends State<SignInPage> {
   }
 
   Future<void> _signInWithEmail() async {
+    FocusScope.of(context).unfocus();
+    setState(() {
+      _isLoading = true; // 로딩 상태 시작
+    });
+
     try {
       final newUser = await _auth.signInWithEmailAndPassword(
         email: _emailController.text,
@@ -65,8 +70,11 @@ class _SignInPageState extends State<SignInPage> {
         const SnackBar(
             content: Text('Invalid email or password. Please try again')),
       );
+    } finally {
+      setState(() {
+        _isLoading = false; // 로딩 상태 종료
+      });
     }
-    FocusScope.of(context).unfocus();
   }
 
   Future<void> _signInWithGoogle() async {
@@ -147,10 +155,12 @@ class _SignInPageState extends State<SignInPage> {
                   const Text('Remember Me'),
                 ],
               ),
-              ElevatedButton(
-                onPressed: _signInWithEmail,
-                child: const Text('SIGN IN'),
-              ),
+              _isLoading
+                  ? const CircularProgressIndicator()
+                  : ElevatedButton(
+                      onPressed: _signInWithEmail,
+                      child: const Text('SIGN IN'),
+                    ),
               TextButton(
                 onPressed: () {
                   context.push('/password');
