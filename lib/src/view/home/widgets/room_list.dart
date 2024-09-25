@@ -65,6 +65,7 @@ class ChatRoomListPage extends StatelessWidget {
                 roomName: room['roomName'] ?? 'Untitled',
                 roomStartDate: roomStartDate,
                 roomEndDate: roomEndDate,
+                imageUrl: room['imageUrl'] ?? '',
               );
             },
           );
