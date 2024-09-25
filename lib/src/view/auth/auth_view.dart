@@ -4,6 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:up_down/src/view/auth/widgets/password_reset_dialog.dart';
+
+import 'widgets/sign_up_dialog.dart';
 
 class SignInPage extends StatefulWidget {
   const SignInPage({super.key});
@@ -24,18 +27,15 @@ class _SignInPageState extends State<SignInPage> {
   void initState() {
     super.initState();
     _checkRememberedUser();
-    print('0000');
   }
 
   Future<void> _checkRememberedUser() async {
     final prefs = await SharedPreferences.getInstance();
     final userId = prefs.getString('userId');
     if (userId != null) {
-      print('111');
       try {
         final user = _auth.currentUser;
         if (user != null && user.uid == userId) {
-          print('222');
           context.go('/auth');
         }
       } catch (e) {
@@ -70,11 +70,10 @@ class _SignInPageState extends State<SignInPage> {
         const SnackBar(
             content: Text('Invalid email or password. Please try again')),
       );
-    } finally {
-      setState(() {
-        _isLoading = false; // 로딩 상태 종료
-      });
     }
+    setState(() {
+      _isLoading = false;
+    });
   }
 
   Future<void> _signInWithGoogle() async {
@@ -117,9 +116,14 @@ class _SignInPageState extends State<SignInPage> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    final user = _auth.currentUser;
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
 
+  @override
+  Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
@@ -131,7 +135,6 @@ class _SignInPageState extends State<SignInPage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              Text('debug* ${user?.uid}'),
               TextField(
                 controller: _emailController,
                 decoration: const InputDecoration(labelText: 'Email'),
@@ -152,7 +155,12 @@ class _SignInPageState extends State<SignInPage> {
                       });
                     },
                   ),
-                  const Text('Remember Me'),
+                  GestureDetector(
+                    onTap: () => setState(() {
+                      _rememberMe = !_rememberMe;
+                    }),
+                    child: const Text('Remember Me'),
+                  ),
                 ],
               ),
               _isLoading
@@ -163,7 +171,12 @@ class _SignInPageState extends State<SignInPage> {
                     ),
               TextButton(
                 onPressed: () {
-                  context.push('/password');
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return const PasswordResetDialog();
+                    },
+                  );
                 },
                 child: const Text('Forgot your password?'),
               ),
@@ -214,7 +227,12 @@ class _SignInPageState extends State<SignInPage> {
                   const Text('Don\'t have an account?'),
                   TextButton(
                     onPressed: () {
-                      context.push('/signup');
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return const SignUpDialog();
+                        },
+                      );
                     },
                     child: const Text('Sign Up'),
                   ),
