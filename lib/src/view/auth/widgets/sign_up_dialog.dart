@@ -47,13 +47,13 @@ class _SignUpDialogState extends State<SignUpDialog> {
         await userCredential.user?.updateProfile(displayName: name);
 
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
+          const SnackBar(
             content: Text(
-              'Sign Up Successful! Welcome, $name',
+              'Sign up successful! Please sign in',
             ),
           ),
         );
-        context.go('/home');
+        context.pop();
       } catch (e) {
         print('Error signing up: $e');
         ScaffoldMessenger.of(context).showSnackBar(
