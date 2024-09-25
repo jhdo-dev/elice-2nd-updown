@@ -3,14 +3,16 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class WelcomePage extends StatefulWidget {
-  const WelcomePage({super.key});
+// 디버깅용 페이지
+
+class DebugPage extends StatefulWidget {
+  const DebugPage({super.key});
 
   @override
-  State<WelcomePage> createState() => _WelcomePageState();
+  State<DebugPage> createState() => _DebugPageState();
 }
 
-class _WelcomePageState extends State<WelcomePage> {
+class _DebugPageState extends State<DebugPage> {
   final _auth = FirebaseAuth.instance;
   final user = FirebaseAuth.instance.currentUser;
 
