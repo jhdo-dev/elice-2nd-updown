@@ -1,11 +1,11 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:cloud_firestore/cloud_firestore.dart'; // Firestore 임포트
 
 // 방 정보를 나타내는 모델
 class Room {
   final String personName; // 인물 이름
   final String roomName; // 방 이름
-  final String roomStartDate; // 방 시작 날짜
-  final String roomEndDate; // 방 종료 날짜
+  final Timestamp roomStartDate; // 방 시작 날짜 (타임스탬프)
+  final Timestamp roomEndDate; // 방 종료 날짜 (타임스탬프)
   final String imageUrl; // 인물 프로필 사진 URL
 
   Room({
@@ -31,53 +31,17 @@ class HomeViewState {
   HomeViewState.initial()
       : popularRooms = [
           Room(
-            personName: '곽튜브',
-            roomName: '학폭 관련 인물 옹호 논란',
-            roomStartDate: '2024-08-01 09:24',
-            roomEndDate: '2024-08-24 18:48',
-            imageUrl: 'https://example.com/image1.jpg',
-          ),
-          Room(
-            personName: '유아인',
-            roomName: '약물 사용 의혹 및 수사 진행',
-            roomStartDate: '2024-09-12 12:30',
-            roomEndDate: '2024-09-30 18:00',
-            imageUrl: 'https://example.com/image2.jpg',
-          ),
-          Room(
-            personName: '김선호',
-            roomName: '사생활 논란과 복귀 여부',
-            roomStartDate: '2024-09-01 10:00',
-            roomEndDate: '2024-09-20 16:45',
-            imageUrl: 'https://example.com/image3.jpg',
+            personName: '테스트',
+            roomName: '테스트논란',
+            roomStartDate: Timestamp.fromMillisecondsSinceEpoch(
+                DateTime.parse('2024-01-01 00:00:00')
+                    .millisecondsSinceEpoch), // 타임스탬프 변환
+            roomEndDate: Timestamp.fromMillisecondsSinceEpoch(
+                DateTime.parse('2024-12-31 00:00:00')
+                    .millisecondsSinceEpoch), // 타임스탬프 변환
+            imageUrl:
+                'https://firebasestorage.googleapis.com/v0/b/up-down-app.appspot.com/o/default_profile.png?alt=media&token=67dbee77-5ac9-4000-87c2-8357d9a38c12', // 이미지 URL 추가
           ),
         ],
-        selectedRoom = null;
+        selectedRoom = null; // 선택된 방은 기본적으로 null
 }
-
-// 상태를 관리하는 StateNotifier
-class HomeViewNotifier extends StateNotifier<HomeViewState> {
-  HomeViewNotifier() : super(HomeViewState.initial());
-
-  // 방 선택 로직
-  void selectRoom(Room room) {
-    state = HomeViewState(
-      popularRooms: state.popularRooms,
-      selectedRoom: room,
-    );
-  }
-
-  // 인기 방 목록을 업데이트하는 로직
-  void updatePopularRooms(List<Room> newRooms) {
-    state = HomeViewState(
-      popularRooms: newRooms,
-      selectedRoom: state.selectedRoom,
-    );
-  }
-}
-
-// Riverpod Provider 생성
-final homeViewProvider =
-    StateNotifierProvider<HomeViewNotifier, HomeViewState>((ref) {
-  return HomeViewNotifier();
-});
