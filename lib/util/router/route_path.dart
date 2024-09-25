@@ -4,9 +4,6 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:up_down/component/page_not_found.dart';
 import 'package:up_down/component/scaffold_with_nav_bar.dart';
 import 'package:up_down/src/view/auth/auth_view.dart';
-import 'package:up_down/src/view/auth/pages/reset_password_page.dart';
-import 'package:up_down/src/view/auth/pages/sign_up_page.dart';
-import 'package:up_down/src/view/auth/pages/welcome_page.dart';
 import 'package:up_down/src/view/home/home_view.dart';
 import 'package:up_down/src/view/result/result_view.dart';
 import 'package:up_down/util/router/route_names.dart';
@@ -25,28 +22,7 @@ GoRouter route(RouteRef ref) {
           path: '/auth',
           name: RouteNames.auth,
           builder: (context, state) {
-            return const WelcomePage();
-          },
-        ),
-        GoRoute(
-          path: '/signin',
-          name: RouteNames.signin,
-          builder: (context, state) {
-            return const SignInPage();
-          },
-        ),
-        GoRoute(
-          path: '/signup',
-          name: RouteNames.signup,
-          builder: (context, state) {
-            return const SignUpPage();
-          },
-        ),
-        GoRoute(
-          path: '/password',
-          name: RouteNames.password,
-          builder: (context, state) {
-            return ResetPasswordPage();
+            return const AuthView();
           },
         ),
         StatefulShellRoute.indexedStack(

@@ -53,7 +53,7 @@ class _SignUpDialogState extends State<SignUpDialog> {
             ),
           ),
         );
-        context.go('/auth');
+        context.go('/home');
       } catch (e) {
         print('Error signing up: $e');
         ScaffoldMessenger.of(context).showSnackBar(
