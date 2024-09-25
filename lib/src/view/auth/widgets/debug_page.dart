@@ -13,8 +13,8 @@ class DebugPage extends StatefulWidget {
 }
 
 class _DebugPageState extends State<DebugPage> {
-  final _auth = FirebaseAuth.instance;
-  final user = FirebaseAuth.instance.currentUser;
+  final _auth = FirebaseAuth.instance; // 로그아웃용
+  final _user = FirebaseAuth.instance.currentUser; // 유저정보 출력용
 
   Future<void> _signOut() async {
     try {
@@ -27,7 +27,7 @@ class _DebugPageState extends State<DebugPage> {
         const SnackBar(content: Text('Successfully signed out!')),
       );
 
-      context.go('/signin');
+      context.go('/auth');
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Sign out failed: $e')),
@@ -42,7 +42,10 @@ class _DebugPageState extends State<DebugPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text('Welcome! ${user?.displayName}'),
+            const Text('Welcome!'),
+            Text('name: ${_user?.displayName}'),
+            Text('email: ${_user?.email}'),
+            Text('photo: ${_user?.photoURL}'),
             ElevatedButton(
               onPressed: _signOut,
               child: const Text('Sign out'),

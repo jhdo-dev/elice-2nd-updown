@@ -25,13 +25,14 @@ class _AuthViewState extends State<AuthView> {
 
   @override
   void initState() {
-    super.initState();
     _checkRememberedUser();
+    super.initState();
   }
 
   Future<void> _checkRememberedUser() async {
     final prefs = await SharedPreferences.getInstance();
     final userId = prefs.getString('userId');
+
     if (userId != null) {
       try {
         final user = _auth.currentUser;
