@@ -1,11 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 import 'package:up_down/src/view/auth/widgets/password_reset_dialog.dart';
+
 import 'widgets/sign_up_dialog.dart';
 
 class AuthView extends StatefulWidget {
@@ -29,6 +30,7 @@ class _AuthViewState extends State<AuthView> {
     _checkRememberedUser();
   }
 
+//비번기억
   Future<void> _checkRememberedUser() async {
     final prefs = await SharedPreferences.getInstance();
     final userId = prefs.getString('userId');
@@ -44,6 +46,7 @@ class _AuthViewState extends State<AuthView> {
     }
   }
 
+//이메일 로그인
   Future<void> _signInWithEmail() async {
     FocusScope.of(context).unfocus();
     setState(() {
@@ -76,6 +79,7 @@ class _AuthViewState extends State<AuthView> {
     });
   }
 
+// 구글 로그인
   Future<void> _signInWithGoogle() async {
     try {
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
@@ -111,6 +115,32 @@ class _AuthViewState extends State<AuthView> {
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Failed to sign in with Google: $e')),
+      );
+    }
+  }
+
+  //페이스북 로그인
+  Future<void> _signInWithFacebook() async {
+    //^
+    try {
+      final LoginResult result = await FacebookAuth.instance.login();
+
+      if (result.status == LoginStatus.success) {
+        final AccessToken accessToken = result.accessToken!;
+
+        final OAuthCredential credential =
+            FacebookAuthProvider.credential(accessToken.tokenString);
+
+        await _auth.signInWithCredential(credential);
+
+        context.go('/auth');
+      } else {
+        throw Exception('Facebook login failed');
+      }
+    } catch (e) {
+      print('Error signing in with Facebook: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to sign in with Facebook: $e')),
       );
     }
   }
@@ -211,7 +241,7 @@ class _AuthViewState extends State<AuthView> {
                     width: 20,
                   ),
                   OutlinedButton(
-                    onPressed: () {},
+                    onPressed: _signInWithFacebook,
                     child: Image.asset(
                       "assets/icons/facebook.png",
                       width: 25,
