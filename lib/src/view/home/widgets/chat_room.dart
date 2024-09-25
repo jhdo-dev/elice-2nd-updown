@@ -5,6 +5,7 @@ class ChatRoom extends StatelessWidget {
   final String roomName;
   final String roomStartDate;
   final String roomEndDate;
+  final String imageUrl; // 추가된 부분: 이미지 URL
 
   const ChatRoom({
     super.key,
@@ -12,6 +13,7 @@ class ChatRoom extends StatelessWidget {
     required this.roomName,
     required this.roomStartDate,
     required this.roomEndDate,
+    required this.imageUrl, // 이미지 URL 매개변수 추가
   });
 
   @override
@@ -34,27 +36,32 @@ class ChatRoom extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Column(
-            children: [
-              SizedBox(
-                width: 70,
-                height: 70,
-                child: CircleAvatar(
-                  backgroundColor: Colors.grey[300], // 아이콘 배경색
+          // 프로필 이미지 추가
+          ClipOval(
+            child: Image.network(
+              imageUrl, // 이미지 URL을 사용하여 이미지를 로드
+              width: 70,
+              height: 70,
+              fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) {
+                return Container(
+                  width: 70,
+                  height: 70,
+                  color: Colors.grey[300],
                   child: const Icon(
-                    Icons.person, // 기본 아이콘
-                    size: 30, // 아이콘 크기
-                    color: Colors.white, // 아이콘 색상
+                    Icons.error,
+                    size: 30,
+                    color: Colors.red,
                   ),
-                ),
-              ),
-            ],
+                );
+              },
+            ),
           ),
           const SizedBox(width: 14.0),
           Container(
-            width: 1, // 선의 두께
-            height: 75, // 선의 높이
-            color: Colors.deepPurple, // 선의 색상
+            width: 1,
+            height: 75,
+            color: Colors.deepPurple,
           ),
           const SizedBox(width: 14.0),
           Expanded(
@@ -72,20 +79,13 @@ class ChatRoom extends StatelessWidget {
                 Text(
                   roomName,
                   style: const TextStyle(
-                    fontSize: 16.0,
+                    fontSize: 15.0,
                     color: Colors.black,
                   ),
                 ),
                 const SizedBox(height: 5.0),
                 Text(
-                  '시작: $roomStartDate',
-                  style: const TextStyle(
-                    fontSize: 14.0,
-                    color: Colors.grey,
-                  ),
-                ),
-                Text(
-                  '종료: $roomStartDate',
+                  '$roomStartDate ~ $roomEndDate',
                   style: const TextStyle(
                     fontSize: 14.0,
                     color: Colors.grey,
@@ -99,8 +99,8 @@ class ChatRoom extends StatelessWidget {
             children: [
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                    // fixedSize: const Size(60, 40),
-                    ),
+                  fixedSize: const Size(69, 40),
+                ),
                 onPressed: () {},
                 child: const Text(
                   '입장',
