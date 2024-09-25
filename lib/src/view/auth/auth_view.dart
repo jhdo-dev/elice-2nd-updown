@@ -1,9 +1,9 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:up_down/src/view/auth/pages/sign_up_page.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SignInPage extends StatefulWidget {
   const SignInPage({super.key});
@@ -16,57 +16,82 @@ class _SignInPageState extends State<SignInPage> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _auth = FirebaseAuth.instance;
-  final GoogleSignIn _googleSignIn = GoogleSignIn();
+  final _googleSignIn = GoogleSignIn();
+  bool _rememberMe = false;
 
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  @override
+  void initState() {
+    super.initState();
+    _checkRememberedUser();
+    print('0000');
+  }
+
+  Future<void> _checkRememberedUser() async {
+    final prefs = await SharedPreferences.getInstance();
+    final userId = prefs.getString('userId');
+    if (userId != null) {
+      print('111');
+      try {
+        final user = _auth.currentUser;
+        if (user != null && user.uid == userId) {
+          print('222');
+          context.go('/auth');
+        }
+      } catch (e) {
+        print('Error during auto login: $e');
+      }
+    }
+  }
+
+  Future<void> _signInWithEmail() async {
+    try {
+      final newUser = await _auth.signInWithEmailAndPassword(
+        email: _emailController.text,
+        password: _passwordController.text,
+      );
+
+      if (_rememberMe) {
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('userId', newUser.user?.uid ?? '');
+      }
+
+      if (newUser.user != null) {
+        context.go('/auth');
+      }
+    } catch (e) {
+      print(e);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+            content: Text('Invalid email or password. Please try again')),
+      );
+    }
+    FocusScope.of(context).unfocus();
+  }
 
   Future<void> _signInWithGoogle() async {
     try {
-      // 사용자가 Google 계정을 선택하고 로그인하도록 합니다.
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
 
-      // 사용자가 로그인하지 않고 프로세스를 취소한 경우
       if (googleUser == null) {
         return;
       }
 
-      // GoogleSignInAuthentication 객체를 통해 인증 정보를 가져옵니다.
       final GoogleSignInAuthentication googleAuth =
           await googleUser.authentication;
 
-      // Google 인증 정보를 사용하여 Firebase에 로그인합니다.
       final credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
       );
-      // Firebase에 로그인합니다.
-      UserCredential userCredential =
-          await _auth.signInWithCredential(credential);
+      final newUser = await _auth.signInWithCredential(credential);
 
-      final User? user = userCredential.user;
-
-      if (user != null) {
-        // Firestore에 사용자 정보를 저장합니다.
-        final userDoc = _firestore.collection('users').doc(user.uid);
-        final docSnapshot = await userDoc.get();
-
-        if (!docSnapshot.exists) {
-          await userDoc.set({
-            'displayName': user.displayName,
-            'email': user.email,
-            'photoURL': user.photoURL,
-            'lastSignInTime': user.metadata.lastSignInTime,
-            'creationTime': user.metadata.creationTime,
-          });
-        }
-      }
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('userId', newUser.user?.uid ?? '');
 
       context.go('/auth');
     } catch (e) {
-      // 오류 메시지를 출력합니다.
       print('Error signing in with Google: $e');
 
-      // 사용자에게 오류 메시지를 표시합니다.
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Failed to sign in with Google: $e')),
       );
@@ -88,7 +113,7 @@ class _SignInPageState extends State<SignInPage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              Text('debug* current user: ${user?.email}'),
+              Text('debug* ${user?.uid}'),
               TextField(
                 controller: _emailController,
                 decoration: const InputDecoration(labelText: 'Email'),
@@ -99,9 +124,21 @@ class _SignInPageState extends State<SignInPage> {
                 decoration: const InputDecoration(labelText: 'Password'),
                 obscureText: true,
               ),
-              const SizedBox(height: 20),
+              Row(
+                children: [
+                  Checkbox(
+                    value: _rememberMe,
+                    onChanged: (value) {
+                      setState(() {
+                        _rememberMe = value ?? false;
+                      });
+                    },
+                  ),
+                  const Text('Remember Me'),
+                ],
+              ),
               ElevatedButton(
-                onPressed: () {},
+                onPressed: _signInWithEmail,
                 child: const Text('SIGN IN'),
               ),
               TextButton(

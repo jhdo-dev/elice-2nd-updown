@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -17,6 +18,7 @@ class _SignUpPageState extends State<SignUpPage> {
   final _passwordController = TextEditingController();
   final _nameController = TextEditingController();
   final _auth = FirebaseAuth.instance;
+  final _firestore = FirebaseFirestore.instance;
 
   @override
   void initState() {
@@ -31,20 +33,31 @@ class _SignUpPageState extends State<SignUpPage> {
   Future<void> _signUp() async {
     final email = _emailController.text;
     final password = _passwordController.text;
+    final name = _nameController.text;
 
     if (email.isNotEmpty && password.isNotEmpty) {
       try {
-        // Firebase Authentication을 사용하여 회원가입을 구현하세요.
-        UserCredential userCredential =
-            await _auth.createUserWithEmailAndPassword(
+        final userCredential = await _auth.createUserWithEmailAndPassword(
           email: email,
           password: password,
         );
 
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(userCredential.user!.uid)
+            .set({
+          'name': name,
+          'email': email,
+          // 'photo': photo.url,
+        });
+
+        // 사용자 프로필 업데이트
+        await userCredential.user?.updateProfile(displayName: name);
+
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              'Sign Up Successful! Welcome, ${userCredential.user?.email}',
+              'Sign Up Successful! Welcome, $name',
             ),
           ),
         );
@@ -52,7 +65,7 @@ class _SignUpPageState extends State<SignUpPage> {
         _emailController.clear();
         _passwordController.clear();
 
-        context.go('/welcome');
+        context.go('/auth');
       } catch (e) {
         print('Error: $e');
 
