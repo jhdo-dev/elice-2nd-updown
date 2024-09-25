@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -16,6 +17,8 @@ class _SignInPageState extends State<SignInPage> {
   final _passwordController = TextEditingController();
   final _auth = FirebaseAuth.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn();
+
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   Future<void> _signInWithGoogle() async {
     try {
@@ -37,7 +40,26 @@ class _SignInPageState extends State<SignInPage> {
         idToken: googleAuth.idToken,
       );
       // Firebase에 로그인합니다.
-      await _auth.signInWithCredential(credential);
+      UserCredential userCredential =
+          await _auth.signInWithCredential(credential);
+
+      final User? user = userCredential.user;
+
+      if (user != null) {
+        // Firestore에 사용자 정보를 저장합니다.
+        final userDoc = _firestore.collection('users').doc(user.uid);
+        final docSnapshot = await userDoc.get();
+
+        if (!docSnapshot.exists) {
+          await userDoc.set({
+            'displayName': user.displayName,
+            'email': user.email,
+            'photoURL': user.photoURL,
+            'lastSignInTime': user.metadata.lastSignInTime,
+            'creationTime': user.metadata.creationTime,
+          });
+        }
+      }
 
       context.go('/auth');
     } catch (e) {
@@ -56,7 +78,7 @@ class _SignInPageState extends State<SignInPage> {
     final user = _auth.currentUser;
 
     return GestureDetector(
-      onTap: () => FocusScope.of(context).unfocus(),
+      onTap: () => FocusScope.of(context).unfocus,
       child: Scaffold(
         appBar: AppBar(
           title: const Text('Sign In Page'),
@@ -80,7 +102,7 @@ class _SignInPageState extends State<SignInPage> {
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () {},
-                child: const Text('LOG IN'),
+                child: const Text('SIGN IN'),
               ),
               TextButton(
                 onPressed: () {},
@@ -105,7 +127,7 @@ class _SignInPageState extends State<SignInPage> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  ElevatedButton(
+                  OutlinedButton(
                     onPressed: _signInWithGoogle,
                     child: Image.asset(
                       "assets/icons/google.png",
@@ -116,7 +138,7 @@ class _SignInPageState extends State<SignInPage> {
                   const SizedBox(
                     width: 20,
                   ),
-                  ElevatedButton(
+                  OutlinedButton(
                     onPressed: () {},
                     child: Image.asset(
                       "assets/icons/facebook.png",

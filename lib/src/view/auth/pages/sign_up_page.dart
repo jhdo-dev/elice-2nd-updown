@@ -15,6 +15,7 @@ class SignUpPage extends StatefulWidget {
 class _SignUpPageState extends State<SignUpPage> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _nameController = TextEditingController();
   final _auth = FirebaseAuth.instance;
 
   @override
@@ -70,31 +71,38 @@ class _SignUpPageState extends State<SignUpPage> {
   Widget build(BuildContext context) {
     final user = _auth.currentUser;
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Sign Up Page'),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            TextField(
-              controller: _emailController,
-              decoration: const InputDecoration(labelText: 'Email'),
-              keyboardType: TextInputType.emailAddress,
-            ),
-            TextField(
-              controller: _passwordController,
-              decoration: const InputDecoration(labelText: 'Password'),
-              obscureText: true,
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: _signUp,
-              child: const Text('Sign Up'),
-            ),
-          ],
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus,
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Sign Up Page'),
+        ),
+        body: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              TextField(
+                controller: _emailController,
+                decoration: const InputDecoration(labelText: 'Email'),
+                keyboardType: TextInputType.emailAddress,
+              ),
+              TextField(
+                controller: _passwordController,
+                decoration: const InputDecoration(labelText: 'Password'),
+                obscureText: true,
+              ),
+              TextField(
+                controller: _nameController,
+                decoration: const InputDecoration(labelText: 'Name'),
+              ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: _signUp,
+                child: const Text('Sign Up'),
+              ),
+            ],
+          ),
         ),
       ),
     );
