@@ -5,6 +5,7 @@ class ChatRoom extends StatelessWidget {
   final String roomName;
   final String roomStartDate;
   final String roomEndDate;
+  final String imageUrl; // 추가된 부분: 이미지 URL
 
   const ChatRoom({
     super.key,
@@ -12,6 +13,7 @@ class ChatRoom extends StatelessWidget {
     required this.roomName,
     required this.roomStartDate,
     required this.roomEndDate,
+    required this.imageUrl, // 이미지 URL 매개변수 추가
   });
 
   @override
@@ -34,21 +36,26 @@ class ChatRoom extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Column(
-            children: [
-              SizedBox(
-                width: 70,
-                height: 70,
-                child: CircleAvatar(
-                  backgroundColor: Colors.grey[300],
+          // 프로필 이미지 추가
+          ClipOval(
+            child: Image.network(
+              imageUrl, // 이미지 URL을 사용하여 이미지를 로드
+              width: 70,
+              height: 70,
+              fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) {
+                return Container(
+                  width: 70,
+                  height: 70,
+                  color: Colors.grey[300],
                   child: const Icon(
-                    Icons.person,
+                    Icons.error,
                     size: 30,
-                    color: Colors.white,
+                    color: Colors.red,
                   ),
-                ),
-              ),
-            ],
+                );
+              },
+            ),
           ),
           const SizedBox(width: 14.0),
           Container(
