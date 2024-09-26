@@ -149,7 +149,7 @@ class VoteResultCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('찬성: ${forPercentage.toStringAsFixed(1)}%'),
+          Text('잘못했다: ${forPercentage.toStringAsFixed(1)}%'),
           const SizedBox(height: 4),
           LinearProgressIndicator(
             value: forPercentage / 100,
@@ -157,7 +157,7 @@ class VoteResultCard extends StatelessWidget {
             valueColor: AlwaysStoppedAnimation<Color>(Colors.red),
           ),
           const SizedBox(height: 8),
-          Text('반대: ${againstPercentage.toStringAsFixed(1)}%'),
+          Text('잘못하지 않았다: ${againstPercentage.toStringAsFixed(1)}%'),
           const SizedBox(height: 4),
           LinearProgressIndicator(
             value: againstPercentage / 100,
