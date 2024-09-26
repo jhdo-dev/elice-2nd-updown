@@ -1,4 +1,4 @@
-// lib/src/home/home_view_state.dart
+// lib/src/view/home/home_view_state.dart
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:up_down/src/model/room.dart';
 
