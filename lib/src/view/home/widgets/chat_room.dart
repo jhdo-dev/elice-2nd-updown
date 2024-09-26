@@ -1,3 +1,4 @@
+// lib/src/home/widgets/chat_room.dart
 import 'package:flutter/material.dart';
 
 class ChatRoom extends StatelessWidget {
