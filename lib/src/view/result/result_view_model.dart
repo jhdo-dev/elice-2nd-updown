@@ -13,6 +13,7 @@ class ResultViewModel extends StateNotifier<ResultViewState> {
   ResultViewModel() : super(const ResultViewState.loading()) {
     fetchResults();
   }
+
   Future<void> fetchResults() async {
     state = const ResultViewState.loading();
     try {
@@ -20,6 +21,29 @@ class ResultViewModel extends StateNotifier<ResultViewState> {
           await FirebaseFirestore.instance.collection('rooms').get();
       final results = snapshot.docs.map((doc) {
         final data = doc.data();
+
+        // roomStartDate와 roomEndDate의 타입에 따라 처리
+        DateTime roomStartDate;
+        DateTime roomEndDate;
+
+        // roomStartDate 처리
+        if (data['roomStartDate'] is Timestamp) {
+          roomStartDate = (data['roomStartDate'] as Timestamp).toDate();
+        } else if (data['roomStartDate'] is String) {
+          roomStartDate = DateTime.parse(data['roomStartDate']);
+        } else {
+          roomStartDate = DateTime.now(); // 기본값 설정
+        }
+
+        // roomEndDate 처리
+        if (data['roomEndDate'] is Timestamp) {
+          roomEndDate = (data['roomEndDate'] as Timestamp).toDate();
+        } else if (data['roomEndDate'] is String) {
+          roomEndDate = DateTime.parse(data['roomEndDate']);
+        } else {
+          roomEndDate = DateTime.now(); // 기본값 설정
+        }
+
         return VoteResultItem(
           id: doc.id,
           title: data['roomName'] ?? '',
@@ -28,10 +52,8 @@ class ResultViewModel extends StateNotifier<ResultViewState> {
           againstPercentage: 0, // 초기값, 필요에 따라 수정
           isWinner: false, // 초기값, 필요에 따라 수정
           participantCount: data['participantCount'] ?? 0,
-          roomStartDate:
-              (data['roomStartDate'] as Timestamp?)?.toDate() ?? DateTime.now(),
-          roomEndDate:
-              (data['roomEndDate'] as Timestamp?)?.toDate() ?? DateTime.now(),
+          roomStartDate: roomStartDate,
+          roomEndDate: roomEndDate,
         );
       }).toList();
       state = ResultViewState.success(results);
