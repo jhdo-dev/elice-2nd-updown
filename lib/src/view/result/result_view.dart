@@ -73,12 +73,12 @@ class VoteResultCard extends StatelessWidget {
                   const BorderRadius.vertical(top: Radius.circular(4)),
               child: Image.network(
                 item.imageUrl,
-                height: 200,
+                height: 300,
                 width: double.infinity,
                 fit: BoxFit.cover,
                 errorBuilder: (context, error, stackTrace) {
                   return Container(
-                    height: 200,
+                    height: 100,
                     color: Colors.grey[300],
                     child: const Center(child: Text('이미지를 불러올 수 없습니다.')),
                   );
