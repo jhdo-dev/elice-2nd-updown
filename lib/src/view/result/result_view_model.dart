@@ -14,6 +14,7 @@ class ResultViewModel extends StateNotifier<ResultViewState> {
     fetchResults();
   }
 
+  // Firestore에서 데이터를 불러오는 로직
   Future<void> fetchResults() async {
     state = const ResultViewState.loading();
     try {
@@ -44,13 +45,15 @@ class ResultViewModel extends StateNotifier<ResultViewState> {
           roomEndDate = DateTime.now(); // 기본값 설정
         }
 
+        // Firestore에서 저장된 투표 결과 불러오기
         return VoteResultItem(
           id: doc.id,
           title: data['roomName'] ?? '',
           imageUrl: data['imageUrl'] ?? '',
-          forPercentage: 0, // 초기값, 필요에 따라 수정
-          againstPercentage: 0, // 초기값, 필요에 따라 수정
-          isWinner: false, // 초기값, 필요에 따라 수정
+          forPercentage: (data['forPercentage'] as num?)?.toDouble() ?? 0.0,
+          againstPercentage:
+              (data['againstPercentage'] as num?)?.toDouble() ?? 0.0,
+          isWinner: data['isWinner'] ?? false,
           participantCount: data['participantCount'] ?? 0,
           roomStartDate: roomStartDate,
           roomEndDate: roomEndDate,
@@ -62,10 +65,71 @@ class ResultViewModel extends StateNotifier<ResultViewState> {
     }
   }
 
+  // 투표 결과를 Firestore에 저장하는 함수
+  Future<void> updateVoteResultInFirestore({
+    required String roomId,
+    required double forPercentage,
+    required double againstPercentage,
+    required bool isWinner,
+  }) async {
+    try {
+      await FirebaseFirestore.instance.collection('rooms').doc(roomId).update({
+        'forPercentage': forPercentage,
+        'againstPercentage': againstPercentage,
+        'isWinner': isWinner,
+      });
+    } catch (e) {
+      // Firestore 업데이트 실패 시 처리
+      print('Error updating vote result: $e');
+    }
+  }
+
+  // 투표 결과 업데이트 로직
+  void updateVoteResult({
+    required String roomId,
+    required int guiltyCount,
+    required int notGuiltyCount,
+  }) {
+    state.whenOrNull(
+      success: (currentResults) {
+        final updatedResults = currentResults.map((item) {
+          if (item.id == roomId) {
+            final totalVotes = guiltyCount + notGuiltyCount;
+            final forPercentage =
+                totalVotes > 0 ? (guiltyCount / totalVotes) * 100 : 0.0;
+            final againstPercentage =
+                totalVotes > 0 ? (notGuiltyCount / totalVotes) * 100 : 0.0;
+            final isWinner = guiltyCount > notGuiltyCount;
+
+            // Firestore에 투표 결과 저장
+            updateVoteResultInFirestore(
+              roomId: roomId,
+              forPercentage: forPercentage,
+              againstPercentage: againstPercentage,
+              isWinner: isWinner,
+            );
+
+            // 상태 업데이트
+            return item.copyWith(
+              forPercentage: forPercentage,
+              againstPercentage: againstPercentage,
+              isWinner: isWinner,
+            );
+          }
+          return item;
+        }).toList();
+
+        // 상태에 업데이트된 결과 반영
+        state = ResultViewState.success(updatedResults);
+      },
+    );
+  }
+
   Future<void> refreshResults() async {
     await fetchResults();
   }
 
+  // 새로운 방을 추가하는 로직
   void addNewRoom(Room room) {
     state.whenOrNull(
       success: (currentResults) {
@@ -81,33 +145,6 @@ class ResultViewModel extends StateNotifier<ResultViewState> {
           roomEndDate: room.roomEndDate,
         );
         state = ResultViewState.success([...currentResults, newItem]);
-      },
-    );
-  }
-
-  void updateVoteResult({
-    required String roomId,
-    required int guiltyCount,
-    required int notGuiltyCount,
-  }) {
-    state.whenOrNull(
-      success: (currentResults) {
-        final updatedResults = currentResults.map((item) {
-          if (item.id == roomId) {
-            final totalVotes = guiltyCount + notGuiltyCount;
-            final forPercentage =
-                totalVotes > 0 ? (guiltyCount / totalVotes) * 100 : 0.0;
-            final againstPercentage =
-                totalVotes > 0 ? (notGuiltyCount / totalVotes) * 100 : 0.0;
-            return item.copyWith(
-              forPercentage: forPercentage,
-              againstPercentage: againstPercentage,
-              isWinner: guiltyCount > notGuiltyCount,
-            );
-          }
-          return item;
-        }).toList();
-        state = ResultViewState.success(updatedResults);
       },
     );
   }
