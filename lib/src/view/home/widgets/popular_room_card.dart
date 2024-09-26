@@ -20,32 +20,37 @@ class PopularRoomCard extends StatelessWidget {
     return Card(
       margin: const EdgeInsets.all(8.0),
       color: Colors.white,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Image.network(
-            imageUrl,
-            width: 100,
-            height: 100,
-            fit: BoxFit.cover,
-            errorBuilder: (context, error, stackTrace) {
-              return const Icon(Icons.error, size: 100, color: Colors.red);
-            },
-          ),
-          const SizedBox(height: 8),
-          Text(
-            personName,
-            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-          ),
-          Text(
-            roomName,
-            style: const TextStyle(fontSize: 16),
-          ),
-          Text(
-            'Participants: $participantCount',
-            style: const TextStyle(fontSize: 14, color: Colors.grey),
-          ),
-        ],
+      child: Padding(
+        padding: const EdgeInsets.all(5),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            ClipOval(
+              child: Image.network(
+                imageUrl,
+                width: 90,
+                height: 90,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) {
+                  return const Icon(Icons.error, size: 100, color: Colors.red);
+                },
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              personName,
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+            Text(
+              roomName,
+              style: const TextStyle(fontSize: 16),
+            ),
+            Text(
+              'Participants: $participantCount',
+              style: const TextStyle(fontSize: 14, color: Colors.grey),
+            ),
+          ],
+        ),
       ),
     );
   }
