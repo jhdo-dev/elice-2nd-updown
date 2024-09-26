@@ -181,7 +181,7 @@ class __$$RoomImplCopyWithImpl<$Res>
 /// @nodoc
 @JsonSerializable()
 class _$RoomImpl implements _Room {
-  const _$RoomImpl(
+  _$RoomImpl(
       {required this.roomId,
       required this.roomName,
       required this.personName,
@@ -256,7 +256,7 @@ class _$RoomImpl implements _Room {
 }
 
 abstract class _Room implements Room {
-  const factory _Room(
+  factory _Room(
       {required final String roomId,
       required final String roomName,
       required final String personName,

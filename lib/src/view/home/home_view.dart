@@ -1,4 +1,4 @@
-// lib/src/home/home_view.dart
+// lib/src/view/home/home_view.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:up_down/src/view/home/home_view_model.dart';
@@ -11,7 +11,7 @@ class HomeView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final popularRoomsAsyncValue = ref.watch(popularRoomsProvider);
+    final homeState = ref.watch(homeViewModelProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -22,25 +22,18 @@ class HomeView extends ConsumerWidget {
           // 인기 방 섹션
           SizedBox(
             height: 200,
-            child: popularRoomsAsyncValue.when(
-              data: (rooms) {
-                if (rooms.isEmpty) {
-                  return const Center(child: Text('No popular rooms'));
-                }
-                return PageView(
-                  children: rooms.map((room) {
-                    return PopularRoomCard(
-                      roomName: room.roomName,
-                      personName: room.personName,
-                      imageUrl: room.imageUrl,
-                      participantCount: room.participantCount, // 추가된 필드
-                    );
-                  }).toList(),
-                );
-              },
-              loading: () => const Center(child: CircularProgressIndicator()),
-              error: (error, stack) => Center(child: Text('Error: $error')),
-            ),
+            child: homeState.popularRooms.isEmpty
+                ? const Center(child: Text('No popular rooms'))
+                : PageView(
+                    children: homeState.popularRooms.map((room) {
+                      return PopularRoomCard(
+                        roomName: room.roomName,
+                        personName: room.personName,
+                        imageUrl: room.imageUrl,
+                        participantCount: room.participantCount,
+                      );
+                    }).toList(),
+                  ),
           ),
           // 방 리스트
           const Expanded(child: RoomListPage()),
