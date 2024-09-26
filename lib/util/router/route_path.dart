@@ -6,6 +6,7 @@ import 'package:up_down/component/page_not_found.dart';
 import 'package:up_down/component/scaffold_with_nav_bar.dart';
 import 'package:up_down/src/provider/auth_repository_provider.dart';
 import 'package:up_down/src/view/auth/auth_view.dart';
+import 'package:up_down/src/view/auth/widgets/debug_page.dart';
 import 'package:up_down/src/view/chat/chat_view.dart';
 import 'package:up_down/src/view/chat/vote/vote_view.dart';
 import 'package:up_down/src/view/home/create_room_view.dart';
@@ -49,11 +50,12 @@ GoRouter route(RouteRef ref) {
 
         if (authenticated == false) {
           return authenticating ? null : '/signin';
+          final String roomId;
         }
 
-        if (!fbAuth.currentUser!.emailVerified) {
-          return '/verifyEmail';
-        }
+        // if (!fbAuth.currentUser!.emailVerified) {
+        //   return '/verifyEmail';
+        // }
 
         final verifyingEmail = state.matchedLocation == '/verifyEmail';
         final splashing = state.matchedLocation == '/splash';
@@ -183,7 +185,7 @@ GoRouter route(RouteRef ref) {
                   path: '/setting',
                   name: RouteNames.setting,
                   builder: (context, state) {
-                    return const Placeholder();
+                    return const DebugPage();
                   },
                 ),
               ],
