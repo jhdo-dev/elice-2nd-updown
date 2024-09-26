@@ -7,7 +7,7 @@ part 'room.g.dart';
 
 @freezed
 class Room with _$Room {
-  const factory Room({
+  factory Room({
     required String roomId,
     required String roomName,
     required String personName,
@@ -20,9 +20,15 @@ class Room with _$Room {
   factory Room.fromJson(Map<String, dynamic> json) => _$RoomFromJson(json);
 
   factory Room.fromFirestore(DocumentSnapshot<Map<String, dynamic>> doc) {
-    return Room.fromJson({
-      ...doc.data()!,
-      'roomId': doc.id,
-    });
+    final data = doc.data()!;
+    return Room(
+      roomId: data['roomId'] ?? doc.id,
+      roomName: data['roomName'] ?? 'Untitled',
+      personName: data['personName'] ?? 'Unknown',
+      imageUrl: data['imageUrl'] ?? '',
+      roomStartDate: (data['roomStartDate'] as Timestamp).toDate(),
+      roomEndDate: (data['roomEndDate'] as Timestamp).toDate(),
+      participantCount: data['participantCount'] ?? 0,
+    );
   }
 }
