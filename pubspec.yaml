@@ -47,6 +47,7 @@ dependencies:
   flutter_local_notifications: ^17.2.3
   google_fonts: ^6.2.1
   google_sign_in: ^6.2.1
+  json_annotation: ^4.9.0
   shared_preferences: ^2.3.2
 
 dev_dependencies:
@@ -57,6 +58,7 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   freezed: ^2.5.7
+  json_serializable: ^6.8.0
   riverpod_generator: ^2.4.3
   riverpod_lint: ^2.3.13
 
