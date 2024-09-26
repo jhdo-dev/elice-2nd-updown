@@ -28,6 +28,7 @@ class RoomListPage extends ConsumerWidget {
 
             return ChatRoom(
               personName: room.personName,
+              roomId: room.roomId,
               roomName: room.roomName,
               roomStartDate: roomStartDate,
               roomEndDate: roomEndDate,
