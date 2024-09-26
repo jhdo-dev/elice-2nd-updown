@@ -140,7 +140,7 @@ GoRouter route(RouteRef ref) {
                   path: '/create-room', // 방 생성 페이지 경로
                   name: RouteNames.createRoom,
                   builder: (context, state) {
-                    return CreateRoomView(); // 방 생성 페이지
+                    return const CreateRoomView(); // 방 생성 페이지
                   },
                 ),
               ],
