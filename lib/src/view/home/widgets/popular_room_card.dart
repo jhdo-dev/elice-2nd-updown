@@ -1,4 +1,4 @@
-// lib/src/home/widgets/popular_room_card.dart
+// lib/src/view/home/widgets/popular_room_card.dart
 import 'package:flutter/material.dart';
 
 class PopularRoomCard extends StatelessWidget {
