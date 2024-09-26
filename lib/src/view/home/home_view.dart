@@ -1,43 +1,49 @@
+// lib/src/view/home/home_view.dart
 import 'package:flutter/material.dart';
-import 'package:up_down/src/view/home/widget/room_list.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:up_down/src/view/home/home_view_model.dart';
+import 'package:up_down/src/view/home/widgets/popular_room_card.dart';
+import 'package:up_down/src/view/home/widgets/room_list.dart';
+import 'package:go_router/go_router.dart';
 
-class HomeView extends StatelessWidget {
+class HomeView extends ConsumerWidget {
   const HomeView({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final homeState = ref.watch(homeViewModelProvider);
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Home'), // 타이틀 설정
+        title: const Text('Home'),
       ),
       body: Column(
         children: [
-          // 인기 방 스와이프 가능한 섹션
+          // 인기 방 섹션
           SizedBox(
-            height: 150, // 원하는 높이로 설정
-            child: PageView(
-              children: [
-                _buildPopularRoomCard('인기 방 1'),
-                _buildPopularRoomCard('인기 방 2'),
-                _buildPopularRoomCard('인기 방 3'),
-              ],
-            ),
+            height: 200,
+            child: homeState.popularRooms.isEmpty
+                ? const Center(child: Text('No popular rooms'))
+                : PageView(
+                    children: homeState.popularRooms.map((room) {
+                      return PopularRoomCard(
+                        roomName: room.roomName,
+                        personName: room.personName,
+                        imageUrl: room.imageUrl,
+                        participantCount: room.participantCount,
+                      );
+                    }).toList(),
+                  ),
           ),
           // 방 리스트
           const Expanded(child: RoomListPage()),
         ],
       ),
-    );
-  }
-
-  Widget _buildPopularRoomCard(String roomName) {
-    return Card(
-      margin: const EdgeInsets.all(8.0),
-      child: Center(
-        child: Text(
-          roomName,
-          style: const TextStyle(fontSize: 24),
-        ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          context.go('/create-room');
+        },
+        child: const Icon(Icons.add),
       ),
     );
   }
