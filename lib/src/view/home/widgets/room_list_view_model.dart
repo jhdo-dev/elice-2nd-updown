@@ -1,4 +1,4 @@
-// lib/src/view/home/room_list_view_model.dart
+// lib/src/view/home/widgets/room_list_view_model.dart
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:up_down/src/model/room.dart';
 import 'package:up_down/src/provider/home_repository_provider.dart';
