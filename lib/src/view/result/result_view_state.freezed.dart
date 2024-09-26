@@ -501,6 +501,9 @@ mixin _$VoteResultItem {
   double get againstPercentage => throw _privateConstructorUsedError;
   bool get isWinner => throw _privateConstructorUsedError;
   bool get hasAudio => throw _privateConstructorUsedError;
+  int get participantCount => throw _privateConstructorUsedError;
+  DateTime get roomStartDate => throw _privateConstructorUsedError;
+  DateTime get roomEndDate => throw _privateConstructorUsedError;
 
   /// Create a copy of VoteResultItem
   /// with the given fields replaced by the non-null parameter values.
@@ -522,7 +525,10 @@ abstract class $VoteResultItemCopyWith<$Res> {
       double forPercentage,
       double againstPercentage,
       bool isWinner,
-      bool hasAudio});
+      bool hasAudio,
+      int participantCount,
+      DateTime roomStartDate,
+      DateTime roomEndDate});
 }
 
 /// @nodoc
@@ -547,6 +553,9 @@ class _$VoteResultItemCopyWithImpl<$Res, $Val extends VoteResultItem>
     Object? againstPercentage = null,
     Object? isWinner = null,
     Object? hasAudio = null,
+    Object? participantCount = null,
+    Object? roomStartDate = null,
+    Object? roomEndDate = null,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -577,6 +586,18 @@ class _$VoteResultItemCopyWithImpl<$Res, $Val extends VoteResultItem>
           ? _value.hasAudio
           : hasAudio // ignore: cast_nullable_to_non_nullable
               as bool,
+      participantCount: null == participantCount
+          ? _value.participantCount
+          : participantCount // ignore: cast_nullable_to_non_nullable
+              as int,
+      roomStartDate: null == roomStartDate
+          ? _value.roomStartDate
+          : roomStartDate // ignore: cast_nullable_to_non_nullable
+              as DateTime,
+      roomEndDate: null == roomEndDate
+          ? _value.roomEndDate
+          : roomEndDate // ignore: cast_nullable_to_non_nullable
+              as DateTime,
     ) as $Val);
   }
 }
@@ -596,7 +617,10 @@ abstract class _$$VoteResultItemImplCopyWith<$Res>
       double forPercentage,
       double againstPercentage,
       bool isWinner,
-      bool hasAudio});
+      bool hasAudio,
+      int participantCount,
+      DateTime roomStartDate,
+      DateTime roomEndDate});
 }
 
 /// @nodoc
@@ -619,6 +643,9 @@ class __$$VoteResultItemImplCopyWithImpl<$Res>
     Object? againstPercentage = null,
     Object? isWinner = null,
     Object? hasAudio = null,
+    Object? participantCount = null,
+    Object? roomStartDate = null,
+    Object? roomEndDate = null,
   }) {
     return _then(_$VoteResultItemImpl(
       id: null == id
@@ -649,6 +676,18 @@ class __$$VoteResultItemImplCopyWithImpl<$Res>
           ? _value.hasAudio
           : hasAudio // ignore: cast_nullable_to_non_nullable
               as bool,
+      participantCount: null == participantCount
+          ? _value.participantCount
+          : participantCount // ignore: cast_nullable_to_non_nullable
+              as int,
+      roomStartDate: null == roomStartDate
+          ? _value.roomStartDate
+          : roomStartDate // ignore: cast_nullable_to_non_nullable
+              as DateTime,
+      roomEndDate: null == roomEndDate
+          ? _value.roomEndDate
+          : roomEndDate // ignore: cast_nullable_to_non_nullable
+              as DateTime,
     ));
   }
 }
@@ -663,7 +702,10 @@ class _$VoteResultItemImpl implements _VoteResultItem {
       required this.forPercentage,
       required this.againstPercentage,
       required this.isWinner,
-      this.hasAudio = false});
+      this.hasAudio = false,
+      this.participantCount = 0,
+      required this.roomStartDate,
+      required this.roomEndDate});
 
   @override
   final String id;
@@ -680,10 +722,17 @@ class _$VoteResultItemImpl implements _VoteResultItem {
   @override
   @JsonKey()
   final bool hasAudio;
+  @override
+  @JsonKey()
+  final int participantCount;
+  @override
+  final DateTime roomStartDate;
+  @override
+  final DateTime roomEndDate;
 
   @override
   String toString() {
-    return 'VoteResultItem(id: $id, title: $title, imageUrl: $imageUrl, forPercentage: $forPercentage, againstPercentage: $againstPercentage, isWinner: $isWinner, hasAudio: $hasAudio)';
+    return 'VoteResultItem(id: $id, title: $title, imageUrl: $imageUrl, forPercentage: $forPercentage, againstPercentage: $againstPercentage, isWinner: $isWinner, hasAudio: $hasAudio, participantCount: $participantCount, roomStartDate: $roomStartDate, roomEndDate: $roomEndDate)';
   }
 
   @override
@@ -702,12 +751,28 @@ class _$VoteResultItemImpl implements _VoteResultItem {
             (identical(other.isWinner, isWinner) ||
                 other.isWinner == isWinner) &&
             (identical(other.hasAudio, hasAudio) ||
-                other.hasAudio == hasAudio));
+                other.hasAudio == hasAudio) &&
+            (identical(other.participantCount, participantCount) ||
+                other.participantCount == participantCount) &&
+            (identical(other.roomStartDate, roomStartDate) ||
+                other.roomStartDate == roomStartDate) &&
+            (identical(other.roomEndDate, roomEndDate) ||
+                other.roomEndDate == roomEndDate));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, id, title, imageUrl,
-      forPercentage, againstPercentage, isWinner, hasAudio);
+  int get hashCode => Object.hash(
+      runtimeType,
+      id,
+      title,
+      imageUrl,
+      forPercentage,
+      againstPercentage,
+      isWinner,
+      hasAudio,
+      participantCount,
+      roomStartDate,
+      roomEndDate);
 
   /// Create a copy of VoteResultItem
   /// with the given fields replaced by the non-null parameter values.
@@ -727,7 +792,10 @@ abstract class _VoteResultItem implements VoteResultItem {
       required final double forPercentage,
       required final double againstPercentage,
       required final bool isWinner,
-      final bool hasAudio}) = _$VoteResultItemImpl;
+      final bool hasAudio,
+      final int participantCount,
+      required final DateTime roomStartDate,
+      required final DateTime roomEndDate}) = _$VoteResultItemImpl;
 
   @override
   String get id;
@@ -743,6 +811,12 @@ abstract class _VoteResultItem implements VoteResultItem {
   bool get isWinner;
   @override
   bool get hasAudio;
+  @override
+  int get participantCount;
+  @override
+  DateTime get roomStartDate;
+  @override
+  DateTime get roomEndDate;
 
   /// Create a copy of VoteResultItem
   /// with the given fields replaced by the non-null parameter values.
