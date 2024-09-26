@@ -1,14 +1,44 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'result_view_model.dart';
 import 'result_view_state.dart';
 
-class ResultView extends ConsumerWidget {
+//메시지
+class ResultView extends ConsumerStatefulWidget {
+  //^
   const ResultView({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  _ResultViewState createState() => _ResultViewState(); //^
+}
+
+//^ 새로운 State 클래스
+class _ResultViewState extends ConsumerState<ResultView> {
+  //^
+  //^ FCM 토큰 요청 및 로깅을 위한 메서드
+  void setupPushNotifications() async {
+    //^
+    final fcm = FirebaseMessaging.instance;
+    // Push Notification 권한 요구 - 반드시 Token을 얻기 전에 실시해야 함
+    await fcm.requestPermission();
+
+    // Firebase Message 토큰 얻기
+    final fcmToken = await fcm.getToken();
+    print('FCM Token: $fcmToken'); // 토큰을 로그에 출력
+  }
+
+  @override
+  void initState() {
+    //^
+    super.initState();
+    // 화면을 열었을 때 한 번만 실행되도록 initState() 안에서 실시
+    setupPushNotifications();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final state = ref.watch(resultViewModelProvider);
 
     return Scaffold(
@@ -106,11 +136,11 @@ class VoteResultCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: isWinner ? Colors.green : Colors.red,
+        color: isWinner ? Colors.red : Colors.blue,
         borderRadius: BorderRadius.circular(20),
       ),
       child: Text(
-        isWinner ? '승' : '패',
+        isWinner ? '나락' : '구원',
         style:
             const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
       ),
