@@ -1,8 +1,11 @@
 // lib/src/view/home/widgets/chat_room.dart
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:up_down/util/router/route_names.dart';
 
 class ChatRoom extends StatelessWidget {
   final String personName;
+  final String roomId;
   final String roomName;
   final String roomStartDate;
   final String roomEndDate;
@@ -14,7 +17,8 @@ class ChatRoom extends StatelessWidget {
     required this.roomName,
     required this.roomStartDate,
     required this.roomEndDate,
-    required this.imageUrl, // 이미지 URL 매개변수 추가
+    required this.imageUrl,
+    required this.roomId, // 이미지 URL 매개변수 추가
   });
 
   @override
@@ -102,7 +106,12 @@ class ChatRoom extends StatelessWidget {
                 style: ElevatedButton.styleFrom(
                   fixedSize: const Size(69, 40),
                 ),
-                onPressed: () {},
+                onPressed: () {
+                  context.goNamed(
+                    RouteNames.vote,
+                    pathParameters: {'roomId': roomId}, // roomId를 params로 전달
+                  );
+                },
                 child: const Text(
                   '입장',
                   style: TextStyle(
