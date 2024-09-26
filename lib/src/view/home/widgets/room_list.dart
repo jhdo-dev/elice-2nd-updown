@@ -1,12 +1,14 @@
+// lib/src/home/widgets/room_list.dart
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:up_down/src/view/home/widgets/chat_room.dart';
 
-class RoomListPage extends StatelessWidget {
+class RoomListPage extends ConsumerWidget {
   const RoomListPage({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return const Scaffold(
       body: ChatRoomListPage(),
     );
