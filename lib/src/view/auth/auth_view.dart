@@ -1,60 +1,160 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:up_down/src/view/auth/pages/sign_up_page.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:up_down/src/view/auth/widgets/password_reset_dialog.dart';
 
-class SignInPage extends StatefulWidget {
-  const SignInPage({super.key});
+import 'widgets/sign_up_dialog.dart';
+
+class AuthView extends StatefulWidget {
+  const AuthView({super.key});
 
   @override
-  _SignInPageState createState() => _SignInPageState();
+  _AuthViewState createState() => _AuthViewState();
 }
 
-class _SignInPageState extends State<SignInPage> {
+class _AuthViewState extends State<AuthView> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _auth = FirebaseAuth.instance;
-  final GoogleSignIn _googleSignIn = GoogleSignIn();
+  final _googleSignIn = GoogleSignIn();
+  bool _rememberMe = false;
+  bool _isLoading = false; // 로딩 상태 추가
 
+  @override
+  void initState() {
+    super.initState();
+    _checkRememberedUser();
+  }
+
+//비번기억
+  Future<void> _checkRememberedUser() async {
+    final prefs = await SharedPreferences.getInstance();
+    final userId = prefs.getString('userId');
+    if (userId != null) {
+      try {
+        final user = _auth.currentUser;
+        if (user != null && user.uid == userId) {
+          context.go('/home');
+        }
+      } catch (e) {
+        print('Error during auto login: $e');
+      }
+    }
+  }
+
+//이메일 로그인
+  Future<void> _signInWithEmail() async {
+    FocusScope.of(context).unfocus();
+    setState(() {
+      _isLoading = true; // 로딩 상태 시작
+    });
+
+    try {
+      final newUser = await _auth.signInWithEmailAndPassword(
+        email: _emailController.text,
+        password: _passwordController.text,
+      );
+
+      if (_rememberMe) {
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('userId', newUser.user?.uid ?? '');
+      }
+
+      if (newUser.user != null) {
+        context.go('/home');
+      }
+    } catch (e) {
+      print(e);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+            content: Text('Invalid email or password. Please try again')),
+      );
+    }
+    setState(() {
+      _isLoading = false;
+    });
+  }
+
+// 구글 로그인
   Future<void> _signInWithGoogle() async {
     try {
-      // 사용자가 Google 계정을 선택하고 로그인하도록 합니다.
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
 
-      // 사용자가 로그인하지 않고 프로세스를 취소한 경우
       if (googleUser == null) {
         return;
       }
 
-      // GoogleSignInAuthentication 객체를 통해 인증 정보를 가져옵니다.
       final GoogleSignInAuthentication googleAuth =
           await googleUser.authentication;
 
-      // Google 인증 정보를 사용하여 Firebase에 로그인합니다.
       final credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
       );
-      // Firebase에 로그인합니다.
-      await _auth.signInWithCredential(credential);
+      final newUser = await _auth.signInWithCredential(credential);
 
-      context.go('/auth');
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('userId', newUser.user?.uid ?? '');
+
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(newUser.user!.uid)
+          .set({
+        'name': newUser.user!.displayName,
+        'email': newUser.user!.email,
+        // 'photo': photo.url,
+      });
+
+      context.go('/home');
     } catch (e) {
-      // 오류 메시지를 출력합니다.
       print('Error signing in with Google: $e');
 
-      // 사용자에게 오류 메시지를 표시합니다.
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Failed to sign in with Google: $e')),
       );
     }
   }
 
+  //페이스북 로그인
+  Future<void> _signInWithFacebook() async {
+    //^
+    try {
+      final LoginResult result = await FacebookAuth.instance.login();
+
+      if (result.status == LoginStatus.success) {
+        final AccessToken accessToken = result.accessToken!;
+
+        final OAuthCredential credential =
+            FacebookAuthProvider.credential(accessToken.tokenString);
+
+        final UserCredential userCredential =
+            await _auth.signInWithCredential(credential);
+
+        context.go('/home');
+      } else {
+        throw Exception('Facebook login failed');
+      }
+    } catch (e) {
+      print('Error signing in with Facebook: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to sign in with Facebook: $e')),
+      );
+    }
+  }
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
-    final user = _auth.currentUser;
-
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
@@ -66,7 +166,6 @@ class _SignInPageState extends State<SignInPage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              Text('debug* current user: ${user?.email}'),
               TextField(
                 controller: _emailController,
                 decoration: const InputDecoration(labelText: 'Email'),
@@ -77,13 +176,39 @@ class _SignInPageState extends State<SignInPage> {
                 decoration: const InputDecoration(labelText: 'Password'),
                 obscureText: true,
               ),
-              const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () {},
-                child: const Text('LOG IN'),
+              Row(
+                children: [
+                  Checkbox(
+                    value: _rememberMe,
+                    onChanged: (value) {
+                      setState(() {
+                        _rememberMe = value ?? false;
+                      });
+                    },
+                  ),
+                  GestureDetector(
+                    onTap: () => setState(() {
+                      _rememberMe = !_rememberMe;
+                    }),
+                    child: const Text('Remember Me'),
+                  ),
+                ],
               ),
+              _isLoading
+                  ? const CircularProgressIndicator()
+                  : ElevatedButton(
+                      onPressed: _signInWithEmail,
+                      child: const Text('SIGN IN'),
+                    ),
               TextButton(
-                onPressed: () {},
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return const PasswordResetDialog();
+                    },
+                  );
+                },
                 child: const Text('Forgot your password?'),
               ),
               const Row(
@@ -105,7 +230,7 @@ class _SignInPageState extends State<SignInPage> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  ElevatedButton(
+                  OutlinedButton(
                     onPressed: _signInWithGoogle,
                     child: Image.asset(
                       "assets/icons/google.png",
@@ -116,8 +241,8 @@ class _SignInPageState extends State<SignInPage> {
                   const SizedBox(
                     width: 20,
                   ),
-                  ElevatedButton(
-                    onPressed: () {},
+                  OutlinedButton(
+                    onPressed: _signInWithFacebook,
                     child: Image.asset(
                       "assets/icons/facebook.png",
                       width: 25,
@@ -133,10 +258,11 @@ class _SignInPageState extends State<SignInPage> {
                   const Text('Don\'t have an account?'),
                   TextButton(
                     onPressed: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => const SignUpPage(),
-                        ),
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return const SignUpDialog();
+                        },
                       );
                     },
                     child: const Text('Sign Up'),
@@ -150,108 +276,3 @@ class _SignInPageState extends State<SignInPage> {
     );
   }
 }
-
-/*
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:google_sign_in/google_sign_in.dart';
-import 'package:flutter/material.dart';
-
-final FirebaseAuth _auth = FirebaseAuth.instance;
-final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-final GoogleSignIn _googleSignIn = GoogleSignIn();
-
-final TextEditingController _emailController = TextEditingController();
-final TextEditingController _passwordController = TextEditingController();
-
-Future<void> _signUpWithEmail() async {
-  final email = _emailController.text;
-  final password = _passwordController.text;
-
-  if (email.isNotEmpty && password.isNotEmpty) {
-    try {
-      // Firebase Authentication을 사용하여 회원가입을 구현합니다.
-      UserCredential userCredential =
-          await _auth.createUserWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
-
-      // Firestore에 사용자 정보를 저장합니다.
-      await _firestore.collection('users').doc(userCredential.user!.uid).set({
-        'displayName': userCredential.user!.displayName,
-        'email': userCredential.user!.email,
-        'photoURL': userCredential.user!.photoURL,
-        'lastSignInTime': userCredential.user!.metadata.lastSignInTime,
-        'creationTime': userCredential.user!.metadata.creationTime,
-      });
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Sign Up Successful! Welcome, ${userCredential.user?.email}',
-          ),
-        ),
-      );
-
-      _emailController.clear();
-      _passwordController.clear();
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Sign Up Failed: $e')),
-      );
-    }
-  } else {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Please enter both email and password')),
-    );
-  }
-}
-
-Future<void> _signInWithGoogle() async {
-  try {
-    final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
-
-    if (googleUser == null) {
-      return;
-    }
-
-    final GoogleSignInAuthentication googleAuth =
-        await googleUser.authentication;
-
-    final credential = GoogleAuthProvider.credential(
-      accessToken: googleAuth.accessToken,
-      idToken: googleAuth.idToken,
-    );
-
-    UserCredential userCredential =
-        await _auth.signInWithCredential(credential);
-
-    final User? user = userCredential.user;
-
-    if (user != null) {
-      // Firestore에 사용자 정보를 저장합니다.
-      final userDoc = _firestore.collection('users').doc(user.uid);
-      final docSnapshot = await userDoc.get();
-
-      if (!docSnapshot.exists) {
-        await userDoc.set({
-          'displayName': user.displayName,
-          'email': user.email,
-          'photoURL': user.photoURL,
-          'lastSignInTime': user.metadata.lastSignInTime,
-          'creationTime': user.metadata.creationTime,
-        });
-      }
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Sign In Successful! Welcome, ${user.displayName}')),
-      );
-    }
-  } catch (e) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Sign In Failed: $e')),
-    );
-  }
-}
- */
