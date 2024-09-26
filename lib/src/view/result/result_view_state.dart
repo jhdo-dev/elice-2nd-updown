@@ -20,5 +20,8 @@ class VoteResultItem with _$VoteResultItem {
     required double againstPercentage,
     required bool isWinner,
     @Default(false) bool hasAudio,
+    @Default(0) int participantCount,
+    required DateTime roomStartDate,
+    required DateTime roomEndDate,
   }) = _VoteResultItem;
 }
