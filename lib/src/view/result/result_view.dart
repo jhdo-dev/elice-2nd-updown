@@ -5,35 +5,24 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'result_view_model.dart';
 import 'result_view_state.dart';
 
-//메시지
 class ResultView extends ConsumerStatefulWidget {
-  //^
   const ResultView({Key? key}) : super(key: key);
 
   @override
-  _ResultViewState createState() => _ResultViewState(); //^
+  _ResultViewState createState() => _ResultViewState();
 }
 
-//^ 새로운 State 클래스
 class _ResultViewState extends ConsumerState<ResultView> {
-  //^
-  //^ FCM 토큰 요청 및 로깅을 위한 메서드
   void setupPushNotifications() async {
-    //^
     final fcm = FirebaseMessaging.instance;
-    // Push Notification 권한 요구 - 반드시 Token을 얻기 전에 실시해야 함
     await fcm.requestPermission();
-
-    // Firebase Message 토큰 얻기
     final fcmToken = await fcm.getToken();
-    print('FCM Token: $fcmToken'); // 토큰을 로그에 출력
+    print('FCM Token: $fcmToken');
   }
 
   @override
   void initState() {
-    //^
     super.initState();
-    // 화면을 열었을 때 한 번만 실행되도록 initState() 안에서 실시
     setupPushNotifications();
   }
 
@@ -52,11 +41,13 @@ class _ResultViewState extends ConsumerState<ResultView> {
         success: (results) => RefreshIndicator(
           onRefresh: () =>
               ref.read(resultViewModelProvider.notifier).refreshResults(),
-          child: ListView.builder(
-            itemCount: results.length,
-            itemBuilder: (context, index) =>
-                VoteResultCard(item: results[index]),
-          ),
+          child: results.isEmpty
+              ? const Center(child: Text('아직 생성된 방이 없습니다.'))
+              : ListView.builder(
+                  itemCount: results.length,
+                  itemBuilder: (context, index) =>
+                      VoteResultCard(item: results[index]),
+                ),
         ),
       ),
     );
@@ -76,9 +67,24 @@ class VoteResultCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          ClipRRect(
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(4)),
-          ),
+          if (item.imageUrl.isNotEmpty)
+            ClipRRect(
+              borderRadius:
+                  const BorderRadius.vertical(top: Radius.circular(4)),
+              child: Image.network(
+                item.imageUrl,
+                height: 200,
+                width: double.infinity,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) {
+                  return Container(
+                    height: 200,
+                    color: Colors.grey[300],
+                    child: const Center(child: Text('이미지를 불러올 수 없습니다.')),
+                  );
+                },
+              ),
+            ),
           Padding(
             padding: const EdgeInsets.all(16),
             child: Column(
@@ -87,14 +93,42 @@ class VoteResultCard extends StatelessWidget {
                 Text(
                   item.title,
                   style: const TextStyle(
-                      fontWeight: FontWeight.bold, fontSize: 18),
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  '참가자 수: ${item.participantCount}',
+                  style: const TextStyle(
+                    fontSize: 14,
+                    color: Colors.grey,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  '시작일: ${_formatDate(item.roomStartDate)}',
+                  style: const TextStyle(
+                    fontSize: 14,
+                    color: Colors.grey,
+                  ),
+                ),
+                Text(
+                  '종료일: ${_formatDate(item.roomEndDate)}',
+                  style: const TextStyle(
+                    fontSize: 14,
+                    color: Colors.grey,
+                  ),
                 ),
                 const SizedBox(height: 12),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     _buildPercentageBar(
-                        context, item.forPercentage, item.againstPercentage),
+                      context,
+                      item.forPercentage,
+                      item.againstPercentage,
+                    ),
                     _buildWinLoseIndicator(item.isWinner),
                   ],
                 ),
@@ -107,7 +141,10 @@ class VoteResultCard extends StatelessWidget {
   }
 
   Widget _buildPercentageBar(
-      BuildContext context, double forPercentage, double againstPercentage) {
+    BuildContext context,
+    double forPercentage,
+    double againstPercentage,
+  ) {
     return Expanded(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -141,9 +178,15 @@ class VoteResultCard extends StatelessWidget {
       ),
       child: Text(
         isWinner ? '나락' : '구원',
-        style:
-            const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        style: const TextStyle(
+          color: Colors.white,
+          fontWeight: FontWeight.bold,
+        ),
       ),
     );
+  }
+
+  String _formatDate(DateTime date) {
+    return '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
   }
 }
