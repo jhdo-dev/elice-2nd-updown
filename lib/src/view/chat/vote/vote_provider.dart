@@ -1,11 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:up_down/src/model/message.dart';
 import 'package:up_down/src/model/vote.dart';
-import 'package:up_down/src/provider/auth_repository_provider.dart';
 import 'package:up_down/src/provider/message_repository_provider.dart';
 import 'package:up_down/src/provider/vote_repository_provider.dart';
 import 'package:up_down/src/view/chat/vote/vote_view_state.dart';
+import 'package:up_down/src/view/result/result_view_model.dart';
 import 'package:up_down/util/helper/firebase_helper.dart';
 
 part 'vote_provider.g.dart';
@@ -95,6 +94,14 @@ class Judgment extends _$Judgment {
 
       final updatedVote =
           await ref.read(voteRepositoryProvider).getVote(roomId);
+
+      // ResultViewModel에 투표 결과 업데이트를 알립니다.
+      ref.read(resultViewModelProvider.notifier).updateVoteResult(
+            roomId: roomId,
+            guiltyCount: updatedVote.guiltyCount,
+            notGuiltyCount: updatedVote.notGuiltyCount,
+          );
+
       return state.value!.copyWith(vote: updatedVote);
     });
   }
