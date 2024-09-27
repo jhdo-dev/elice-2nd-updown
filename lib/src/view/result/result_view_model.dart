@@ -130,22 +130,23 @@ class ResultViewModel extends StateNotifier<ResultViewState> {
   }
 
   // 새로운 방을 추가하는 로직
-  void addNewRoom(Room room) {
-    state.whenOrNull(
-      success: (currentResults) {
-        final newItem = VoteResultItem(
-          id: room.roomId,
-          title: room.roomName,
-          imageUrl: room.imageUrl,
-          forPercentage: 0,
-          againstPercentage: 0,
-          isWinner: false,
-          participantCount: room.participantCount,
-          roomStartDate: room.roomStartDate,
-          roomEndDate: room.roomEndDate,
-        );
-        state = ResultViewState.success([...currentResults, newItem]);
-      },
-    );
+  Future<void> addNewRoom(Room room) async {
+    // Firestore에 새로운 방 정보 저장 //^ 추가
+    final roomRef =
+        FirebaseFirestore.instance.collection('rooms').doc(room.roomId); //^ 추가
+    await roomRef.set({
+      'roomId': room.roomId, //^ 추가
+      'roomName': room.roomName, //^ 추가
+      'imageUrl': room.imageUrl, //^ 추가
+      'participantCount': room.participantCount, //^ 추가
+      'roomStartDate': room.roomStartDate, //^ 추가
+      'roomEndDate': room.roomEndDate, //^ 추가
+      'forPercentage': 0, // 초기값 //^ 추가
+      'againstPercentage': 0, // 초기값 //^ 추가
+      'isWinner': false, // 초기값 //^ 추가
+    }); //^ 추가
+
+    // Firestore에 저장 후 결과 목록 갱신
+    await fetchResults(); //^ 추가
   }
 }
