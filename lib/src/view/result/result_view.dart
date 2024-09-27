@@ -1,3 +1,5 @@
+// stream 으로 하면 바로 가져올 수 있다.
+
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -38,13 +40,17 @@ class _ResultViewState extends ConsumerState<ResultView> {
       body: state.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (message) => Center(child: Text('Error: $message')),
-        success: (results) => results.isEmpty
-            ? const Center(child: Text('아직 생성된 방이 없습니다.'))
-            : ListView.builder(
-                itemCount: results.length,
-                itemBuilder: (context, index) =>
-                    VoteResultCard(item: results[index]),
-              ),
+        success: (results) => RefreshIndicator(
+          onRefresh: () =>
+              ref.read(resultViewModelProvider.notifier).refreshResults(),
+          child: results.isEmpty
+              ? const Center(child: Text('아직 생성된 방이 없습니다.'))
+              : ListView.builder(
+                  itemCount: results.length,
+                  itemBuilder: (context, index) =>
+                      VoteResultCard(item: results[index]),
+                ),
+        ),
       ),
     );
   }
@@ -95,7 +101,7 @@ class VoteResultCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  '참가자 수: ${item.participantCount}',
+                  '참가자 수: ${item.participantCount}', //^ 수정된 부분
                   style: const TextStyle(
                     fontSize: 14,
                     color: Colors.grey,
@@ -145,7 +151,7 @@ class VoteResultCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('잘못했다: ${forPercentage.toStringAsFixed(1)}%'),
+          Text('잘못했다: ${forPercentage.toStringAsFixed(1)}%'), //^ 수정된 부분
           const SizedBox(height: 4),
           LinearProgressIndicator(
             value: forPercentage / 100,
@@ -153,7 +159,7 @@ class VoteResultCard extends StatelessWidget {
             valueColor: AlwaysStoppedAnimation<Color>(Colors.red),
           ),
           const SizedBox(height: 8),
-          Text('잘못하지 않았다: ${againstPercentage.toStringAsFixed(1)}%'),
+          Text('잘못하지 않았다: ${againstPercentage.toStringAsFixed(1)}%'), //^ 수정된 부분
           const SizedBox(height: 4),
           LinearProgressIndicator(
             value: againstPercentage / 100,

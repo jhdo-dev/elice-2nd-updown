@@ -1,9 +1,7 @@
-import 'dart:async';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:up_down/src/model/room.dart';
-import 'package:up_down/src/repository/vote_repository.dart';
+import 'package:up_down/src/repository/vote_repository.dart'; //^ 추가
 
 import 'result_view_state.dart';
 
@@ -14,13 +12,11 @@ final resultViewModelProvider =
 
 class ResultViewModel extends StateNotifier<ResultViewState> {
   ResultViewModel() : super(const ResultViewState.loading()) {
-    fetchResults(); //^ 초기 데이터 로드
+    fetchResults();
   }
 
-  final VoteRepository _voteRepository = VoteRepository();
-  StreamSubscription<QuerySnapshot>? _roomsSubscription;
+  final VoteRepository _voteRepository = VoteRepository(); //^ 추가
 
-  //^ fetchResults 메서드 유지 및 수정
   Future<void> fetchResults() async {
     state = const ResultViewState.loading();
     try {
@@ -29,34 +25,11 @@ class ResultViewModel extends StateNotifier<ResultViewState> {
           .orderBy('createdAt', descending: true)
           .get();
 
-      await _processSnapshot(snapshot);
-      _startListeningToResults(); //^ 데이터 로드 후 실시간 리스너 시작
-    } catch (e) {
-      state = ResultViewState.error(e.toString());
-    }
-  }
-
-  //^ 실시간 리스너 시작
-  void _startListeningToResults() {
-    _roomsSubscription?.cancel(); // 기존 리스너가 있다면 취소
-    _roomsSubscription = FirebaseFirestore.instance
-        .collection('rooms')
-        .orderBy('createdAt', descending: true)
-        .snapshots()
-        .listen((snapshot) {
-      _processSnapshot(snapshot);
-    }, onError: (error) {
-      state = ResultViewState.error(error.toString());
-    });
-  }
-
-  //^ 스냅샷 처리 메서드
-  Future<void> _processSnapshot(QuerySnapshot snapshot) async {
-    try {
       final results = await Future.wait(snapshot.docs.map((doc) async {
-        final data = doc.data() as Map<String, dynamic>;
+        final data = doc.data();
         final roomId = doc.id;
 
+        //^ 투표 데이터 가져오기
         final voteSnapshot = await FirebaseFirestore.instance
             .collection('rooms')
             .doc(roomId)
@@ -66,9 +39,26 @@ class ResultViewModel extends StateNotifier<ResultViewState> {
 
         final voteData = voteSnapshot.data() ?? {};
 
-        DateTime roomStartDate = _parseDateTime(data['roomStartDate']);
-        DateTime roomEndDate = _parseDateTime(data['roomEndDate']);
+        DateTime roomStartDate;
+        DateTime roomEndDate;
 
+        if (data['roomStartDate'] is Timestamp) {
+          roomStartDate = (data['roomStartDate'] as Timestamp).toDate();
+        } else if (data['roomStartDate'] is String) {
+          roomStartDate = DateTime.parse(data['roomStartDate']);
+        } else {
+          roomStartDate = DateTime.now();
+        }
+
+        if (data['roomEndDate'] is Timestamp) {
+          roomEndDate = (data['roomEndDate'] as Timestamp).toDate();
+        } else if (data['roomEndDate'] is String) {
+          roomEndDate = DateTime.parse(data['roomEndDate']);
+        } else {
+          roomEndDate = DateTime.now();
+        }
+
+        //^ 수정된 부분: 투표 데이터 사용
         final guiltyCount = voteData['guiltyCount'] as int? ?? 0;
         final notGuiltyCount = voteData['notGuiltyCount'] as int? ?? 0;
         final participants = voteData['participants'] as List<dynamic>? ?? [];
@@ -96,22 +86,6 @@ class ResultViewModel extends StateNotifier<ResultViewState> {
     } catch (e) {
       state = ResultViewState.error(e.toString());
     }
-  }
-
-  DateTime _parseDateTime(dynamic value) {
-    if (value is Timestamp) {
-      return value.toDate();
-    } else if (value is String) {
-      return DateTime.parse(value);
-    } else {
-      return DateTime.now();
-    }
-  }
-
-  @override
-  void dispose() {
-    _roomsSubscription?.cancel();
-    super.dispose();
   }
 
   Future<void> updateVoteResultInFirestore({
@@ -187,6 +161,6 @@ class ResultViewModel extends StateNotifier<ResultViewState> {
       'isWinner': false,
     });
 
-    // 새 방이 추가되면 자동으로 리스너가 업데이트를 감지합니다.
+    await fetchResults();
   }
 }
