@@ -6,7 +6,7 @@ part of 'vote_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$judgmentHash() => r'424e084f4a315b0bef95314aa48b05183208c37f';
+String _$judgmentHash() => r'79ff9c89160b37362a11ca15da84fe21745d0fec';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -30,10 +30,10 @@ class _SystemHash {
 }
 
 abstract class _$Judgment
-    extends BuildlessAutoDisposeAsyncNotifier<VoteViewState> {
+    extends BuildlessAutoDisposeStreamNotifier<VoteViewState> {
   late final String roomId;
 
-  FutureOr<VoteViewState> build({
+  Stream<VoteViewState> build({
     required String roomId,
   });
 }
@@ -82,7 +82,7 @@ class JudgmentFamily extends Family<AsyncValue<VoteViewState>> {
 
 /// See also [Judgment].
 class JudgmentProvider
-    extends AutoDisposeAsyncNotifierProviderImpl<Judgment, VoteViewState> {
+    extends AutoDisposeStreamNotifierProviderImpl<Judgment, VoteViewState> {
   /// See also [Judgment].
   JudgmentProvider({
     required String roomId,
@@ -112,7 +112,7 @@ class JudgmentProvider
   final String roomId;
 
   @override
-  FutureOr<VoteViewState> runNotifierBuild(
+  Stream<VoteViewState> runNotifierBuild(
     covariant Judgment notifier,
   ) {
     return notifier.build(
@@ -137,7 +137,7 @@ class JudgmentProvider
   }
 
   @override
-  AutoDisposeAsyncNotifierProviderElement<Judgment, VoteViewState>
+  AutoDisposeStreamNotifierProviderElement<Judgment, VoteViewState>
       createElement() {
     return _JudgmentProviderElement(this);
   }
@@ -156,13 +156,13 @@ class JudgmentProvider
   }
 }
 
-mixin JudgmentRef on AutoDisposeAsyncNotifierProviderRef<VoteViewState> {
+mixin JudgmentRef on AutoDisposeStreamNotifierProviderRef<VoteViewState> {
   /// The parameter `roomId` of this provider.
   String get roomId;
 }
 
 class _JudgmentProviderElement
-    extends AutoDisposeAsyncNotifierProviderElement<Judgment, VoteViewState>
+    extends AutoDisposeStreamNotifierProviderElement<Judgment, VoteViewState>
     with JudgmentRef {
   _JudgmentProviderElement(super.provider);
 
