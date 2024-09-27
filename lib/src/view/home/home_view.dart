@@ -43,6 +43,7 @@ class HomeView extends ConsumerWidget {
         ],
       ),
       floatingActionButton: isAdminAsyncValue.when(
+        // 투표테스트
         data: (isAdmin) => isAdmin
             ? FloatingActionButton(
                 onPressed: () {
