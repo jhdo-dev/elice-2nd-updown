@@ -26,7 +26,7 @@ class MessageRepository {
     try {
       return roomsCollection
           .doc(roomId)
-          .collection('messages_test')
+          .collection('messages')
           .orderBy('sentAt', descending: true)
           .snapshots()
           .map((snapshot) =>
@@ -44,7 +44,7 @@ class MessageRepository {
     required Timestamp sentAt,
   }) async {
     try {
-      await roomsCollection.doc(roomId).collection('messages_test').add({
+      await roomsCollection.doc(roomId).collection('messages').add({
         'userId': userId,
         'message': message,
         'sentAt': sentAt,
