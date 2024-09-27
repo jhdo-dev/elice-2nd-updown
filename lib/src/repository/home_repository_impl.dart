@@ -23,9 +23,11 @@ class HomeRepositoryImpl implements HomeRepository {
 
   @override
   Stream<List<Room>> getChatRooms() {
+    final now = DateTime.now();
     return _firestore
         .collection('rooms')
-        .orderBy('createdAt', descending: true)
+        .where('roomEndDate', isGreaterThanOrEqualTo: Timestamp.fromDate(now))
+        .orderBy('roomEndDate', descending: false) // 필터링에 사용된 필드로 정렬
         .snapshots()
         .map((snapshot) =>
             snapshot.docs.map((doc) => Room.fromFirestore(doc)).toList());
