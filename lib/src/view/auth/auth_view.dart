@@ -108,6 +108,7 @@ class _AuthViewState extends State<AuthView> {
         'name': newUser.user!.displayName,
         'email': newUser.user!.email,
         // 'photo': photo.url,
+        'isAdmin': false,
       });
 
       context.go('/home');
