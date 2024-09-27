@@ -12,11 +12,11 @@ class HomeRepositoryImpl implements HomeRepository {
 
   @override
   Stream<List<Room>> getPopularRooms() {
-    final now = DateTime.now();
+    // final now = DateTime.now();
     return _firestore
         .collection('rooms')
-        .where('roomEndDate', isGreaterThanOrEqualTo: Timestamp.fromDate(now))
-        .orderBy('roomEndDate', descending: false) // roomEndDate로 정렬 (필수)
+        // .where('roomEndDate', isGreaterThanOrEqualTo: Timestamp.fromDate(now))
+        // .orderBy('roomEndDate', descending: false) // roomEndDate로 정렬 (필수)
         .orderBy('participantCount', descending: true)
         .limit(3)
         .snapshots()
