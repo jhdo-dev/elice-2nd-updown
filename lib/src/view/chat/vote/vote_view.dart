@@ -83,6 +83,7 @@ class _VoteViewState extends ConsumerState<VoteView> {
                                   userId: 'currentUserId', // 실제 유저 ID로 교체
                                   isGuilty: true,
                                 );
+                            ref.read(judgmentProvider(roomId: widget.roomId));
                           },
                           child: const Text('잘못했다'),
                         ),
