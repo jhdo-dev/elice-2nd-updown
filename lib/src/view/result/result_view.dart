@@ -38,17 +38,13 @@ class _ResultViewState extends ConsumerState<ResultView> {
       body: state.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (message) => Center(child: Text('Error: $message')),
-        success: (results) => RefreshIndicator(
-          onRefresh: () =>
-              ref.read(resultViewModelProvider.notifier).refreshResults(),
-          child: results.isEmpty
-              ? const Center(child: Text('아직 생성된 방이 없습니다.'))
-              : ListView.builder(
-                  itemCount: results.length,
-                  itemBuilder: (context, index) =>
-                      VoteResultCard(item: results[index]),
-                ),
-        ),
+        success: (results) => results.isEmpty
+            ? const Center(child: Text('아직 생성된 방이 없습니다.'))
+            : ListView.builder(
+                itemCount: results.length,
+                itemBuilder: (context, index) =>
+                    VoteResultCard(item: results[index]),
+              ),
       ),
     );
   }

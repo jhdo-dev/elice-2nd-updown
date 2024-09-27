@@ -74,9 +74,9 @@ class _$ResultViewStateCopyWithImpl<$Res, $Val extends ResultViewState>
     implements $ResultViewStateCopyWith<$Res> {
   _$ResultViewStateCopyWithImpl(this._value, this._then);
 
-  // ignore: unused_field
+// ignore: unused_field
   final $Val _value;
-  // ignore: unused_field
+// ignore: unused_field
   final $Res Function($Val) _then;
 
   /// Create a copy of ResultViewState
@@ -382,7 +382,7 @@ class _$SuccessImpl implements _Success {
   @override
   List<VoteResultItem> get results {
     if (_results is EqualUnmodifiableListView) return _results;
-    // ignore: implicit_dynamic_type
+// ignore: implicit_dynamic_type
     return EqualUnmodifiableListView(_results);
   }
 
@@ -536,9 +536,9 @@ class _$VoteResultItemCopyWithImpl<$Res, $Val extends VoteResultItem>
     implements $VoteResultItemCopyWith<$Res> {
   _$VoteResultItemCopyWithImpl(this._value, this._then);
 
-  // ignore: unused_field
+// ignore: unused_field
   final $Val _value;
-  // ignore: unused_field
+// ignore: unused_field
   final $Res Function($Val) _then;
 
   /// Create a copy of VoteResultItem
