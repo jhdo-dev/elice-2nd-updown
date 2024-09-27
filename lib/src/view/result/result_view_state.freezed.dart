@@ -74,9 +74,9 @@ class _$ResultViewStateCopyWithImpl<$Res, $Val extends ResultViewState>
     implements $ResultViewStateCopyWith<$Res> {
   _$ResultViewStateCopyWithImpl(this._value, this._then);
 
-// ignore: unused_field
+  // ignore: unused_field
   final $Val _value;
-// ignore: unused_field
+  // ignore: unused_field
   final $Res Function($Val) _then;
 
   /// Create a copy of ResultViewState
@@ -382,7 +382,7 @@ class _$SuccessImpl implements _Success {
   @override
   List<VoteResultItem> get results {
     if (_results is EqualUnmodifiableListView) return _results;
-// ignore: implicit_dynamic_type
+    // ignore: implicit_dynamic_type
     return EqualUnmodifiableListView(_results);
   }
 
@@ -500,10 +500,11 @@ mixin _$VoteResultItem {
   double get forPercentage => throw _privateConstructorUsedError;
   double get againstPercentage => throw _privateConstructorUsedError;
   bool get isWinner => throw _privateConstructorUsedError;
-  bool get hasAudio => throw _privateConstructorUsedError;
   int get participantCount => throw _privateConstructorUsedError;
   DateTime get roomStartDate => throw _privateConstructorUsedError;
   DateTime get roomEndDate => throw _privateConstructorUsedError;
+  int get guiltyCount => throw _privateConstructorUsedError;
+  int get notGuiltyCount => throw _privateConstructorUsedError;
 
   /// Create a copy of VoteResultItem
   /// with the given fields replaced by the non-null parameter values.
@@ -525,10 +526,11 @@ abstract class $VoteResultItemCopyWith<$Res> {
       double forPercentage,
       double againstPercentage,
       bool isWinner,
-      bool hasAudio,
       int participantCount,
       DateTime roomStartDate,
-      DateTime roomEndDate});
+      DateTime roomEndDate,
+      int guiltyCount,
+      int notGuiltyCount});
 }
 
 /// @nodoc
@@ -536,9 +538,9 @@ class _$VoteResultItemCopyWithImpl<$Res, $Val extends VoteResultItem>
     implements $VoteResultItemCopyWith<$Res> {
   _$VoteResultItemCopyWithImpl(this._value, this._then);
 
-// ignore: unused_field
+  // ignore: unused_field
   final $Val _value;
-// ignore: unused_field
+  // ignore: unused_field
   final $Res Function($Val) _then;
 
   /// Create a copy of VoteResultItem
@@ -552,10 +554,11 @@ class _$VoteResultItemCopyWithImpl<$Res, $Val extends VoteResultItem>
     Object? forPercentage = null,
     Object? againstPercentage = null,
     Object? isWinner = null,
-    Object? hasAudio = null,
     Object? participantCount = null,
     Object? roomStartDate = null,
     Object? roomEndDate = null,
+    Object? guiltyCount = null,
+    Object? notGuiltyCount = null,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -582,10 +585,6 @@ class _$VoteResultItemCopyWithImpl<$Res, $Val extends VoteResultItem>
           ? _value.isWinner
           : isWinner // ignore: cast_nullable_to_non_nullable
               as bool,
-      hasAudio: null == hasAudio
-          ? _value.hasAudio
-          : hasAudio // ignore: cast_nullable_to_non_nullable
-              as bool,
       participantCount: null == participantCount
           ? _value.participantCount
           : participantCount // ignore: cast_nullable_to_non_nullable
@@ -598,6 +597,14 @@ class _$VoteResultItemCopyWithImpl<$Res, $Val extends VoteResultItem>
           ? _value.roomEndDate
           : roomEndDate // ignore: cast_nullable_to_non_nullable
               as DateTime,
+      guiltyCount: null == guiltyCount
+          ? _value.guiltyCount
+          : guiltyCount // ignore: cast_nullable_to_non_nullable
+              as int,
+      notGuiltyCount: null == notGuiltyCount
+          ? _value.notGuiltyCount
+          : notGuiltyCount // ignore: cast_nullable_to_non_nullable
+              as int,
     ) as $Val);
   }
 }
@@ -617,10 +624,11 @@ abstract class _$$VoteResultItemImplCopyWith<$Res>
       double forPercentage,
       double againstPercentage,
       bool isWinner,
-      bool hasAudio,
       int participantCount,
       DateTime roomStartDate,
-      DateTime roomEndDate});
+      DateTime roomEndDate,
+      int guiltyCount,
+      int notGuiltyCount});
 }
 
 /// @nodoc
@@ -642,10 +650,11 @@ class __$$VoteResultItemImplCopyWithImpl<$Res>
     Object? forPercentage = null,
     Object? againstPercentage = null,
     Object? isWinner = null,
-    Object? hasAudio = null,
     Object? participantCount = null,
     Object? roomStartDate = null,
     Object? roomEndDate = null,
+    Object? guiltyCount = null,
+    Object? notGuiltyCount = null,
   }) {
     return _then(_$VoteResultItemImpl(
       id: null == id
@@ -672,10 +681,6 @@ class __$$VoteResultItemImplCopyWithImpl<$Res>
           ? _value.isWinner
           : isWinner // ignore: cast_nullable_to_non_nullable
               as bool,
-      hasAudio: null == hasAudio
-          ? _value.hasAudio
-          : hasAudio // ignore: cast_nullable_to_non_nullable
-              as bool,
       participantCount: null == participantCount
           ? _value.participantCount
           : participantCount // ignore: cast_nullable_to_non_nullable
@@ -688,6 +693,14 @@ class __$$VoteResultItemImplCopyWithImpl<$Res>
           ? _value.roomEndDate
           : roomEndDate // ignore: cast_nullable_to_non_nullable
               as DateTime,
+      guiltyCount: null == guiltyCount
+          ? _value.guiltyCount
+          : guiltyCount // ignore: cast_nullable_to_non_nullable
+              as int,
+      notGuiltyCount: null == notGuiltyCount
+          ? _value.notGuiltyCount
+          : notGuiltyCount // ignore: cast_nullable_to_non_nullable
+              as int,
     ));
   }
 }
@@ -702,10 +715,11 @@ class _$VoteResultItemImpl implements _VoteResultItem {
       required this.forPercentage,
       required this.againstPercentage,
       required this.isWinner,
-      this.hasAudio = false,
-      this.participantCount = 0,
+      required this.participantCount,
       required this.roomStartDate,
-      required this.roomEndDate});
+      required this.roomEndDate,
+      required this.guiltyCount,
+      required this.notGuiltyCount});
 
   @override
   final String id;
@@ -720,19 +734,19 @@ class _$VoteResultItemImpl implements _VoteResultItem {
   @override
   final bool isWinner;
   @override
-  @JsonKey()
-  final bool hasAudio;
-  @override
-  @JsonKey()
   final int participantCount;
   @override
   final DateTime roomStartDate;
   @override
   final DateTime roomEndDate;
+  @override
+  final int guiltyCount;
+  @override
+  final int notGuiltyCount;
 
   @override
   String toString() {
-    return 'VoteResultItem(id: $id, title: $title, imageUrl: $imageUrl, forPercentage: $forPercentage, againstPercentage: $againstPercentage, isWinner: $isWinner, hasAudio: $hasAudio, participantCount: $participantCount, roomStartDate: $roomStartDate, roomEndDate: $roomEndDate)';
+    return 'VoteResultItem(id: $id, title: $title, imageUrl: $imageUrl, forPercentage: $forPercentage, againstPercentage: $againstPercentage, isWinner: $isWinner, participantCount: $participantCount, roomStartDate: $roomStartDate, roomEndDate: $roomEndDate, guiltyCount: $guiltyCount, notGuiltyCount: $notGuiltyCount)';
   }
 
   @override
@@ -750,14 +764,16 @@ class _$VoteResultItemImpl implements _VoteResultItem {
                 other.againstPercentage == againstPercentage) &&
             (identical(other.isWinner, isWinner) ||
                 other.isWinner == isWinner) &&
-            (identical(other.hasAudio, hasAudio) ||
-                other.hasAudio == hasAudio) &&
             (identical(other.participantCount, participantCount) ||
                 other.participantCount == participantCount) &&
             (identical(other.roomStartDate, roomStartDate) ||
                 other.roomStartDate == roomStartDate) &&
             (identical(other.roomEndDate, roomEndDate) ||
-                other.roomEndDate == roomEndDate));
+                other.roomEndDate == roomEndDate) &&
+            (identical(other.guiltyCount, guiltyCount) ||
+                other.guiltyCount == guiltyCount) &&
+            (identical(other.notGuiltyCount, notGuiltyCount) ||
+                other.notGuiltyCount == notGuiltyCount));
   }
 
   @override
@@ -769,10 +785,11 @@ class _$VoteResultItemImpl implements _VoteResultItem {
       forPercentage,
       againstPercentage,
       isWinner,
-      hasAudio,
       participantCount,
       roomStartDate,
-      roomEndDate);
+      roomEndDate,
+      guiltyCount,
+      notGuiltyCount);
 
   /// Create a copy of VoteResultItem
   /// with the given fields replaced by the non-null parameter values.
@@ -792,10 +809,11 @@ abstract class _VoteResultItem implements VoteResultItem {
       required final double forPercentage,
       required final double againstPercentage,
       required final bool isWinner,
-      final bool hasAudio,
-      final int participantCount,
+      required final int participantCount,
       required final DateTime roomStartDate,
-      required final DateTime roomEndDate}) = _$VoteResultItemImpl;
+      required final DateTime roomEndDate,
+      required final int guiltyCount,
+      required final int notGuiltyCount}) = _$VoteResultItemImpl;
 
   @override
   String get id;
@@ -810,13 +828,15 @@ abstract class _VoteResultItem implements VoteResultItem {
   @override
   bool get isWinner;
   @override
-  bool get hasAudio;
-  @override
   int get participantCount;
   @override
   DateTime get roomStartDate;
   @override
   DateTime get roomEndDate;
+  @override
+  int get guiltyCount;
+  @override
+  int get notGuiltyCount;
 
   /// Create a copy of VoteResultItem
   /// with the given fields replaced by the non-null parameter values.
