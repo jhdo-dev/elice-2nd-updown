@@ -112,6 +112,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:up_down/src/model/vote.dart';
 import 'package:up_down/src/model/message.dart';
+import 'package:up_down/src/provider/home_repository_provider.dart';
 import 'package:up_down/src/provider/message_repository_provider.dart';
 import 'package:up_down/src/provider/vote_repository_provider.dart';
 import 'package:up_down/src/view/chat/vote/vote_view_state.dart';
@@ -123,6 +124,11 @@ part 'vote_provider.g.dart';
 class Judgment extends _$Judgment {
   @override
   Stream<VoteViewState> build({required String roomId}) async* {
+    ref.onDispose(() {
+      ref
+          .read(homeRepositoryProvider)
+          .removeParticipant(roomId, fbAuth.currentUser!.uid);
+    });
     final messagesStream =
         ref.read(messageRepositoryProvider).getMessagesStream(roomId);
     final voteStream = ref.read(voteRepositoryProvider).getVoteStream(roomId);
