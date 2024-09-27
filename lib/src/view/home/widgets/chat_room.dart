@@ -1,9 +1,12 @@
 // lib/src/view/home/widgets/chat_room.dart
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:up_down/src/provider/home_repository_provider.dart';
+import 'package:up_down/util/helper/firebase_helper.dart';
 import 'package:up_down/util/router/route_names.dart';
 
-class ChatRoom extends StatelessWidget {
+class ChatRoom extends ConsumerWidget {
   final String personName;
   final String roomId;
   final String roomName;
@@ -22,9 +25,12 @@ class ChatRoom extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return GestureDetector(
       onTap: () {
+        ref
+            .read(homeRepositoryProvider)
+            .addParticipant(roomId, fbAuth.currentUser!.uid);
         context.goNamed(
           RouteNames.vote,
           pathParameters: {'roomId': roomId}, // roomId를 params로 전달
@@ -117,6 +123,9 @@ class ChatRoom extends StatelessWidget {
             //         fixedSize: const Size(69, 40),
             //       ),
             //       onPressed: () {
+            //         ref
+            //             .read(homeRepositoryProvider)
+            //             .addParticipant(roomId, fbAuth.currentUser!.uid);
             //         context.goNamed(
             //           RouteNames.vote,
             //           pathParameters: {'roomId': roomId}, // roomId를 params로 전달
