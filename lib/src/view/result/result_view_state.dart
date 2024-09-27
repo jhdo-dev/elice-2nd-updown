@@ -10,6 +10,7 @@ class ResultViewState with _$ResultViewState {
       _Success;
 }
 
+//lenth 로 받기
 @freezed
 class VoteResultItem with _$VoteResultItem {
   const factory VoteResultItem({
