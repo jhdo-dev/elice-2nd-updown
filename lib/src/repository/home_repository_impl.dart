@@ -12,16 +12,20 @@ class HomeRepositoryImpl implements HomeRepository {
 
   @override
   Stream<List<Room>> getPopularRooms() {
-    // final now = DateTime.now();
+    final now = DateTime.now();
     return _firestore
         .collection('rooms')
-        // .where('roomEndDate', isGreaterThanOrEqualTo: Timestamp.fromDate(now))
-        // .orderBy('roomEndDate', descending: false) // roomEndDate로 정렬 (필수)
+        .where('roomEndDate', isGreaterThanOrEqualTo: Timestamp.fromDate(now))
+        .orderBy('roomEndDate', descending: false)
         .orderBy('participantCount', descending: true)
         .limit(3)
         .snapshots()
         .map((snapshot) =>
-            snapshot.docs.map((doc) => Room.fromFirestore(doc)).toList());
+            snapshot.docs.map((doc) => Room.fromFirestore(doc)).toList())
+        .handleError((error) {
+      print('Error fetching popular rooms: $error');
+      // 예를 들어, 사용자에게 에러 메시지를 표시하거나 기본 데이터를 제공할 수 있습니다.
+    });
   }
 
   @override
