@@ -41,6 +41,7 @@ class _SignUpDialogState extends State<SignUpDialog> {
           'name': name,
           'email': email,
           // 'photo': photo.url,
+          'isAdmin': false,
         });
 
         // 사용자 프로필 업데이트
