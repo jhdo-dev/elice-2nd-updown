@@ -14,7 +14,6 @@ import 'package:up_down/src/view/home/home_view.dart';
 import 'package:up_down/src/view/result/result_view.dart';
 import 'package:up_down/src/view/splash/firebase_error_view.dart';
 import 'package:up_down/src/view/splash/splash_view.dart';
-import 'package:up_down/util/helper/firebase_helper.dart';
 import 'package:up_down/util/router/route_names.dart';
 
 part 'route_path.g.dart';
@@ -142,7 +141,7 @@ GoRouter route(RouteRef ref) {
                   path: '/create-room', // 방 생성 페이지 경로
                   name: RouteNames.createRoom,
                   builder: (context, state) {
-                    return CreateRoomView(); // 방 생성 페이지
+                    return const CreateRoomView(); // 방 생성 페이지
                   },
                 ),
               ],

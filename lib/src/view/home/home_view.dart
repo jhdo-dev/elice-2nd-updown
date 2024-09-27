@@ -27,6 +27,7 @@ class HomeView extends ConsumerWidget {
                 : PageView(
                     children: homeState.popularRooms.map((room) {
                       return PopularRoomCard(
+                        roomId: room.roomId,
                         roomName: room.roomName,
                         personName: room.personName,
                         imageUrl: room.imageUrl,
