@@ -1,6 +1,7 @@
 // lib/src/view/home/home_view.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:up_down/src/provider/admin_repository_provider.dart';
 import 'package:up_down/src/view/home/home_view_model.dart';
 import 'package:up_down/src/view/home/widgets/popular_room_card.dart';
 import 'package:up_down/src/view/home/widgets/room_list.dart';
@@ -12,6 +13,7 @@ class HomeView extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final homeState = ref.watch(homeViewModelProvider);
+    final isAdminAsyncValue = ref.watch(isAdminProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -40,11 +42,29 @@ class HomeView extends ConsumerWidget {
           const Expanded(child: RoomListPage()),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          context.go('/create-room');
+      floatingActionButton: isAdminAsyncValue.when(
+        data: (isAdmin) => isAdmin
+            ? FloatingActionButton(
+                onPressed: () {
+                  context.go('/create-room');
+                },
+                child: const Icon(Icons.add),
+              )
+            : null, // isAdmin이 false인 경우 버튼을 표시하지 않음
+        loading: () => const SizedBox(
+          width: 24,
+          height: 24,
+          child: CircularProgressIndicator(strokeWidth: 2),
+        ), // 로딩 중일 때 스피너 표시
+        error: (error, stack) {
+          // 에러 발생 시 사용자에게 알림 표시
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Failed to load admin status')),
+            );
+          });
+          return null;
         },
-        child: const Icon(Icons.add),
       ),
     );
   }
