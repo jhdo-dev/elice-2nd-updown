@@ -1,10 +1,8 @@
-// stream 으로 하면 바로 가져올 수 있다.
-
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:up_down/src/view/result/result_view_model.dart';
 
-import 'result_view_model.dart';
 import 'result_view_state.dart';
 
 class ResultView extends ConsumerStatefulWidget {
@@ -101,7 +99,7 @@ class VoteResultCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  '참가자 수: ${item.participantCount}', //^ 수정된 부분
+                  '참가자 수: ${item.participantCount}',
                   style: const TextStyle(
                     fontSize: 14,
                     color: Colors.grey,
@@ -130,6 +128,8 @@ class VoteResultCard extends StatelessWidget {
                       context,
                       item.forPercentage,
                       item.againstPercentage,
+                      item.guiltyCount,
+                      item.notGuiltyCount,
                     ),
                     _buildWinLoseIndicator(item.isWinner),
                   ],
@@ -146,12 +146,14 @@ class VoteResultCard extends StatelessWidget {
     BuildContext context,
     double forPercentage,
     double againstPercentage,
+    int guiltyCount,
+    int notGuiltyCount,
   ) {
     return Expanded(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('잘못했다: ${forPercentage.toStringAsFixed(1)}%'), //^ 수정된 부분
+          Text('잘못했다: ${forPercentage.toStringAsFixed(1)}% ($guiltyCount표)'),
           const SizedBox(height: 4),
           LinearProgressIndicator(
             value: forPercentage / 100,
@@ -159,7 +161,8 @@ class VoteResultCard extends StatelessWidget {
             valueColor: AlwaysStoppedAnimation<Color>(Colors.red),
           ),
           const SizedBox(height: 8),
-          Text('잘못하지 않았다: ${againstPercentage.toStringAsFixed(1)}%'), //^ 수정된 부분
+          Text(
+              '잘못하지 않았다: ${againstPercentage.toStringAsFixed(1)}% ($notGuiltyCount표)'),
           const SizedBox(height: 4),
           LinearProgressIndicator(
             value: againstPercentage / 100,
