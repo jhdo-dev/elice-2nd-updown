@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:up_down/src/provider/auth_repository_provider.dart';
 
@@ -28,7 +27,7 @@ class Signup extends _$Signup {
     final newState = await AsyncValue.guard<void>(
       () => ref
           .read(authRepositoryProvider)
-          .signup(name: name, email: email, password: password),
+          .signUp(name: name, email: email, password: password),
     );
 
     if (key == _key) {
