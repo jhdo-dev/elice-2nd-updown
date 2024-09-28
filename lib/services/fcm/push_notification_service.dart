@@ -40,8 +40,8 @@ class PushNotificationService {
   void _showNotification(RemoteMessage message) async {
     const AndroidNotificationDetails androidPlatformChannelSpecifics =
         AndroidNotificationDetails(
-      'your_channel_id',
-      'your_channel_name',
+      'high_importance_channel', //^
+      'High Importance Notifications', //^
       importance: Importance.max,
       priority: Priority.high,
     );
