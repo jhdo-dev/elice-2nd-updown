@@ -26,33 +26,31 @@ class _AuthViewState extends State<AuthView> {
 
   @override
   void initState() {
-    _checkRememberedUser();
+    // _checkRememberedUser();
     super.initState();
   }
 
 //비번기억
-  Future<void> _checkRememberedUser() async {
-    final prefs = await SharedPreferences.getInstance();
-    final userId = prefs.getString('userId');
+  // Future<void> _checkRememberedUser() async {
+  //   final prefs = await SharedPreferences.getInstance();
+  //   final userId = prefs.getString('userId');
 
-    if (userId != null) {
-      try {
-        final user = _auth.currentUser;
-        if (user != null && user.uid == userId) {
-          context.go('/home');
-        }
-      } catch (e) {
-        print('Error during auto login: $e');
-      }
-    }
-  }
+  //   if (userId != null) {
+  //     try {
+  //       final user = _auth.currentUser;
+  //       if (user != null && user.uid == userId) {
+  //         context.go('/home');
+  //       }
+  //     } catch (e) {
+  //       print('Error during auto login: $e');
+  //     }
+  //   }
+  // }
 
 //이메일 로그인
   Future<void> _signInWithEmail() async {
     FocusScope.of(context).unfocus();
-    setState(() {
-      _isLoading = true; // 로딩 상태 시작
-    });
+    setState(() => _isLoading = true);
 
     try {
       final newUser = await _auth.signInWithEmailAndPassword(
@@ -60,10 +58,10 @@ class _AuthViewState extends State<AuthView> {
         password: _passwordController.text,
       );
 
-      if (_rememberMe) {
-        final prefs = await SharedPreferences.getInstance();
-        await prefs.setString('userId', newUser.user?.uid ?? '');
-      }
+      // if (_rememberMe) {
+      //   final prefs = await SharedPreferences.getInstance();
+      //   await prefs.setString('userId', newUser.user?.uid ?? '');
+      // }
 
       if (newUser.user != null) {
         context.go('/home');
@@ -75,9 +73,7 @@ class _AuthViewState extends State<AuthView> {
             content: Text('Invalid email or password. Please try again')),
       );
     }
-    setState(() {
-      _isLoading = false;
-    });
+    setState(() => _isLoading = false);
   }
 
 // 구글 로그인
@@ -98,8 +94,8 @@ class _AuthViewState extends State<AuthView> {
       );
       final newUser = await _auth.signInWithCredential(credential);
 
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setString('userId', newUser.user?.uid ?? '');
+      // final prefs = await SharedPreferences.getInstance();
+      // await prefs.setString('userId', newUser.user?.uid ?? '');
 
       await FirebaseFirestore.instance
           .collection('users')
