@@ -3,7 +3,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:up_down/src/provider/home_repository_provider.dart';
 import 'package:up_down/src/view/home/create_room_view_state.dart';
-import 'package:up_down/src/view/result/result_view_model.dart'; //^ 추가
 
 part 'create_room_view_model.g.dart';
 
@@ -43,7 +42,7 @@ class CreateRoomViewModel extends _$CreateRoomViewModel {
       'createdAt': Timestamp.now(),
     });
     // 방 생성 후 result_view 갱신 (결과 목록 다시 불러오기)
-    ref.read(resultViewModelProvider.notifier).fetchResults(); //
+    //
     // 상태 초기화
     state = CreateRoomViewState();
   }
