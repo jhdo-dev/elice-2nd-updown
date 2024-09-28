@@ -25,7 +25,7 @@ class _AuthViewState extends State<AuthView> {
 
   @override
   void initState() {
-    _checkRememberedUser();
+    // _checkRememberedUser();
     super.initState();
   }
 
@@ -39,9 +39,7 @@ class _AuthViewState extends State<AuthView> {
 //이메일 로그인
   Future<void> _signInWithEmail() async {
     FocusScope.of(context).unfocus();
-    setState(() {
-      _isLoading = true; // 로딩 상태 시작
-    });
+    setState(() => _isLoading = true);
 
     try {
       final newUser = await _auth.signInWithEmailAndPassword(
@@ -59,9 +57,7 @@ class _AuthViewState extends State<AuthView> {
             content: Text('Invalid email or password. Please try again')),
       );
     }
-    setState(() {
-      _isLoading = false;
-    });
+    setState(() => _isLoading = false);
   }
 
 // 구글 로그인
