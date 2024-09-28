@@ -1,3 +1,4 @@
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -20,6 +21,8 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
+  FirebaseAnalytics analytics = FirebaseAnalytics.instance;
+
   // FCM 서비스 초기화
   final fcmService = FCMService();
   await fcmService.initialize();
@@ -29,7 +32,7 @@ void main() async {
   await pushNotificationService.initialize();
 
   // 알림 권한 요청
-  await requestNotificationPermissions();
+  await requestNotificationPermissions(fcmService); //^
 
   runApp(
     const ProviderScope(
@@ -38,10 +41,10 @@ void main() async {
   );
 }
 
-//^ 알림 권한 요청 함수
-Future<void> requestNotificationPermissions() async {
-  // FCMService나 PushNotificationService 클래스 내에 이 메서드를 구현하고 여기서 호출하는 것이 좋습니다.
-  // 예: await FCMService.requestPermissions();
+//알림 권한 요청 함수
+Future<void> requestNotificationPermissions(FCMService fcmService) async {
+  //^
+  await fcmService.requestPermissions(); //^
 }
 
 class MyApp extends ConsumerWidget {
