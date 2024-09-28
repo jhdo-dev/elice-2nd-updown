@@ -1,22 +1,27 @@
+import 'package:firebase_analytics/firebase_analytics.dart'; //^
 import 'package:firebase_messaging/firebase_messaging.dart';
 
-//fcm 토큰 수신
 class FCMService {
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
+  final FirebaseAnalytics _analytics = FirebaseAnalytics.instance; //^
 
   Future<void> initialize() async {
-    // FCM 토큰 요청
     String? token = await _firebaseMessaging.getToken();
     print("FCM Token: $token");
 
-    // 토큰 갱신 리스너
     _firebaseMessaging.onTokenRefresh.listen((newToken) {
       print("New FCM Token: $newToken");
-      // TODO: 새 토큰을 서버에 전송
+      _sendTokenToServer(newToken);
     });
 
-    // TODO: 토큰을 서버에 전송
     _sendTokenToServer(token);
+
+    // 메시지 핸들러 설정
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      //^
+      print("Foreground message received: ${message.notification?.title}");
+      _logMessageReceived(message);
+    });
   }
 
   void _sendTokenToServer(String? token) {
@@ -35,5 +40,16 @@ class FCMService {
       sound: true,
     );
     print('User granted permission: ${settings.authorizationStatus}');
+  }
+
+  void _logMessageReceived(RemoteMessage message) {
+    _analytics.logEvent(
+      name: 'fcm_message_received',
+      parameters: {
+        'message_id': message.messageId ?? 'unknown', //^
+        'title': message.notification?.title ?? 'No Title', //^
+        'body': message.notification?.body ?? 'No Body', //^
+      },
+    );
   }
 }
