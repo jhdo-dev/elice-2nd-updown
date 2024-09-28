@@ -53,7 +53,7 @@ class VoteRepository {
             voteId: roomId,
             roomId: roomId,
             personName: 'Unknown',
-          );
+          ); //프롬프트 엔지니어
           return Vote(
             voteId: roomId,
             roomId: roomId,
