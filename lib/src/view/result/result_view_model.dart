@@ -1,6 +1,10 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:up_down/src/model/room.dart';
+import 'package:up_down/src/model/vote.dart';
+import 'package:up_down/src/repository/vote_repository.dart';
 
 import 'result_view_state.dart';
 
@@ -11,142 +15,152 @@ final resultViewModelProvider =
 
 class ResultViewModel extends StateNotifier<ResultViewState> {
   ResultViewModel() : super(const ResultViewState.loading()) {
-    fetchResults();
+    _initializeStreams();
   }
 
-  // Firestore에서 데이터를 불러오는 로직
-  Future<void> fetchResults() async {
-    state = const ResultViewState.loading();
+  final VoteRepository _voteRepository = VoteRepository();
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  StreamSubscription? _roomsSubscription;
+  Map<String, StreamSubscription> _voteSubscriptions = {};
+
+  void _initializeStreams() {
+    _roomsSubscription = _firestore
+        .collection('rooms')
+        .orderBy('createdAt', descending: true)
+        .snapshots()
+        .listen(_handleRoomsSnapshot);
+  }
+
+  void _handleRoomsSnapshot(QuerySnapshot snapshot) {
+    for (var change in snapshot.docChanges) {
+      switch (change.type) {
+        case DocumentChangeType.added:
+          _subscribeToVoteUpdates(change.doc.id);
+          break;
+        case DocumentChangeType.modified:
+          // Handle room modifications if needed
+          break;
+        case DocumentChangeType.removed:
+          _unsubscribeFromVoteUpdates(change.doc.id);
+          break;
+      }
+    }
+    _updateResults(snapshot.docs);
+  }
+
+  void _subscribeToVoteUpdates(String roomId) {
+    _voteSubscriptions[roomId] = _voteRepository
+        .getVoteStream(roomId)
+        .listen((voteData) => _updateVoteResult(roomId, voteData));
+  }
+
+  void _unsubscribeFromVoteUpdates(String roomId) {
+    _voteSubscriptions[roomId]?.cancel();
+    _voteSubscriptions.remove(roomId);
+  }
+
+  void _updateVoteResult(String roomId, Vote voteData) {
+    state.whenOrNull(
+      success: (currentResults) {
+        final updatedResults = currentResults.map((item) {
+          if (item.id == roomId) {
+            final totalVotes = voteData.guiltyCount + voteData.notGuiltyCount;
+            final forPercentage = totalVotes > 0
+                ? (voteData.guiltyCount / totalVotes) * 100
+                : 0.0;
+            final againstPercentage = totalVotes > 0
+                ? (voteData.notGuiltyCount / totalVotes) * 100
+                : 0.0;
+
+            return item.copyWith(
+              forPercentage: forPercentage,
+              againstPercentage: againstPercentage,
+              isWinner: voteData.guiltyCount > voteData.notGuiltyCount,
+              participantCount: voteData.participants.length,
+              guiltyCount: voteData.guiltyCount,
+              notGuiltyCount: voteData.notGuiltyCount,
+            );
+          }
+          return item;
+        }).toList();
+
+        state = ResultViewState.success(updatedResults);
+      },
+    );
+  }
+
+  Future<void> _updateResults(List<QueryDocumentSnapshot> docs) async {
     try {
-      final snapshot =
-          await FirebaseFirestore.instance.collection('rooms').get();
-      final results = snapshot.docs.map((doc) {
-        final data = doc.data();
+      final results = await Future.wait(docs.map((doc) async {
+        final data = doc.data() as Map<String, dynamic>;
+        final roomId = doc.id;
 
-        // roomStartDate와 roomEndDate의 타입에 따라 처리
-        DateTime roomStartDate;
-        DateTime roomEndDate;
+        final voteData = await _voteRepository.getVoteStream(roomId).first;
 
-        // roomStartDate 처리
-        if (data['roomStartDate'] is Timestamp) {
-          roomStartDate = (data['roomStartDate'] as Timestamp).toDate();
-        } else if (data['roomStartDate'] is String) {
-          roomStartDate = DateTime.parse(data['roomStartDate']);
-        } else {
-          roomStartDate = DateTime.now(); // 기본값 설정
-        }
+        final roomStartDate = (data['roomStartDate'] as Timestamp).toDate();
+        final roomEndDate = (data['roomEndDate'] as Timestamp).toDate();
 
-        // roomEndDate 처리
-        if (data['roomEndDate'] is Timestamp) {
-          roomEndDate = (data['roomEndDate'] as Timestamp).toDate();
-        } else if (data['roomEndDate'] is String) {
-          roomEndDate = DateTime.parse(data['roomEndDate']);
-        } else {
-          roomEndDate = DateTime.now(); // 기본값 설정
-        }
+        final totalVotes = voteData.guiltyCount + voteData.notGuiltyCount;
+        final forPercentage =
+            totalVotes > 0 ? (voteData.guiltyCount / totalVotes) * 100 : 0.0;
+        final againstPercentage =
+            totalVotes > 0 ? (voteData.notGuiltyCount / totalVotes) * 100 : 0.0;
 
-        // Firestore에서 저장된 투표 결과 불러오기
         return VoteResultItem(
           id: doc.id,
           title: data['roomName'] ?? '',
           imageUrl: data['imageUrl'] ?? '',
-          forPercentage: (data['forPercentage'] as num?)?.toDouble() ?? 0.0,
-          againstPercentage:
-              (data['againstPercentage'] as num?)?.toDouble() ?? 0.0,
-          isWinner: data['isWinner'] ?? false,
-          participantCount: data['participantCount'] ?? 0,
+          forPercentage: forPercentage,
+          againstPercentage: againstPercentage,
+          isWinner: voteData.guiltyCount > voteData.notGuiltyCount,
+          participantCount: voteData.participants.length,
           roomStartDate: roomStartDate,
           roomEndDate: roomEndDate,
+          guiltyCount: voteData.guiltyCount,
+          notGuiltyCount: voteData.notGuiltyCount,
         );
-      }).toList();
+      }));
+
       state = ResultViewState.success(results);
     } catch (e) {
       state = ResultViewState.error(e.toString());
     }
   }
 
-  // 투표 결과를 Firestore에 저장하는 함수
-  Future<void> updateVoteResultInFirestore({
-    required String roomId,
-    required double forPercentage,
-    required double againstPercentage,
-    required bool isWinner,
-  }) async {
-    try {
-      await FirebaseFirestore.instance.collection('rooms').doc(roomId).update({
-        'forPercentage': forPercentage,
-        'againstPercentage': againstPercentage,
-        'isWinner': isWinner,
-      });
-    } catch (e) {
-      // Firestore 업데이트 실패 시 처리
-      print('Error updating vote result: $e');
-    }
+  Future<void> refreshResults() async {
+    final snapshot = await _firestore
+        .collection('rooms')
+        .orderBy('createdAt', descending: true)
+        .get();
+    _updateResults(snapshot.docs);
   }
 
-  // 투표 결과 업데이트 로직
-  void updateVoteResult({
-    required String roomId,
-    required int guiltyCount,
-    required int notGuiltyCount,
-  }) {
-    state.whenOrNull(
-      success: (currentResults) {
-        final updatedResults = currentResults.map((item) {
-          if (item.id == roomId) {
-            final totalVotes = guiltyCount + notGuiltyCount;
-            final forPercentage =
-                totalVotes > 0 ? (guiltyCount / totalVotes) * 100 : 0.0;
-            final againstPercentage =
-                totalVotes > 0 ? (notGuiltyCount / totalVotes) * 100 : 0.0;
-            final isWinner = guiltyCount > notGuiltyCount;
+  Future<void> addNewRoom(Room room) async {
+    final roomRef = _firestore.collection('rooms').doc(room.roomId);
+    await roomRef.set({
+      'roomId': room.roomId,
+      'roomName': room.roomName,
+      'imageUrl': room.imageUrl,
+      'participantCount': room.participantCount,
+      'roomStartDate': room.roomStartDate,
+      'roomEndDate': room.roomEndDate,
+      'createdAt': FieldValue.serverTimestamp(),
+    });
 
-            // Firestore에 투표 결과 저장
-            updateVoteResultInFirestore(
-              roomId: roomId,
-              forPercentage: forPercentage,
-              againstPercentage: againstPercentage,
-              isWinner: isWinner,
-            );
-
-            // 상태 업데이트
-            return item.copyWith(
-              forPercentage: forPercentage,
-              againstPercentage: againstPercentage,
-              isWinner: isWinner,
-            );
-          }
-          return item;
-        }).toList();
-
-        // 상태에 업데이트된 결과 반영
-        state = ResultViewState.success(updatedResults);
-      },
+    // 새 방을 생성할 때 기본 투표 데이터도 생성
+    await _voteRepository.createVote(
+      voteId: room.roomId,
+      roomId: room.roomId,
+      personName: room.roomName,
     );
   }
 
-  Future<void> refreshResults() async {
-    await fetchResults();
-  }
-
-  // 새로운 방을 추가하는 로직
-  Future<void> addNewRoom(Room room) async {
-    // Firestore에 새로운 방 정보 저장 //^ 추가
-    final roomRef =
-        FirebaseFirestore.instance.collection('rooms').doc(room.roomId); //^ 추가
-    await roomRef.set({
-      'roomId': room.roomId, //^ 추가
-      'roomName': room.roomName, //^ 추가
-      'imageUrl': room.imageUrl, //^ 추가
-      'participantCount': room.participantCount, //^ 추가
-      'roomStartDate': room.roomStartDate, //^ 추가
-      'roomEndDate': room.roomEndDate, //^ 추가
-      'forPercentage': 0, // 초기값 //^ 추가
-      'againstPercentage': 0, // 초기값 //^ 추가
-      'isWinner': false, // 초기값 //^ 추가
-    }); //^ 추가
-
-    // Firestore에 저장 후 결과 목록 갱신
-    await fetchResults(); //^ 추가
+  @override
+  void dispose() {
+    _roomsSubscription?.cancel();
+    for (var subscription in _voteSubscriptions.values) {
+      subscription.cancel();
+    }
+    super.dispose();
   }
 }

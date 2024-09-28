@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Your Flutter App</title>
+    <link rel="manifest" href="manifest.json">
+</head>
+<body>
+<script src="flutter.js" defer></script>
+<script>
+    window.addEventListener('load', function (ev) {
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('flutter_service_worker.js');
+      }
+    });
+</script>
+<div id="flutter"></div>
+</body>
+</html>
