@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:up_down/src/view/auth/widgets/password_reset_dialog.dart';
 
 import '../signup/sign_up_dialog.dart';
@@ -32,18 +31,8 @@ class _AuthViewState extends State<AuthView> {
 
 //비번기억
   Future<void> _checkRememberedUser() async {
-    final prefs = await SharedPreferences.getInstance();
-    final userId = prefs.getString('userId');
-
-    if (userId != null) {
-      try {
-        final user = _auth.currentUser;
-        if (user != null && user.uid == userId) {
-          context.go('/home');
-        }
-      } catch (e) {
-        print('Error during auto login: $e');
-      }
+    try {} catch (e) {
+      print('Error during auto login: $e');
     }
   }
 
@@ -59,11 +48,6 @@ class _AuthViewState extends State<AuthView> {
         email: _emailController.text,
         password: _passwordController.text,
       );
-
-      if (_rememberMe) {
-        final prefs = await SharedPreferences.getInstance();
-        await prefs.setString('userId', newUser.user?.uid ?? '');
-      }
 
       if (newUser.user != null) {
         context.go('/home');
@@ -97,9 +81,6 @@ class _AuthViewState extends State<AuthView> {
         idToken: googleAuth.idToken,
       );
       final newUser = await _auth.signInWithCredential(credential);
-
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setString('userId', newUser.user?.uid ?? '');
 
       await FirebaseFirestore.instance
           .collection('users')
