@@ -2,10 +2,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../../component/error_dialog.dart';
-import '../../../../util/helper/firebase_helper.dart';
-import '../../../model/custom_error.dart';
-import '../../../provider/auth_repository_provider.dart';
+import '../auth/widgets/error_dialog.dart';
+import '../../../util/helper/firebase_helper.dart';
+import '../../model/custom_error.dart';
+import '../../provider/auth_repository_provider.dart';
 
 class SettingView extends ConsumerStatefulWidget {
   const SettingView({super.key});
