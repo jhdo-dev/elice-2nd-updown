@@ -7,7 +7,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:up_down/src/view/auth/widgets/password_reset_dialog.dart';
 
-import 'widgets/sign_up_dialog.dart';
+import '../signup/sign_up_dialog.dart';
 
 class AuthView extends StatefulWidget {
   const AuthView({super.key});
@@ -161,7 +161,7 @@ class _AuthViewState extends State<AuthView> {
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Sign In Page'),
+          title: const Text('Auth View'),
         ),
         body: Padding(
           padding: const EdgeInsets.all(16.0),

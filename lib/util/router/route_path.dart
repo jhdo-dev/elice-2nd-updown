@@ -5,8 +5,8 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:up_down/component/page_not_found.dart';
 import 'package:up_down/component/scaffold_with_nav_bar.dart';
 import 'package:up_down/src/provider/auth_repository_provider.dart';
-import 'package:up_down/src/view/auth/auth_view.dart';
-import 'package:up_down/src/view/auth/widgets/debug_page.dart';
+import 'package:up_down/src/view/auth/main/auth_view.dart';
+import 'package:up_down/src/view/setting/main/setting_view.dart';
 import 'package:up_down/src/view/chat/chat_view.dart';
 import 'package:up_down/src/view/chat/vote/vote_view.dart';
 import 'package:up_down/src/view/home/create_room_view.dart';
@@ -15,6 +15,8 @@ import 'package:up_down/src/view/result/result_view.dart';
 import 'package:up_down/src/view/splash/firebase_error_view.dart';
 import 'package:up_down/src/view/splash/splash_view.dart';
 import 'package:up_down/util/router/route_names.dart';
+
+import '../helper/firebase_helper.dart';
 
 part 'route_path.g.dart';
 
@@ -43,13 +45,10 @@ GoRouter route(RouteRef ref) {
         ///AsyncData
         final authenticated = authState.valueOrNull != null;
 
-        final authenticating = (state.matchedLocation == '/signin') ||
-            (state.matchedLocation == '/signup') ||
-            (state.matchedLocation == 'resetPassword');
+        final authenticating = (state.matchedLocation == '/auth');
 
         if (authenticated == false) {
-          return authenticating ? null : '/signin';
-          final String roomId;
+          return authenticating ? null : '/auth';
         }
 
         // if (!fbAuth.currentUser!.emailVerified) {
@@ -78,8 +77,8 @@ GoRouter route(RouteRef ref) {
           },
         ),
         GoRoute(
-          path: '/signin',
-          name: RouteNames.signin,
+          path: '/auth',
+          name: RouteNames.auth,
           builder: (context, state) {
             return const AuthView();
           },
@@ -184,7 +183,7 @@ GoRouter route(RouteRef ref) {
                   path: '/setting',
                   name: RouteNames.setting,
                   builder: (context, state) {
-                    return const DebugPage();
+                    return const SettingView();
                   },
                 ),
               ],
