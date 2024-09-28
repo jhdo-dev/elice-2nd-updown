@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:up_down/component/form_fields.dart';
+import 'package:up_down/src/view/auth/widgets/form_fields.dart';
 
-import '../../../../component/error_dialog.dart';
+import '../widgets/error_dialog.dart';
 import '../../../model/custom_error.dart';
 import 'signup_provider.dart';
 
@@ -20,9 +20,10 @@ class _SignUpDialogState extends ConsumerState<SignUpDialog> {
   final _formKey = GlobalKey<FormState>();
   AutovalidateMode _autovalidateMode = AutovalidateMode.disabled;
 
-  void _submit() async {
+  void _signUp() async {
     FocusScope.of(context).unfocus();
     setState(() => _autovalidateMode = AutovalidateMode.always);
+    await Future.delayed(const Duration(seconds: 5)); // 로딩표시 디버깅용
 
     final form = _formKey.currentState;
 
@@ -32,8 +33,6 @@ class _SignUpDialogState extends ConsumerState<SignUpDialog> {
         name: _nameController.text.trim(),
         email: _emailController.text.trim(),
         password: _passwordController.text.trim());
-
-    await Future.delayed(const Duration(seconds: 5)); // 로딩표시 디버깅용
   }
 
   @override
@@ -82,7 +81,7 @@ class _SignUpDialogState extends ConsumerState<SignUpDialog> {
               child: signupState.maybeWhen(
             loading: () => const CircularProgressIndicator(),
             orElse: () => ElevatedButton(
-              onPressed: _submit,
+              onPressed: _signUp,
               child: const Text('Sign Up'),
             ),
           )),
