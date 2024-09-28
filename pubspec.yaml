@@ -50,7 +50,6 @@ dependencies:
   google_fonts: ^6.2.1
   google_sign_in: ^6.2.1
   json_annotation: ^4.9.0
-  shared_preferences: ^2.3.2
   rxdart: ^0.28.0
   validators: ^3.0.0
 
