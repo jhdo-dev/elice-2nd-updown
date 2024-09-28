@@ -1,1 +1,20 @@
-{"flutter":{"platforms":{"android":{"default":{"projectId":"up-down-app","appId":"1:364848733451:android:a506ded027a261a59fd60e","fileOutput":"android/app/google-services.json"}},"ios":{"default":{"projectId":"up-down-app","appId":"1:364848733451:ios:8bd4b8946c0457479fd60e","uploadDebugSymbols":false,"fileOutput":"ios/Runner/GoogleService-Info.plist"}},"dart":{"lib/firebase_options.dart":{"projectId":"up-down-app","configurations":{"android":"1:364848733451:android:a506ded027a261a59fd60e"}}}}}}
+{
+  "hosting": {
+    "site": "my-site-id",  // Firebase Console에서 확인한 사이트 ID
+    "public": "build/web",  // Flutter 웹 빌드 폴더 경로
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+    "rewrites": [
+      {
+        "source": "/test",
+        "function": "helloFunction"
+      },
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
+  },
+  "functions": {
+    "source": "functions"
+  }
+}
