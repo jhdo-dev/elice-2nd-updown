@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:up_down/src/model/custom_error.dart';
+import 'package:up_down/src/provider/home_repository_provider.dart';
 import 'package:up_down/src/view/chat/vote/vote_provider.dart';
+import 'package:up_down/util/helper/firebase_helper.dart';
 
 class VoteView extends ConsumerStatefulWidget {
   final String roomId;
@@ -17,6 +19,9 @@ class _VoteViewState extends ConsumerState<VoteView> {
   @override
   void dispose() {
     _messageController.dispose();
+    // ref
+    //     .read(homeRepositoryProvider)
+    //     .removeParticipant(widget.roomId, fbAuth.currentUser!.uid);
     super.dispose();
   }
 
