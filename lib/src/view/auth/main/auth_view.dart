@@ -4,10 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:up_down/src/view/auth/widgets/password_reset_dialog.dart';
 
-import 'widgets/sign_up_dialog.dart';
+import '../signup/sign_up_dialog.dart';
 
 class AuthView extends StatefulWidget {
   const AuthView({super.key});
@@ -26,44 +25,27 @@ class _AuthViewState extends State<AuthView> {
 
   @override
   void initState() {
-    _checkRememberedUser();
+    // _checkRememberedUser();
     super.initState();
   }
 
 //비번기억
   Future<void> _checkRememberedUser() async {
-    final prefs = await SharedPreferences.getInstance();
-    final userId = prefs.getString('userId');
-
-    if (userId != null) {
-      try {
-        final user = _auth.currentUser;
-        if (user != null && user.uid == userId) {
-          context.go('/home');
-        }
-      } catch (e) {
-        print('Error during auto login: $e');
-      }
+    try {} catch (e) {
+      print('Error during auto login: $e');
     }
   }
 
 //이메일 로그인
   Future<void> _signInWithEmail() async {
     FocusScope.of(context).unfocus();
-    setState(() {
-      _isLoading = true; // 로딩 상태 시작
-    });
+    setState(() => _isLoading = true);
 
     try {
       final newUser = await _auth.signInWithEmailAndPassword(
         email: _emailController.text,
         password: _passwordController.text,
       );
-
-      if (_rememberMe) {
-        final prefs = await SharedPreferences.getInstance();
-        await prefs.setString('userId', newUser.user?.uid ?? '');
-      }
 
       if (newUser.user != null) {
         context.go('/home');
@@ -75,9 +57,7 @@ class _AuthViewState extends State<AuthView> {
             content: Text('Invalid email or password. Please try again')),
       );
     }
-    setState(() {
-      _isLoading = false;
-    });
+    setState(() => _isLoading = false);
   }
 
 // 구글 로그인
@@ -97,9 +77,6 @@ class _AuthViewState extends State<AuthView> {
         idToken: googleAuth.idToken,
       );
       final newUser = await _auth.signInWithCredential(credential);
-
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setString('userId', newUser.user?.uid ?? '');
 
       await FirebaseFirestore.instance
           .collection('users')
@@ -161,7 +138,7 @@ class _AuthViewState extends State<AuthView> {
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Sign In Page'),
+          title: const Text('Auth View'),
         ),
         body: Padding(
           padding: const EdgeInsets.all(16.0),

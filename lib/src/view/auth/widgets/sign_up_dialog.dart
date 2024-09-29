@@ -18,9 +18,7 @@ class _SignUpDialogState extends State<SignUpDialog> {
 
   void _signUp() async {
     FocusScope.of(context).unfocus();
-    setState(() {
-      _isLoading = true;
-    });
+    setState(() => _isLoading = true);
 
     final email = _emailController.text;
     final password = _passwordController.text;
@@ -66,9 +64,7 @@ class _SignUpDialogState extends State<SignUpDialog> {
         const SnackBar(content: Text('Please fill in all fields')),
       );
     }
-    setState(() {
-      _isLoading = false;
-    });
+    setState(() => _isLoading = false);
   }
 
   @override
