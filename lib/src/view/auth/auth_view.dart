@@ -7,8 +7,8 @@ import 'package:go_router/go_router.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:up_down/src/view/auth/password_reset/password_reset_dialog.dart';
 
-import 'widgets/error_dialog.dart';
-import 'widgets/form_fields.dart';
+import '../../../component/error_dialog.dart';
+import '../../../component/form_fields.dart';
 import '../../model/custom_error.dart';
 import 'sign_up/sign_up_dialog.dart';
 import 'auth_view_provider.dart';
@@ -121,6 +121,14 @@ class _AuthViewState extends ConsumerState<AuthView> {
     ref.listen(signInProvider, (prev, next) {
       next.whenOrNull(
         error: (e, st) => errorDialog(context, e as CustomError),
+        data: (_) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content:
+                  Text('Hello, [username]! You\'ve successfully signed in.'),
+            ),
+          );
+        },
       );
     });
 
@@ -232,7 +240,7 @@ class _AuthViewState extends ConsumerState<AuthView> {
                           },
                         );
                       },
-                      child: const Text('Sign Up'),
+                      child: const Text('Get Started'),
                     ),
                   ],
                 )

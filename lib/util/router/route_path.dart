@@ -51,14 +51,9 @@ GoRouter route(RouteRef ref) {
           return authenticating ? null : '/auth';
         }
 
-        // if (!fbAuth.currentUser!.emailVerified) {
-        //   return '/verifyEmail';
-        // }
-
-        final verifyingEmail = state.matchedLocation == '/verifyEmail';
         final splashing = state.matchedLocation == '/splash';
 
-        return (authenticating || verifyingEmail || splashing) ? '/home' : null;
+        return (authenticating || splashing) ? '/home' : null;
       },
       routes: [
         GoRoute(

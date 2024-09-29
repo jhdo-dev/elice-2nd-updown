@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:up_down/src/view/auth/widgets/form_fields.dart';
+import 'package:go_router/go_router.dart';
+import 'package:up_down/component/form_fields.dart';
 
-import '../widgets/error_dialog.dart';
+import '../../../../component/error_dialog.dart';
 import '../../../model/custom_error.dart';
 import 'signup_provider.dart';
 
@@ -23,7 +24,6 @@ class _SignUpDialogState extends ConsumerState<SignUpDialog> {
   void _signUp() async {
     FocusScope.of(context).unfocus();
     setState(() => _autovalidateMode = AutovalidateMode.always);
-    await Future.delayed(const Duration(seconds: 5)); // 로딩표시 디버깅용
 
     final form = _formKey.currentState;
 
@@ -49,10 +49,14 @@ class _SignUpDialogState extends ConsumerState<SignUpDialog> {
       signupProvider,
       (previous, next) {
         next.whenOrNull(
-          error: (e, st) => errorDialog(
-            context,
-            (e as CustomError),
-          ),
+          error: (e, st) => errorDialog(context, e as CustomError),
+          data: (_) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Welcome, username*! Thank you for joining us.'),
+              ),
+            );
+          },
         );
       },
     );
@@ -62,7 +66,7 @@ class _SignUpDialogState extends ConsumerState<SignUpDialog> {
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus,
       child: AlertDialog(
-        title: const Text('Sign Up'),
+        title: const Text('Get Started'),
         content: Form(
           key: _formKey,
           autovalidateMode: _autovalidateMode,
