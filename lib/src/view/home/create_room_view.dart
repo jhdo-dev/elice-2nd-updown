@@ -50,6 +50,15 @@ class _CreateRoomViewState extends ConsumerState<CreateRoomView> {
               decoration: const InputDecoration(labelText: '방 이름'),
             ),
             const SizedBox(height: 20),
+            // 이미지 선택 및 업로드 버튼 추가
+            ElevatedButton(
+              onPressed: () async {
+                await viewModel.pickAndUploadImage();
+              },
+              child: Text(state.imageUrl == null
+                  ? '이미지 선택'
+                  : '이미지 업로드 완료'), // 이미지 선택 상태를 표시
+            ),
             // 방 시작 날짜 선택
             ElevatedButton(
               onPressed: () async {
@@ -128,3 +137,20 @@ class _CreateRoomViewState extends ConsumerState<CreateRoomView> {
     return picked;
   }
 }
+
+
+// rooms(Collection):
+//     randomDocumentId(Document):
+//         roomId: "jsaWgJSvCl8a7YSRHOZw"
+//         personName: "김테스트"
+//         roomName: "테스트 논란"
+//         roomStartDate: Timestamp
+//         roomEndDate: Timestamp
+//         imageUrl: "https://picsum.photos/200/300"
+//         participants(Sub-Collection):
+//             userId: "userid01"
+//             joinedAt: Timestamp
+//         messages(Sub-Collection):
+//             userId: "userid01"
+//             message: "Hello, world!"
+//             sentAt: Timestamp
