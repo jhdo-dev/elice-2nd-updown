@@ -9,7 +9,7 @@ import 'package:up_down/util/router/route_path.dart';
 
 import 'firebase_options.dart';
 
-// 백그라운드 메시지 핸들러 등록
+//백글라운드 메시지 등록
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
   print("Handling a background message: ${message.messageId}");
@@ -17,8 +17,6 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  // Firebase 초기화
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
@@ -33,16 +31,8 @@ void main() async {
   final pushNotificationService = PushNotificationService();
   await pushNotificationService.initialize();
 
-  // 백그라운드 메시지 핸들러 등록
-  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-  await requestNotificationPermissions(fcmService);
-
-  // 테스트용 푸시 알림 전송
-  await fcmService.sendNotification(
-    'Test Title',
-    'This is a test notification body',
-    await FirebaseMessaging.instance.getToken() ?? '', // 특정 토픽 또는 사용자 토큰
-  );
+  // 알림 권한 요청
+  await requestNotificationPermissions(fcmService); //^
 
   runApp(
     const ProviderScope(
@@ -51,8 +41,9 @@ void main() async {
   );
 }
 
-// 알림 권한 요청 함수
+//알림 권한 요청 함수
 Future<void> requestNotificationPermissions(FCMService fcmService) async {
+  //^
   await fcmService.requestPermissions(); //^
 }
 
