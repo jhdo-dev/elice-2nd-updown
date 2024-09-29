@@ -19,6 +19,9 @@ class SettingView extends ConsumerStatefulWidget {
 }
 
 class _SettingViewState extends ConsumerState<SettingView> {
+  bool _alarmToggle = true;
+  bool _themeToggle = false;
+
   Future<void> _signOut() async {
     try {
       await ref.read(authRepositoryProvider).signout();
@@ -48,28 +51,64 @@ class _SettingViewState extends ConsumerState<SettingView> {
       body: profileState.when(
         skipLoadingOnRefresh: false,
         data: (appUser) {
-          return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
+          return Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: ListView(
+              children: <Widget>[
                 const ProfileWidget(),
-                const Text('Welcome!'),
-                Text('name: ${appUser.name}'),
-                Text('email: ${appUser.email}'),
-                // Text('photo: ${appUser.photoURL}'),
+                ListTile(
+                  enabled: _alarmToggle,
+                  title: const Text('Alarm'),
+                  subtitle: Text('Enabled: $_alarmToggle'),
+                  trailing: Switch(
+                    onChanged: (bool? value) {
+                      setState(() {
+                        _alarmToggle = value!;
+                      });
+                    },
+                    value: _alarmToggle,
+                  ),
+                ),
+                ListTile(
+                  enabled: _themeToggle,
+                  title: const Text('Dark Mode'),
+                  subtitle: Text('Enabled: $_themeToggle'),
+                  trailing: Switch(
+                    onChanged: (bool? value) {
+                      setState(() {
+                        _themeToggle = value!;
+                      });
+                    },
+                    value: _themeToggle,
+                  ),
+                ),
                 ElevatedButton(
                   onPressed: _signOut,
                   child: const Text('Sign out'),
                 ),
-                ElevatedButton(
-                  onPressed: () {
-                    // GoRouter.of(context).goNamed(RouteNames.changePassword);
-                  },
-                  child: const Text('Change Password'),
-                )
               ],
             ),
           );
+          // 디버그용
+          // Center(
+          //   child: Column(
+          //     mainAxisAlignment: MainAxisAlignment.center,
+          //     children: [
+          //       const ProfileWidget(),
+          //       const Text('Welcome!'),
+          //       Text('name: ${appUser.name}'),
+          //       Text('email: ${appUser.email}'),
+          //       // Text('photo: ${appUser.photoURL}'),
+
+          //       ElevatedButton(
+          //         onPressed: () {
+          //           // GoRouter.of(context).goNamed(RouteNames.changePassword);
+          //         },
+          //         child: const Text('Change Password'),
+          //       )
+          //     ],
+          //   ),
+          // );
         },
         error: (e, _) {
           final error = e as CustomError;

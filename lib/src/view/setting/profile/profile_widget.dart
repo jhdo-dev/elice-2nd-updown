@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:up_down/src/model/custom_error.dart';
 import 'package:up_down/src/provider/auth_repository_provider.dart';
+import 'package:up_down/src/view/setting/profile_edit/profile_edit_dialog.dart';
 import 'package:up_down/util/helper/firebase_helper.dart';
 import 'package:up_down/util/router/route_names.dart';
 
@@ -20,7 +21,22 @@ class ProfileWidget extends ConsumerWidget {
     return profileState.when(
       skipLoadingOnRefresh: false,
       data: (appUser) {
-        return const Card();
+        return ListTile(
+          leading: const FlutterLogo(size: 72.0),
+          title: Text(appUser.name),
+          subtitle: Text(appUser.email),
+          trailing: IconButton(
+            icon: const Icon(Icons.settings),
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return const ProfileEditDialog();
+                },
+              );
+            },
+          ),
+        );
       },
       error: (e, _) {
         final error = e as CustomError;
