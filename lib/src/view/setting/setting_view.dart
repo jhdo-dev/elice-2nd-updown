@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:up_down/src/view/setting/profile/profile_widget.dart';
 import 'package:up_down/src/view/setting/push_notification_toggle/push_notification_toggle.dart';
+import 'package:up_down/src/view/setting/theme_toggle/theme_toggle.dart';
 
 import '../../../component/error_dialog.dart';
 import '../../../util/helper/firebase_helper.dart';
@@ -11,6 +12,7 @@ import '../../../util/router/route_names.dart';
 import '../../model/custom_error.dart';
 import '../../provider/auth_repository_provider.dart';
 import 'profile/profile_provider.dart';
+import 'profile_edit/profile_edit_dialog.dart';
 
 class SettingView extends ConsumerStatefulWidget {
   const SettingView({super.key});
@@ -20,8 +22,6 @@ class SettingView extends ConsumerStatefulWidget {
 }
 
 class _SettingViewState extends ConsumerState<SettingView> {
-  bool _themeToggle = false;
-
   Future<void> _signOut() async {
     try {
       await ref.read(authRepositoryProvider).signout();
@@ -39,14 +39,14 @@ class _SettingViewState extends ConsumerState<SettingView> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Setting'),
-        actions: [
-          IconButton(
-            onPressed: () {
-              ref.invalidate(profileProvider);
-            },
-            icon: const Icon(Icons.refresh),
-          ),
-        ],
+        // actions: [
+        //   IconButton(
+        //     onPressed: () {
+        //       ref.invalidate(profileProvider);
+        //     },
+        //     icon: const Icon(Icons.refresh),
+        //   ),
+        // ],
       ),
       body: profileState.when(
         skipLoadingOnRefresh: false,
@@ -55,21 +55,47 @@ class _SettingViewState extends ConsumerState<SettingView> {
             padding: const EdgeInsets.all(8.0),
             child: ListView(
               children: <Widget>[
-                const ProfileWidget(),
-                const PushNotificationToggle(),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const FlutterLogo(size: 72.0),
+                    Text(appUser.name),
+                    Text(appUser.email),
+                  ],
+                ),
+                // const ProfileWidget(),
                 ListTile(
-                  enabled: _themeToggle,
-                  title: const Text('Dark Mode'),
-                  subtitle: Text('Enabled: $_themeToggle'),
-                  trailing: Switch(
-                    onChanged: (bool? value) {
-                      setState(() {
-                        _themeToggle = value!;
-                      });
+                  title: Text(appUser.name),
+                  subtitle: Text(appUser.email),
+                  trailing: IconButton(
+                    icon: const Icon(Icons.settings),
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return const ProfileEditDialog();
+                        },
+                      );
                     },
-                    value: _themeToggle,
                   ),
                 ),
+                ListTile(
+                  title: Text(appUser.name),
+                  subtitle: Text(appUser.email),
+                  trailing: IconButton(
+                    icon: const Icon(Icons.settings),
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return const ProfileEditDialog();
+                        },
+                      );
+                    },
+                  ),
+                ),
+                const PushNotificationToggle(),
+                const ThemeToggle(),
                 ElevatedButton(
                   onPressed: _signOut,
                   child: const Text('Sign out'),
