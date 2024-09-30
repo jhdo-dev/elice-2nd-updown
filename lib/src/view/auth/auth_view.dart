@@ -72,6 +72,7 @@ class _AuthViewState extends ConsumerState<AuthView> {
         'isAdmin': false,
       });
 
+      if (!mounted) return;
       context.go('/home');
     } catch (e) {
       print('Error signing in with Google: $e');
@@ -97,6 +98,7 @@ class _AuthViewState extends ConsumerState<AuthView> {
         final UserCredential userCredential =
             await _auth.signInWithCredential(credential);
 
+        if (!mounted) return;
         context.go('/home');
       } else {
         throw Exception('Facebook login failed');
