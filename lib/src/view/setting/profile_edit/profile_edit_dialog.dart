@@ -27,10 +27,10 @@ class _SignUpDialogState extends ConsumerState<ProfileEditDialog> {
 
     if (form == null || !form.validate()) return;
 
-    ref.read(signupProvider.notifier).signup(
-        name: _nameController.text.trim(),
-        email: _emailController.text.trim(),
-        password: _passwordController.text.trim());
+    // ref.read(signupProvider.notifier).signup(
+    //     name: _nameController.text.trim(),
+    //     email: _emailController.text.trim(),
+    //     password: _passwordController.text.trim());
   }
 
   @override
@@ -43,23 +43,23 @@ class _SignUpDialogState extends ConsumerState<ProfileEditDialog> {
 
   @override
   Widget build(BuildContext context) {
-    ref.listen<AsyncValue<void>>(
-      signupProvider,
-      (previous, next) {
-        next.whenOrNull(
-          error: (e, st) => errorDialog(context, e as CustomError),
-          data: (_) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Welcome, username*! Thank you for joining us.'),
-              ),
-            );
-          },
-        );
-      },
-    );
-
-    final signupState = ref.watch(signupProvider);
+    // ref.listen<AsyncValue<void>>(
+    //   signupProvider,
+    //   (previous, next) {
+    //     next.whenOrNull(
+    //       error: (e, st) => errorDialog(context, e as CustomError),
+    //       data: (_) {
+    //         ScaffoldMessenger.of(context).showSnackBar(
+    //           const SnackBar(
+    //             content: Text('Welcome, username*! Thank you for joining us.'),
+    //           ),
+    //         );
+    //       },
+    //     );
+    //   },
+    // );
+//
+    // final signupState = ref.watch(signupProvider);
 
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus,
@@ -78,15 +78,15 @@ class _SignUpDialogState extends ConsumerState<ProfileEditDialog> {
             ],
           ),
         ),
-        actions: [
-          Center(
-              child: signupState.maybeWhen(
-            loading: () => const CircularProgressIndicator(),
-            orElse: () => ElevatedButton(
-              onPressed: _signUp,
-              child: const Text('Save'),
-            ),
-          )),
+        actions: const [
+          // Center(
+          //     child: signupState.maybeWhen(
+          //   loading: () => const CircularProgressIndicator(),
+          //   orElse: () => ElevatedButton(
+          //     onPressed: _signUp,
+          //     child: const Text('Save'),
+          //   ),
+          // )),
         ],
       ),
     );

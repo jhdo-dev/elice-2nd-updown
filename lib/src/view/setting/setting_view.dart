@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:up_down/src/view/setting/profile/profile_widget.dart';
+import 'package:up_down/src/view/setting/push_notification_toggle/push_notification_toggle.dart';
 
 import '../../../component/error_dialog.dart';
 import '../../../util/helper/firebase_helper.dart';
@@ -19,7 +20,6 @@ class SettingView extends ConsumerStatefulWidget {
 }
 
 class _SettingViewState extends ConsumerState<SettingView> {
-  bool _alarmToggle = true;
   bool _themeToggle = false;
 
   Future<void> _signOut() async {
@@ -38,7 +38,7 @@ class _SettingViewState extends ConsumerState<SettingView> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Home'),
+        title: const Text('Setting'),
         actions: [
           IconButton(
             onPressed: () {
@@ -56,19 +56,7 @@ class _SettingViewState extends ConsumerState<SettingView> {
             child: ListView(
               children: <Widget>[
                 const ProfileWidget(),
-                ListTile(
-                  enabled: _alarmToggle,
-                  title: const Text('Alarm'),
-                  subtitle: Text('Enabled: $_alarmToggle'),
-                  trailing: Switch(
-                    onChanged: (bool? value) {
-                      setState(() {
-                        _alarmToggle = value!;
-                      });
-                    },
-                    value: _alarmToggle,
-                  ),
-                ),
+                const PushNotificationToggle(),
                 ListTile(
                   enabled: _themeToggle,
                   title: const Text('Dark Mode'),
