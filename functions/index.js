@@ -2,6 +2,28 @@ const { onCall } = require("firebase-functions/v2/https");
 const { setGlobalOptions } = require("firebase-functions/v2");
 const admin = require("firebase-admin");
 
+
+exports.sendNotification = onCall(async (data, context) => {
+    const { title, body, token } = data;
+
+    const message = {
+        notification: {
+            title: title,
+            body: body
+        },
+        token: token
+    };
+
+    try {
+        const response = await admin.messaging().send(message);
+        console.log('Successfully sent message:', response);
+        return { success: true, message: "Notification sent successfully" };
+    } catch (error) {
+        console.log('Error sending message:', error);
+        throw new Error('Error sending push notification');
+    }
+});
+
 // 글로벌 옵션 설정 (지역 설정)
 setGlobalOptions({ region: "asia-northeast3" });
 
