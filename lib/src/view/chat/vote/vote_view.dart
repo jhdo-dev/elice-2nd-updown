@@ -20,10 +20,84 @@ class _VoteViewState extends ConsumerState<VoteView> {
   @override
   void dispose() {
     _messageController.dispose();
-    // ref
-    //     .read(homeRepositoryProvider)
-    //     .removeParticipant(widget.roomId, fbAuth.currentUser!.uid);
     super.dispose();
+  }
+
+  // 투표 다이얼로그 표시 함수
+  Future<void> _showVoteDialog() async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // 다이얼로그 밖을 누르면 닫히지 않도록 설정
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('투표하기'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: const <Widget>[
+                Text('투표는 신중하게 딱 한번만 가능합니다.'),
+                SizedBox(height: 10),
+                Text('어느 쪽에 투표하시겠습니까?'),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('잘못했다'),
+              onPressed: () {
+                ref
+                    .read(judgmentProvider(roomId: widget.roomId).notifier)
+                    .castVote(
+                      roomId: widget.roomId,
+                      isGuilty: true,
+                    );
+                Navigator.of(context).pop(); // 다이얼로그 닫기
+              },
+            ),
+            TextButton(
+              child: const Text('잘못하지 않았다'),
+              onPressed: () {
+                ref
+                    .read(judgmentProvider(roomId: widget.roomId).notifier)
+                    .castVote(
+                      roomId: widget.roomId,
+                      isGuilty: false,
+                    );
+                Navigator.of(context).pop(); // 다이얼로그 닫기
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  // 이미 투표한 경우의 다이얼로그
+  Future<void> _showAlreadyVotedDialog(String voteChoice) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: true,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('투표 완료'),
+          content: Text('당신은 "$voteChoice"에 투표하셨습니다.'),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('확인'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  double _calculateVoteRatio(int guiltyCount, int notGuiltyCount) {
+    if (guiltyCount + notGuiltyCount == 0) {
+      return 0.5; // 투표가 없으면 50:50으로 표시
+    }
+    return guiltyCount / (guiltyCount + notGuiltyCount);
   }
 
   @override
@@ -32,8 +106,68 @@ class _VoteViewState extends ConsumerState<VoteView> {
     final messageState = ref.watch(judgmentProvider(roomId: widget.roomId));
 
     return Scaffold(
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          messageState.whenOrNull(data: (voteViewState) {
+            final userId = fbAuth.currentUser!.uid;
+            final vote = voteViewState.vote;
+
+            // 참가자에 대한 투표 정보를 확인하고 결과를 다이얼로그에 표시
+            if (vote.participants.containsKey(userId)) {
+              final userVote = vote.participants[userId]!;
+              final voteChoice = userVote ? '잘못했다' : '잘못하지 않았다';
+              _showAlreadyVotedDialog(voteChoice);
+            } else {
+              _showVoteDialog();
+            }
+          });
+        },
+        child: Icon(Icons.how_to_vote),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerTop,
       appBar: AppBar(
         title: const Text('Chat Room & Vote'),
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(50.0),
+          child: messageState.when(
+            data: (voteViewState) {
+              final vote = voteViewState.vote;
+              final voteRatio =
+                  _calculateVoteRatio(vote.guiltyCount, vote.notGuiltyCount);
+
+              return Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text('잘못한 사람: ${vote.guiltyCount}',
+                            style: TextStyle(color: Colors.red)),
+                        Text('잘못하지 않은 사람: ${vote.notGuiltyCount}',
+                            style: TextStyle(color: Colors.green)),
+                      ],
+                    ),
+                  ),
+                  // LinearProgressIndicator로 투표 비율 표시
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16.0, vertical: 8.0),
+                    child: LinearProgressIndicator(
+                      value: voteRatio, // 투표 비율에 따라 프로그레스 바 업데이트
+                      backgroundColor: Colors.green,
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.red),
+                    ),
+                  ),
+                ],
+              );
+            },
+            error: (e, _) {
+              return const SizedBox();
+            },
+            loading: () => const LinearProgressIndicator(),
+          ),
+        ),
       ),
       body: Column(
         children: [
@@ -42,7 +176,6 @@ class _VoteViewState extends ConsumerState<VoteView> {
             child: messageState.when(
               data: (voteViewState) {
                 final messages = voteViewState.messages;
-                final vote = voteViewState.vote;
 
                 return Column(
                   children: [
@@ -63,52 +196,6 @@ class _VoteViewState extends ConsumerState<VoteView> {
                                 );
                               },
                             ),
-                    ),
-                    // 투표 결과 표시
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 10),
-                      child: Column(
-                        children: [
-                          Text('잘못한 사람: ${vote.guiltyCount}'),
-                          Text('잘못하지 않은 사람: ${vote.notGuiltyCount}'),
-                        ],
-                      ),
-                    ),
-                    // 투표 버튼
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        ElevatedButton(
-                          onPressed: () {
-                            // "잘못했다" 투표 처리
-                            ref
-                                .read(judgmentProvider(roomId: widget.roomId)
-                                    .notifier)
-                                .castVote(
-                                  roomId: widget.roomId,
-                                  userId: 'currentUserId', // 실제 유저 ID로 교체
-                                  isGuilty: true,
-                                );
-                            ref.read(judgmentProvider(roomId: widget.roomId));
-                          },
-                          child: const Text('잘못했다'),
-                        ),
-                        const SizedBox(width: 10),
-                        ElevatedButton(
-                          onPressed: () {
-                            // "잘못하지 않았다" 투표 처리
-                            ref
-                                .read(judgmentProvider(roomId: widget.roomId)
-                                    .notifier)
-                                .castVote(
-                                  roomId: widget.roomId,
-                                  userId: 'currentUserId', // 실제 유저 ID로 교체
-                                  isGuilty: false,
-                                );
-                          },
-                          child: const Text('잘못하지 않았다'),
-                        ),
-                      ],
                     ),
                   ],
                 );
@@ -159,12 +246,15 @@ class _VoteViewState extends ConsumerState<VoteView> {
                   icon: const Icon(Icons.send),
                   onPressed: () {
                     // 메시지 전송
-                    ref
-                        .read(judgmentProvider(roomId: widget.roomId).notifier)
-                        .sendMessage(
-                          roomId: widget.roomId,
-                          message: _messageController.text,
-                        );
+                    if (_messageController.text.isNotEmpty) {
+                      ref
+                          .read(
+                              judgmentProvider(roomId: widget.roomId).notifier)
+                          .sendMessage(
+                            roomId: widget.roomId,
+                            message: _messageController.text,
+                          );
+                    }
                     _messageController.clear();
                   },
                 )
