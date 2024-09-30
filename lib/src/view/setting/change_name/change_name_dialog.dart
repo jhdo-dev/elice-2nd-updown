@@ -6,7 +6,7 @@ import '../../../../component/error_dialog.dart';
 import '../../../../component/form_fields.dart';
 import '../../../../util/helper/firebase_helper.dart';
 import '../../../model/custom_error.dart';
-import '../profile/profile_provider.dart';
+import '../setting_provider.dart';
 import 'change_name_provider.dart';
 
 class ChangeNameDialog extends ConsumerStatefulWidget {
