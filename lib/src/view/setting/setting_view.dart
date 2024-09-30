@@ -65,32 +65,20 @@ class _SettingViewState extends ConsumerState<SettingView> {
                 ),
                 // const ProfileWidget(),
                 ListTile(
-                  title: Text(appUser.name),
-                  subtitle: Text(appUser.email),
-                  trailing: IconButton(
-                    icon: const Icon(Icons.settings),
-                    onPressed: () {
-                      showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return const ProfileEditDialog();
-                        },
-                      );
+                  title: const Text('Change Name'),
+                  onTap: () => showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return const ProfileEditDialog();
                     },
                   ),
                 ),
                 ListTile(
-                  title: Text(appUser.name),
-                  subtitle: Text(appUser.email),
-                  trailing: IconButton(
-                    icon: const Icon(Icons.settings),
-                    onPressed: () {
-                      showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return const ProfileEditDialog();
-                        },
-                      );
+                  title: const Text('Change Password'),
+                  onTap: () => showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return const ProfileEditDialog();
                     },
                   ),
                 ),
