@@ -1,4 +1,5 @@
 // lib/src/view/home/create_room_view.dart
+// test
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -43,13 +44,22 @@ class _CreateRoomViewState extends ConsumerState<CreateRoomView> {
           children: [
             TextField(
               controller: personNameController,
-              decoration: const InputDecoration(labelText: '인물 이름'),
+              decoration: const InputDecoration(labelText: '인물 이름을 입력해주세요.'),
             ),
             TextField(
               controller: roomNameController,
-              decoration: const InputDecoration(labelText: '방 이름'),
+              decoration: const InputDecoration(labelText: '논란 제목을 입력해주세요.'),
             ),
             const SizedBox(height: 20),
+            // 이미지 선택 및 업로드 버튼 추가
+            ElevatedButton(
+              onPressed: () async {
+                await viewModel.pickAndUploadImage();
+              },
+              child: Text(state.imageUrl == null
+                  ? '이미지 선택'
+                  : '이미지 업로드 완료'), // 이미지 선택 상태를 표시
+            ),
             // 방 시작 날짜 선택
             ElevatedButton(
               onPressed: () async {
@@ -128,3 +138,20 @@ class _CreateRoomViewState extends ConsumerState<CreateRoomView> {
     return picked;
   }
 }
+
+
+// rooms(Collection):
+//     randomDocumentId(Document):
+//         roomId: "jsaWgJSvCl8a7YSRHOZw"
+//         personName: "김테스트"
+//         roomName: "테스트 논란"
+//         roomStartDate: Timestamp
+//         roomEndDate: Timestamp
+//         imageUrl: "https://picsum.photos/200/300"
+//         participants(Sub-Collection):
+//             userId: "userid01"
+//             joinedAt: Timestamp
+//         messages(Sub-Collection):
+//             userId: "userid01"
+//             message: "Hello, world!"
+//             sentAt: Timestamp
