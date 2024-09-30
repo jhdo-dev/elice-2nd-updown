@@ -1,25 +1,25 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'profile_edit_provider.dart';
+part of 'change_name_provider.dart';
 
 // **************************************************************************
 // RiverpodGenerator
 // **************************************************************************
 
-String _$profileEditHash() => r'42df6bcfc5f7d01d4cde57529ee8240143e1241a';
+String _$changeNameHash() => r'3d38badb9170ebbb6a2f29eab861ee96626522b0';
 
-/// See also [ProfileEdit].
-@ProviderFor(ProfileEdit)
-final profileEditProvider =
-    AutoDisposeAsyncNotifierProvider<ProfileEdit, void>.internal(
-  ProfileEdit.new,
-  name: r'profileEditProvider',
+/// See also [ChangeName].
+@ProviderFor(ChangeName)
+final changeNameProvider =
+    AutoDisposeAsyncNotifierProvider<ChangeName, void>.internal(
+  ChangeName.new,
+  name: r'changeNameProvider',
   debugGetCreateSourceHash:
-      const bool.fromEnvironment('dart.vm.product') ? null : _$profileEditHash,
+      const bool.fromEnvironment('dart.vm.product') ? null : _$changeNameHash,
   dependencies: null,
   allTransitiveDependencies: null,
 );
 
-typedef _$ProfileEdit = AutoDisposeAsyncNotifier<void>;
+typedef _$ChangeName = AutoDisposeAsyncNotifier<void>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member
