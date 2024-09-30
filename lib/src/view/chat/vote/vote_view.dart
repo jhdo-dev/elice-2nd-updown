@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:up_down/src/model/custom_error.dart';
+import 'package:up_down/src/provider/auth_repository_provider.dart';
 import 'package:up_down/src/provider/home_repository_provider.dart';
 import 'package:up_down/src/view/chat/vote/vote_provider.dart';
 import 'package:up_down/util/helper/firebase_helper.dart';
@@ -55,7 +56,7 @@ class _VoteViewState extends ConsumerState<VoteView> {
                               itemBuilder: (context, index) {
                                 final message = messages[index];
                                 return ListTile(
-                                  title: Text(message.userId), // 유저 ID 표시
+                                  title: Text(message.name), // 유저 ID 표시
                                   subtitle: Text(message.message),
                                   trailing:
                                       Text(message.sentAt.toDate().toString()),
