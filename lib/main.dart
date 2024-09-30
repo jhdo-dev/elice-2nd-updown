@@ -4,12 +4,11 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:up_down/services/fcm/fcm_service.dart';
-import 'package:up_down/services/fcm/push_notification_service.dart';
 import 'package:up_down/util/router/route_path.dart';
 
 import 'firebase_options.dart';
 
-//백글라운드 메시지 등록
+// 백그라운드 메시지 핸들러
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
   print("Handling a background message: ${message.messageId}");
@@ -23,28 +22,18 @@ void main() async {
 
   FirebaseAnalytics analytics = FirebaseAnalytics.instance;
 
-  // FCM 서비스 초기화
-  final fcmService = FCMService();
-  await fcmService.initialize();
-
-  // 푸시 알림 서비스 초기화
+  // 푸시 알림 서비스 초기화 (통합된 서비스)
   final pushNotificationService = PushNotificationService();
   await pushNotificationService.initialize();
 
-  // 알림 권한 요청
-  await requestNotificationPermissions(fcmService); //^
+  // 백그라운드 메시지 핸들러 등록
+  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
   runApp(
     const ProviderScope(
       child: MyApp(),
     ),
   );
-}
-
-//알림 권한 요청 함수
-Future<void> requestNotificationPermissions(FCMService fcmService) async {
-  //^
-  await fcmService.requestPermissions(); //^
 }
 
 class MyApp extends ConsumerWidget {
