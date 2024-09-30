@@ -55,7 +55,7 @@ class CreateRoomViewModel extends _$CreateRoomViewModel {
     state = state.copyWith(roomEndDate: date);
   }
 
-  Future<String> createRoom(String personName, String roomName) async {
+  Future<void> createRoom(String personName, String roomName) async {
     final roomRef = _firestore.collection('rooms').doc();
 
     // Firestore에 방 정보 저장
@@ -70,11 +70,9 @@ class CreateRoomViewModel extends _$CreateRoomViewModel {
       'participantCount': 0, // 참가자 수 초기화
       'createdAt': Timestamp.now(),
     });
-
+    // 방 생성 후 result_view 갱신 (결과 목록 다시 불러오기)
+    //
     // 상태 초기화
     state = CreateRoomViewState();
-
-    // roomId 반환
-    return roomRef.id;
   }
 }
