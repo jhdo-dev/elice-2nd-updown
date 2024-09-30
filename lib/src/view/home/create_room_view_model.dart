@@ -2,11 +2,11 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart'; // 추가된 부분
+import 'package:image_picker/image_picker.dart'; // 추가된 부분
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:up_down/src/provider/home_repository_provider.dart';
 import 'package:up_down/src/view/home/create_room_view_state.dart';
-import 'package:firebase_storage/firebase_storage.dart'; // 추가된 부분
-import 'package:image_picker/image_picker.dart'; // 추가된 부분
 
 part 'create_room_view_model.g.dart';
 
@@ -55,7 +55,7 @@ class CreateRoomViewModel extends _$CreateRoomViewModel {
     state = state.copyWith(roomEndDate: date);
   }
 
-  Future<void> createRoom(String personName, String roomName) async {
+  Future<String> createRoom(String personName, String roomName) async {
     final roomRef = _firestore.collection('rooms').doc();
 
     // Firestore에 방 정보 저장
@@ -70,9 +70,11 @@ class CreateRoomViewModel extends _$CreateRoomViewModel {
       'participantCount': 0, // 참가자 수 초기화
       'createdAt': Timestamp.now(),
     });
-    // 방 생성 후 result_view 갱신 (결과 목록 다시 불러오기)
-    //
+
     // 상태 초기화
     state = CreateRoomViewState();
+
+    // roomId 반환
+    return roomRef.id;
   }
 }

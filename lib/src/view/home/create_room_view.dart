@@ -1,5 +1,3 @@
-// lib/src/view/home/create_room_view.dart
-// test
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -79,40 +77,22 @@ class _CreateRoomViewState extends ConsumerState<CreateRoomView> {
             // 방 종료 날짜 선택
             ElevatedButton(
               onPressed: () async {
-                final pickedDate = await selectDate(context);
-                if (pickedDate != null) {
-                  viewModel.setRoomEndDate(pickedDate);
-                }
-              },
-              child: Text(state.roomEndDate == null
-                  ? '방 종료 날짜 선택'
-                  : '방 종료 날짜: ${state.roomEndDate!.toLocal().toString().substring(0, 10)}'),
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () async {
                 if (personNameController.text.isNotEmpty &&
                     roomNameController.text.isNotEmpty &&
                     state.roomStartDate != null &&
                     state.roomEndDate != null) {
                   try {
-                    await viewModel.createRoom(
+                    // 방 생성
+                    final roomId = await viewModel.createRoom(
                       personNameController.text,
                       roomNameController.text,
                     );
 
-                    // // title이 비어있지 않도록 보장
-                    // String title = roomNameController.text.isNotEmpty
-                    //     ? '새로운 방 "${roomNameController.text}"이 생성되었습니다!'
-                    //     : '새로운 방이 생성되었습니다!';
-                    //
-                    // String body =
-                    //     '${personNameController.text}님이 새로운 방을 만들었습니다.';
-                    //
-                    // // 값 확인용 로그
-                    // print('Sending notification - Title: $title, Body: $body');
-                    //
-                    // await fcmService.sendNotificationToAllUsers(title, body);
+                    // FCM 서비스를 통해 방 생성 및 알림 전송
+                    await fcmService.createRoom(
+                      roomId,
+                      roomNameController.text,
+                    );
 
                     // 입력 필드 초기화
                     personNameController.clear();
@@ -155,19 +135,3 @@ class _CreateRoomViewState extends ConsumerState<CreateRoomView> {
     return picked;
   }
 }
-
-// rooms(Collection):
-//     randomDocumentId(Document):
-//         roomId: "jsaWgJSvCl8a7YSRHOZw"
-//         personName: "김테스트"
-//         roomName: "테스트 논란"
-//         roomStartDate: Timestamp
-//         roomEndDate: Timestamp
-//         imageUrl: "https://picsum.photos/200/300"
-//         participants(Sub-Collection):
-//             userId: "userid01"
-//             joinedAt: Timestamp
-//         messages(Sub-Collection):
-//             userId: "userid01"
-//             message: "Hello, world!"
-//             sentAt: Timestamp

@@ -1,56 +1,35 @@
-const functions = require('firebase-functions');
-const admin = require('firebase-admin');
+const { onCall } = require("firebase-functions/v2/https");
+const { setGlobalOptions } = require("firebase-functions/v2");
+const admin = require("firebase-admin");
 
+// 글로벌 옵션 설정 (지역 설정)
+setGlobalOptions({ region: "asia-northeast3" });
+
+// Firebase Admin SDK 초기화
 admin.initializeApp();
 
-exports.sendNotificationToTopic = functions.https.onCall(async (data, context) => {
-  console.log('Function called with data:', JSON.stringify(data));
+// 방 생성 시 호출되는 Firebase Functions
+exports.createRoom = onCall(async (data, context) => {
+    const { roomId, roomName, token } = data;
 
-  try {
-    // title 필드 검증 및 기본값 설정
-    let title = data.title;
-    if (!title || typeof title !== 'string' || title.trim() === '') {
-      console.warn('Invalid or missing title, using default');
-      title = '새로운 알림';
-    } else {
-      title = title.trim();
-    }
+    // 여기서 방 생성 로직을 처리할 수 있음 (필요한 경우 Firestore 등에 저장)
 
-    // body 필드 검증
-    if (!data.body || typeof data.body !== 'string' || data.body.trim() === '') {
-      console.error('Invalid body:', data.body);
-      throw new functions.https.HttpsError('invalid-argument', 'The body field is required and must be a non-empty string.');
-    }
-
-    // topic 필드 검증
-    if (!data.topic || typeof data.topic !== 'string' || data.topic.trim() === '') {
-      console.error('Invalid topic:', data.topic);
-      throw new functions.https.HttpsError('invalid-argument', 'The topic field is required and must be a non-empty string.');
-    }
-
+    // 푸시 알림 메시지 구성
     const message = {
-      notification: {
-        title: title,
-        body: data.body.trim(),
-      },
-      topic: data.topic.trim(),
+        notification: {
+            title: "새로운 방이 생성되었습니다!",
+            body: `${roomName} 방이 생성되었습니다. 지금 참여해보세요!`
+        },
+        token: token  // FCM 토큰
     };
 
-    console.log('Sending message to topic:', message.topic);
-    console.log('Message content:', message.notification);
-
-    const response = await admin.messaging().send(message);
-    console.log('Successfully sent message:', response);
-
-    return {
-      success: true,
-      messageId: response,
-      details: `Notification sent to topic ${data.topic}`
-    };
-
-  } catch (error) {
-    console.error('Error sending message:', error);
-    console.error('Error details:', JSON.stringify(error));
-    throw new functions.https.HttpsError('internal', `Error sending notification: ${error.message}`);
-  }
+    try {
+        // 푸시 알림 전송
+        const response = await admin.messaging().send(message);
+        console.log('Successfully sent message:', response);
+        return { success: true, message: "Notification sent successfully" };
+    } catch (error) {
+        console.log('Error sending message:', error);
+        throw new Error('Error sending push notification');
+    }
 });
