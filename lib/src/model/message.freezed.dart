@@ -17,6 +17,7 @@ final _privateConstructorUsedError = UnsupportedError(
 /// @nodoc
 mixin _$Message {
   String get userId => throw _privateConstructorUsedError;
+  String get name => throw _privateConstructorUsedError;
   String get message => throw _privateConstructorUsedError;
   Timestamp get sentAt => throw _privateConstructorUsedError;
 
@@ -31,7 +32,7 @@ abstract class $MessageCopyWith<$Res> {
   factory $MessageCopyWith(Message value, $Res Function(Message) then) =
       _$MessageCopyWithImpl<$Res, Message>;
   @useResult
-  $Res call({String userId, String message, Timestamp sentAt});
+  $Res call({String userId, String name, String message, Timestamp sentAt});
 }
 
 /// @nodoc
@@ -50,6 +51,7 @@ class _$MessageCopyWithImpl<$Res, $Val extends Message>
   @override
   $Res call({
     Object? userId = null,
+    Object? name = null,
     Object? message = null,
     Object? sentAt = null,
   }) {
@@ -57,6 +59,10 @@ class _$MessageCopyWithImpl<$Res, $Val extends Message>
       userId: null == userId
           ? _value.userId
           : userId // ignore: cast_nullable_to_non_nullable
+              as String,
+      name: null == name
+          ? _value.name
+          : name // ignore: cast_nullable_to_non_nullable
               as String,
       message: null == message
           ? _value.message
@@ -77,7 +83,7 @@ abstract class _$$MessageImplCopyWith<$Res> implements $MessageCopyWith<$Res> {
       __$$MessageImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String userId, String message, Timestamp sentAt});
+  $Res call({String userId, String name, String message, Timestamp sentAt});
 }
 
 /// @nodoc
@@ -94,6 +100,7 @@ class __$$MessageImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? userId = null,
+    Object? name = null,
     Object? message = null,
     Object? sentAt = null,
   }) {
@@ -101,6 +108,10 @@ class __$$MessageImplCopyWithImpl<$Res>
       userId: null == userId
           ? _value.userId
           : userId // ignore: cast_nullable_to_non_nullable
+              as String,
+      name: null == name
+          ? _value.name
+          : name // ignore: cast_nullable_to_non_nullable
               as String,
       message: null == message
           ? _value.message
@@ -118,10 +129,15 @@ class __$$MessageImplCopyWithImpl<$Res>
 
 class _$MessageImpl with DiagnosticableTreeMixin implements _Message {
   const _$MessageImpl(
-      {required this.userId, required this.message, required this.sentAt});
+      {required this.userId,
+      required this.name,
+      required this.message,
+      required this.sentAt});
 
   @override
   final String userId;
+  @override
+  final String name;
   @override
   final String message;
   @override
@@ -129,7 +145,7 @@ class _$MessageImpl with DiagnosticableTreeMixin implements _Message {
 
   @override
   String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
-    return 'Message(userId: $userId, message: $message, sentAt: $sentAt)';
+    return 'Message(userId: $userId, name: $name, message: $message, sentAt: $sentAt)';
   }
 
   @override
@@ -138,6 +154,7 @@ class _$MessageImpl with DiagnosticableTreeMixin implements _Message {
     properties
       ..add(DiagnosticsProperty('type', 'Message'))
       ..add(DiagnosticsProperty('userId', userId))
+      ..add(DiagnosticsProperty('name', name))
       ..add(DiagnosticsProperty('message', message))
       ..add(DiagnosticsProperty('sentAt', sentAt));
   }
@@ -148,12 +165,13 @@ class _$MessageImpl with DiagnosticableTreeMixin implements _Message {
         (other.runtimeType == runtimeType &&
             other is _$MessageImpl &&
             (identical(other.userId, userId) || other.userId == userId) &&
+            (identical(other.name, name) || other.name == name) &&
             (identical(other.message, message) || other.message == message) &&
             (identical(other.sentAt, sentAt) || other.sentAt == sentAt));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, userId, message, sentAt);
+  int get hashCode => Object.hash(runtimeType, userId, name, message, sentAt);
 
   /// Create a copy of Message
   /// with the given fields replaced by the non-null parameter values.
@@ -167,11 +185,14 @@ class _$MessageImpl with DiagnosticableTreeMixin implements _Message {
 abstract class _Message implements Message {
   const factory _Message(
       {required final String userId,
+      required final String name,
       required final String message,
       required final Timestamp sentAt}) = _$MessageImpl;
 
   @override
   String get userId;
+  @override
+  String get name;
   @override
   String get message;
   @override
