@@ -40,12 +40,14 @@ class MessageRepository {
   Future<void> sendMessage({
     required String roomId,
     required String userId,
+    required String name,
     required String message,
     required Timestamp sentAt,
   }) async {
     try {
       await roomsCollection.doc(roomId).collection('messages').add({
         'userId': userId,
+        'name': name,
         'message': message,
         'sentAt': sentAt,
       });
