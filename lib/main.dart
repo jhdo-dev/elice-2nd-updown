@@ -2,11 +2,19 @@ import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:up_down/services/fcm/fcm_service.dart';
 import 'package:up_down/util/router/route_path.dart';
 
 import 'firebase_options.dart';
+
+// 백그라운드 메시지 핸들러
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  await Firebase.initializeApp();
+  print("Handling a background message: ${message.messageId}");
+  // 여기에 백그라운드 알림 처리 로직 추가
+}
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -36,6 +44,18 @@ void main() async {
     print("FCM Token refreshed: $token");
   });
 
+  // 백그라운드 메시지 핸들러 등록
+  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+
+  // 로컬 알림 설정
+  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+      FlutterLocalNotificationsPlugin();
+  const AndroidInitializationSettings initializationSettingsAndroid =
+      AndroidInitializationSettings('@mipmap/ic_launcher');
+  final InitializationSettings initializationSettings =
+      InitializationSettings(android: initializationSettingsAndroid);
+  await flutterLocalNotificationsPlugin.initialize(initializationSettings);
+
   runApp(
     const ProviderScope(
       child: MyApp(),
@@ -50,6 +70,18 @@ class MyApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(routeProvider);
 
+    // 포그라운드 메시지 핸들링
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      print("Received a foreground message: ${message.notification?.title}");
+      _showNotification(message);
+    });
+
+    // 알림 클릭 핸들링
+    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+      print("Notification clicked!");
+      // 여기에 알림 클릭 시 처리 로직 추가 (예: 특정 화면으로 이동)
+    });
+
     return MaterialApp.router(
       title: 'UP DOWN',
       debugShowCheckedModeBanner: false,
@@ -58,6 +90,26 @@ class MyApp extends ConsumerWidget {
         useMaterial3: true,
       ),
       routerConfig: router,
+    );
+  }
+
+  void _showNotification(RemoteMessage message) async {
+    const AndroidNotificationDetails androidPlatformChannelSpecifics =
+        AndroidNotificationDetails(
+      'your_channel_id',
+      'your_channel_name',
+      importance: Importance.max,
+      priority: Priority.high,
+    );
+    const NotificationDetails platformChannelSpecifics =
+        NotificationDetails(android: androidPlatformChannelSpecifics);
+
+    await FlutterLocalNotificationsPlugin().show(
+      0,
+      message.notification?.title ?? '',
+      message.notification?.body ?? '',
+      platformChannelSpecifics,
+      payload: message.data['route'],
     );
   }
 }
