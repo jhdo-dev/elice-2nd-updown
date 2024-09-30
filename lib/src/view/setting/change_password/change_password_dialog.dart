@@ -4,9 +4,8 @@ import 'package:go_router/go_router.dart';
 import 'package:up_down/src/view/setting/change_password/change_password_provider.dart';
 import '../../../../component/error_dialog.dart';
 import '../../../../component/form_fields.dart';
-import '../../../../util/helper/firebase_helper.dart';
 import '../../../model/custom_error.dart';
-import '../profile/profile_provider.dart';
+import '../setting_provider.dart';
 
 class ChangePasswordDialog extends ConsumerStatefulWidget {
   const ChangePasswordDialog({super.key});

@@ -1,21 +1,15 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:up_down/src/view/setting/change_name/change_name_dialog.dart';
-import 'package:up_down/src/view/setting/change_password/change_password_provider.dart';
 import 'package:up_down/src/view/setting/change_password/change_password_dialog.dart';
-import 'package:up_down/src/view/setting/profile/profile_widget.dart';
 import 'package:up_down/src/view/setting/push_notification_toggle/push_notification_toggle.dart';
 import 'package:up_down/src/view/setting/theme_toggle/theme_toggle.dart';
 
 import '../../../component/error_dialog.dart';
 import '../../../util/helper/firebase_helper.dart';
-import '../../../util/router/route_names.dart';
 import '../../model/custom_error.dart';
 import '../../provider/auth_repository_provider.dart';
-import 'profile/profile_provider.dart';
-import 'profile_edit/profile_edit_dialog.dart';
+import 'setting_provider.dart';
 
 class SettingView extends ConsumerStatefulWidget {
   const SettingView({super.key});
@@ -42,31 +36,17 @@ class _SettingViewState extends ConsumerState<SettingView> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Setting'),
-        // actions: [
-        //   IconButton(
-        //     onPressed: () {
-        //       ref.invalidate(profileProvider);
-        //     },
-        //     icon: const Icon(Icons.refresh),
-        //   ),
-        // ],
       ),
       body: profileState.when(
         skipLoadingOnRefresh: false,
         data: (appUser) {
           return Padding(
             padding: const EdgeInsets.all(8.0),
-            child: ListView(
-              children: <Widget>[
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const FlutterLogo(size: 72.0),
-                    Text(appUser.name),
-                    Text(appUser.email),
-                  ],
-                ),
-                // const ProfileWidget(),
+            child: Column(
+              children: [
+                const FlutterLogo(size: 72.0),
+                Text(appUser.name),
+                Text(appUser.email),
                 ListTile(
                   title: const Text('Change Name'),
                   onTap: () => showDialog(
@@ -94,26 +74,6 @@ class _SettingViewState extends ConsumerState<SettingView> {
               ],
             ),
           );
-          // 디버그용
-          // Center(
-          //   child: Column(
-          //     mainAxisAlignment: MainAxisAlignment.center,
-          //     children: [
-          //       const ProfileWidget(),
-          //       const Text('Welcome!'),
-          //       Text('name: ${appUser.name}'),
-          //       Text('email: ${appUser.email}'),
-          //       // Text('photo: ${appUser.photoURL}'),
-
-          //       ElevatedButton(
-          //         onPressed: () {
-          //           // GoRouter.of(context).goNamed(RouteNames.changePassword);
-          //         },
-          //         child: const Text('Change Password'),
-          //       )
-          //     ],
-          //   ),
-          // );
         },
         error: (e, _) {
           final error = e as CustomError;
