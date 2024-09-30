@@ -62,7 +62,7 @@ class _PasswordResetDialogState extends ConsumerState<PasswordResetDialog> {
     final resetPwdState = ref.watch(passwordResetProvider);
 
     return GestureDetector(
-      onTap: FocusScope.of(context).unfocus,
+      onTap: () => FocusScope.of(context).unfocus(),
       child: AlertDialog(
         title: const Text('Password Reset'),
         content: Form(

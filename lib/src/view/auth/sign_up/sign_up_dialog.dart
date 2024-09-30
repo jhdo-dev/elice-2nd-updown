@@ -64,7 +64,7 @@ class _SignUpDialogState extends ConsumerState<SignUpDialog> {
     final signupState = ref.watch(signupProvider);
 
     return GestureDetector(
-      onTap: () => FocusScope.of(context).unfocus,
+      onTap: () => FocusScope.of(context).unfocus(),
       child: AlertDialog(
         title: const Text('Get Started'),
         content: Form(

@@ -8,6 +8,7 @@ import 'package:up_down/services/fcm/push_notification_service.dart';
 import 'package:up_down/util/router/route_path.dart';
 
 import 'firebase_options.dart';
+import 'src/view/setting/theme_toggle/theme_provider.dart';
 
 //백글라운드 메시지 등록
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -53,14 +54,16 @@ class MyApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(routeProvider);
+    final isDarkMode = ref.watch(themeProvider);
 
     return MaterialApp.router(
       title: 'UP DOWN',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
+      // theme: ThemeData(
+      //   colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+      //   useMaterial3: true,
+      // ),
+      theme: isDarkMode ? ThemeData.dark() : ThemeData.light(),
       routerConfig: router,
     );
   }
