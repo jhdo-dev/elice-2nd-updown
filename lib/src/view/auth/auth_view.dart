@@ -121,14 +121,6 @@ class _AuthViewState extends ConsumerState<AuthView> {
     ref.listen(signInProvider, (prev, next) {
       next.whenOrNull(
         error: (e, st) => errorDialog(context, e as CustomError),
-        data: (_) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content:
-                  Text('Hello, [username]! You\'ve successfully signed in.'),
-            ),
-          );
-        },
       );
     });
 

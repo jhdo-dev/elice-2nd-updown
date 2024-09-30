@@ -98,6 +98,20 @@ class AuthRepository {
     }
   }
 
+  Future<void> changeName(String newName) async {
+    try {
+      await currentUser!.updateProfile(displayName: newName);
+      await currentUser!.reload();
+
+      // Firestore에서 사용자 이름 업데이트
+      await usersCollection.doc(currentUser!.uid).update({
+        'name': newName,
+      });
+    } catch (e) {
+      throw handleException(e);
+    }
+  }
+
   Future<void> sendPasswordResetEmail(String email) async {
     try {
       await fbAuth.sendPasswordResetEmail(email: email);
@@ -106,13 +120,13 @@ class AuthRepository {
     }
   }
 
-  // Future<void> sendEmailVerification() async {
-  //   try {
-  //     await currentUser!.sendEmailVerification();
-  //   } catch (e) {
-  //     throw handleException(e);
-  //   }
-  // }
+// Future<void> sendEmailVerification() async {
+//   try {
+//     await currentUser!.sendEmailVerification();
+//   } catch (e) {
+//     throw handleException(e);
+//   }
+// }
 
   Future<void> reloadUser() async {
     try {
@@ -130,20 +144,6 @@ class AuthRepository {
       await currentUser!.reauthenticateWithCredential(
         EmailAuthProvider.credential(email: email, password: password),
       );
-    } catch (e) {
-      throw handleException(e);
-    }
-  }
-
-  Future<void> updateUserName(String newName) async {
-    try {
-      await currentUser!.updateProfile(displayName: newName);
-      await currentUser!.reload();
-
-      // Firestore에서 사용자 이름 업데이트
-      await usersCollection.doc(currentUser!.uid).update({
-        'name': newName,
-      });
     } catch (e) {
       throw handleException(e);
     }
