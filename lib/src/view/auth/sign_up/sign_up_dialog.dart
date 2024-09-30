@@ -52,8 +52,9 @@ class _SignUpDialogState extends ConsumerState<SignUpDialog> {
           error: (e, st) => errorDialog(context, e as CustomError),
           data: (_) {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Welcome, username*! Thank you for joining us.'),
+              SnackBar(
+                content: Text(
+                    'Welcome, ${_nameController.text}! Thank you for joining us.'),
               ),
             );
           },

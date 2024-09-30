@@ -32,7 +32,7 @@ class PushNotificationToggleState extends State<PushNotificationToggle> {
       subtitle: Text('Enabled: $_pushNotificationToggle'),
       trailing: Switch(
         onChanged: (bool? value) {
-          _togglePushNotifications(value!);
+          // _togglePushNotifications(value!);
         },
         value: _pushNotificationToggle,
       ),
