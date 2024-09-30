@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 
@@ -6,6 +7,8 @@ class PushNotificationService {
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFunctions _functions =
+      FirebaseFunctions.instanceFor(region: 'asia-northeast3');
 
   Future<void> initialize() async {
     try {
@@ -61,6 +64,38 @@ class PushNotificationService {
     } catch (e) {
       print('Error getting FCM token: $e');
       return null;
+    }
+  }
+
+  //방생성 버튼 로직
+  Future<void> sendRoomCreationNotification({
+    required String roomName,
+    required String creatorName,
+  }) async {
+    try {
+      User? user = _auth.currentUser;
+      if (user == null) {
+        print('User not logged in, cannot send notification');
+        return;
+      }
+
+      String? token = await getToken();
+      if (token == null) {
+        print('FCM token is null, cannot send notification');
+        return;
+      }
+
+      HttpsCallable callable = _functions.httpsCallable('sendPushNotification');
+      final result = await callable.call({
+        'title': "새로운 방 생성: $roomName",
+        'body': "$creatorName 님이 새로운 방을 만들었습니다.",
+        'userId': user.uid, // 토큰 대신 userId를 전송
+      });
+
+      print('Push notification sent successfully: ${result.data}');
+    } catch (e) {
+      print('Failed to send push notification: $e');
+      rethrow; // 에러를 상위로 전파하여 UI에서 처리할 수 있게 함
     }
   }
 }
