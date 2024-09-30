@@ -33,7 +33,12 @@ class ChatRoom extends ConsumerWidget {
             .addParticipant(roomId, fbAuth.currentUser!.uid);
         context.goNamed(
           RouteNames.vote,
-          pathParameters: {'roomId': roomId}, // roomId를 params로 전달
+          pathParameters: {'roomId': roomId}, // roomId를 경로로 전달
+          extra: {
+            'roomId': roomId,
+            'roomName': roomName,
+            'personName': personName,
+          }, // 필요한 데이터를 Map으로 전달
         );
       },
       child: Container(
