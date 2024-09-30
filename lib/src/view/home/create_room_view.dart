@@ -111,7 +111,7 @@ class _CreateRoomViewState extends ConsumerState<CreateRoomView> {
                     print('Sending notification - Title: $title, Body: $body');
 
                     // FCM 푸시 알림 전송
-                    await fcmService.PushNotificationService(title, body); //&
+                    await fcmService.sendNotification(title, body);
 
                     // 입력 필드 초기화
                     personNameController.clear();

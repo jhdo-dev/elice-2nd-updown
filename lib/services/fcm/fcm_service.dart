@@ -135,6 +135,35 @@ class PushNotificationService {
     }
   }
 
+  Future<void> sendNotification(String title, String body) async {
+    try {
+      final token = await getToken();
+      if (token == null) {
+        throw Exception('FCM token is null');
+      }
+
+      final callable = _functions.httpsCallable('sendNotification');
+      final result = await callable.call({
+        'title': title,
+        'body': body,
+        'token': token,
+      });
+
+      if (result.data['success'] == true) {
+        print('Notification sent successfully: ${result.data['message']}');
+      } else {
+        throw Exception(
+            'Failed to send notification: ${result.data['message']}');
+      }
+    } on FirebaseFunctionsException catch (e) {
+      print('Failed to call function: ${e.message}');
+      throw Exception('Failed to send notification: ${e.message}');
+    } catch (e) {
+      print('Error sending notification: $e');
+      throw Exception('Error sending notification: $e');
+    }
+  }
+
   Future<void> createRoom(String roomId, String roomName) async {
     try {
       final token = await getToken();
