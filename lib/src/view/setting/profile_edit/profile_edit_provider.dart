@@ -24,7 +24,7 @@ class ProfileEdit extends _$ProfileEdit {
     state = const AsyncLoading();
 
     state = await AsyncValue.guard<void>(
-      () => ref.read(authRepositoryProvider).updateUserName(newName),
+      () => ref.read(authRepositoryProvider).changeName(newName),
     );
   }
 

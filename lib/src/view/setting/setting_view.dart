@@ -2,6 +2,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:up_down/src/view/setting/change_name/change_name_dialog.dart';
+import 'package:up_down/src/view/setting/change_password/change_password_provider.dart';
+import 'package:up_down/src/view/setting/change_password/change_password_dialog.dart';
 import 'package:up_down/src/view/setting/profile/profile_widget.dart';
 import 'package:up_down/src/view/setting/push_notification_toggle/push_notification_toggle.dart';
 import 'package:up_down/src/view/setting/theme_toggle/theme_toggle.dart';
@@ -69,7 +72,7 @@ class _SettingViewState extends ConsumerState<SettingView> {
                   onTap: () => showDialog(
                     context: context,
                     builder: (BuildContext context) {
-                      return const ProfileEditDialog();
+                      return const ChangeNameDialog();
                     },
                   ),
                 ),
@@ -78,7 +81,7 @@ class _SettingViewState extends ConsumerState<SettingView> {
                   onTap: () => showDialog(
                     context: context,
                     builder: (BuildContext context) {
-                      return const ProfileEditDialog();
+                      return const ChangePasswordDialog();
                     },
                   ),
                 ),
