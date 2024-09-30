@@ -1,4 +1,3 @@
-import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -96,28 +95,11 @@ class _CreateRoomViewState extends ConsumerState<CreateRoomView> {
                       roomNameController.text,
                     );
 
-                    // 푸시 알림 전송을 위한 FCM 토큰 가져오기
-                    String? token = await fcmService.getToken(); // FCM 토큰 가져오기
-                    if (token != null) {
-                      // Firebase Functions로 푸시 알림 전송
-                      try {
-                        HttpsCallable callable = FirebaseFunctions.instanceFor(
-                                region: 'asia-northeast3')
-                            .httpsCallable('sendPushNotification');
-                        final result = await callable.call({
-                          'title': "새로운 방 생성: ${roomNameController.text}",
-                          'body':
-                              "${personNameController.text} 님이 새로운 방을 만들었습니다.",
-                          'token': token,
-                        });
-                        print(
-                            'Push notification sent successfully: ${result.data}');
-                      } on Exception catch (e) {
-                        print('Failed to send push notification: $e');
-                      }
-                    } else {
-                      print("FCM token is null, can't send push notification.");
-                    }
+                    // FCM 서비스를 통해 알림 전송
+                    await fcmService.sendRoomCreationNotification(
+                      roomName: roomNameController.text,
+                      creatorName: personNameController.text,
+                    );
 
                     // try {
                     //   HttpsCallable callable = FirebaseFunctions.instanceFor(
