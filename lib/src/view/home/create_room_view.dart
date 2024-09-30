@@ -101,18 +101,18 @@ class _CreateRoomViewState extends ConsumerState<CreateRoomView> {
                       roomNameController.text,
                     );
 
-                    // title이 비어있지 않도록 보장
-                    String title = roomNameController.text.isNotEmpty
-                        ? '새로운 방 "${roomNameController.text}"이 생성되었습니다!'
-                        : '새로운 방이 생성되었습니다!';
-
-                    String body =
-                        '${personNameController.text}님이 새로운 방을 만들었습니다.';
-
-                    // 값 확인용 로그
-                    print('Sending notification - Title: $title, Body: $body');
-
-                    await fcmService.sendNotificationToAllUsers(title, body);
+                    // // title이 비어있지 않도록 보장
+                    // String title = roomNameController.text.isNotEmpty
+                    //     ? '새로운 방 "${roomNameController.text}"이 생성되었습니다!'
+                    //     : '새로운 방이 생성되었습니다!';
+                    //
+                    // String body =
+                    //     '${personNameController.text}님이 새로운 방을 만들었습니다.';
+                    //
+                    // // 값 확인용 로그
+                    // print('Sending notification - Title: $title, Body: $body');
+                    //
+                    // await fcmService.sendNotificationToAllUsers(title, body);
 
                     // 입력 필드 초기화
                     personNameController.clear();
@@ -155,7 +155,6 @@ class _CreateRoomViewState extends ConsumerState<CreateRoomView> {
     return picked;
   }
 }
-
 
 // rooms(Collection):
 //     randomDocumentId(Document):
