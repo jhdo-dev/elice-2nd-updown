@@ -22,6 +22,27 @@ class PushNotificationService {
     }
   }
 
+  Future<void> sendNotification(
+      {required String title,
+      required String body,
+      required String pushToken,
+      String screen = "/main"}) async {
+    try {
+      HttpsCallable callable =
+          FirebaseFunctions.instanceFor(region: 'asia-northeast3')
+              .httpsCallable('sendPushNotification');
+      final result = await callable.call({
+        'title': title,
+        'body': body,
+        'token': pushToken,
+        'screen': screen,
+      });
+      print("success : ${result.data}");
+    } catch (e) {
+      print('Caught generic exception: $e');
+    }
+  }
+
   Future<void> _requestAndroidPermissions() async {
     if (await Permission.notification.isDenied) {
       await Permission.notification.request();
@@ -132,35 +153,6 @@ class PushNotificationService {
       print('Unsubscribed from topic: $topic');
     } catch (e) {
       print('Error unsubscribing from topic: $e');
-    }
-  }
-
-  Future<void> sendNotification(String title, String body) async {
-    try {
-      final token = await getToken();
-      if (token == null) {
-        throw Exception('FCM token is null');
-      }
-
-      final callable = _functions.httpsCallable('sendNotification');
-      final result = await callable.call({
-        'title': title,
-        'body': body,
-        'token': token,
-      });
-
-      if (result.data['success'] == true) {
-        print('Notification sent successfully: ${result.data['message']}');
-      } else {
-        throw Exception(
-            'Failed to send notification: ${result.data['message']}');
-      }
-    } on FirebaseFunctionsException catch (e) {
-      print('Failed to call function: ${e.message}');
-      throw Exception('Failed to send notification: ${e.message}');
-    } catch (e) {
-      print('Error sending notification: $e');
-      throw Exception('Error sending notification: $e');
     }
   }
 
