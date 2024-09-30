@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:up_down/component/page_not_found.dart';
 import 'package:up_down/component/scaffold_with_nav_bar.dart';
+import 'package:up_down/src/model/room.dart';
 import 'package:up_down/src/provider/auth_repository_provider.dart';
 import 'package:up_down/src/view/auth/main/auth_view.dart';
 import 'package:up_down/src/view/setting/main/setting_view.dart';
@@ -158,8 +159,18 @@ GoRouter route(RouteRef ref) {
                       path: 'vote/:roomId',
                       name: RouteNames.vote,
                       builder: (context, state) {
-                        final roomId = state.pathParameters['roomId'];
-                        return VoteView(roomId: roomId!);
+                        // extra에서 roomId, roomName, personName 값을 가져옴
+                        final extraData = state.extra as Map<String, String>;
+
+                        final roomId = extraData['roomId']!;
+                        final roomName = extraData['roomName']!;
+                        final personName = extraData['personName']!;
+
+                        return VoteView(
+                          roomId: roomId,
+                          roomName: roomName,
+                          personName: personName,
+                        );
                       },
                     ),
                   ],
