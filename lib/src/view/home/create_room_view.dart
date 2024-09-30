@@ -1,4 +1,5 @@
 // lib/src/view/home/create_room_view.dart
+// test
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -43,11 +44,11 @@ class _CreateRoomViewState extends ConsumerState<CreateRoomView> {
           children: [
             TextField(
               controller: personNameController,
-              decoration: const InputDecoration(labelText: '인물 이름'),
+              decoration: const InputDecoration(labelText: '인물 이름을 입력해주세요.'),
             ),
             TextField(
               controller: roomNameController,
-              decoration: const InputDecoration(labelText: '방 이름'),
+              decoration: const InputDecoration(labelText: '논란 제목을 입력해주세요.'),
             ),
             const SizedBox(height: 20),
             // 이미지 선택 및 업로드 버튼 추가
