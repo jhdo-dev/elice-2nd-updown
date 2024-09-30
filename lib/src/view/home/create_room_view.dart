@@ -96,27 +96,44 @@ class _CreateRoomViewState extends ConsumerState<CreateRoomView> {
                       roomNameController.text,
                     );
 
-                    // 푸시 알림 전송
-                    // await fcmService.createRoom(
-                    //   roomNameController.text, // roomId 대신 roomName을 사용
-                    //   '${personNameController.text}의 방', // roomName
-                    // );
-
-                    try {
-                      HttpsCallable callable = FirebaseFunctions.instanceFor(
-                              region: 'asia-northeast3')
-                          .httpsCallable('sendPushNotification');
-                      final result = await callable.call({
-                        'title': "title",
-                        'body': "body",
-                        'token': "pushToken",
-                      });
-                      print(
-                          'Push notification sent successfully: ${result.data}');
-                    } on Exception catch (e) {
-                      print('Failed to send push notification: $e');
-                      // TODO
+                    // 푸시 알림 전송을 위한 FCM 토큰 가져오기
+                    String? token = await fcmService.getToken(); // FCM 토큰 가져오기
+                    if (token != null) {
+                      // Firebase Functions로 푸시 알림 전송
+                      try {
+                        HttpsCallable callable = FirebaseFunctions.instanceFor(
+                                region: 'asia-northeast3')
+                            .httpsCallable('sendPushNotification');
+                        final result = await callable.call({
+                          'title': "새로운 방 생성: ${roomNameController.text}",
+                          'body':
+                              "${personNameController.text} 님이 새로운 방을 만들었습니다.",
+                          'token': token,
+                        });
+                        print(
+                            'Push notification sent successfully: ${result.data}');
+                      } on Exception catch (e) {
+                        print('Failed to send push notification: $e');
+                      }
+                    } else {
+                      print("FCM token is null, can't send push notification.");
                     }
+
+                    // try {
+                    //   HttpsCallable callable = FirebaseFunctions.instanceFor(
+                    //           region: 'asia-northeast3')
+                    //       .httpsCallable('sendPushNotification');
+                    //   final result = await callable.call({
+                    //     'title': "title",
+                    //     'body': "body",
+                    //     'token': "pushToken",
+                    //   });
+                    //   print(
+                    //       'Push notification sent successfully: ${result.data}');
+                    // } on Exception catch (e) {
+                    //   print('Failed to send push notification: $e');
+                    //   // TODO
+                    // }
 
                     // 입력 필드 초기화
                     personNameController.clear();
