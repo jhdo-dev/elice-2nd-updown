@@ -61,6 +61,8 @@ class VoteResultCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bool isCompleted = DateTime.now().isAfter(item.roomEndDate); //^
+
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
       elevation: 4,
@@ -113,13 +115,36 @@ class VoteResultCard extends StatelessWidget {
                     color: Colors.grey,
                   ),
                 ),
-                Text(
-                  '종료일: ${_formatDate(item.roomEndDate)}',
-                  style: const TextStyle(
-                    fontSize: 14,
-                    color: Colors.grey,
-                  ),
-                ),
+                Row(
+                  //^
+                  children: [
+                    Text(
+                      '종료일: ${_formatDate(item.roomEndDate)}',
+                      style: const TextStyle(
+                        fontSize: 14,
+                        color: Colors.grey,
+                      ),
+                    ),
+                    if (isCompleted)
+                      Container(
+                        margin: const EdgeInsets.only(left: 8),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: Colors.green,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: const Text(
+                          '완료',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                  ],
+                ), //^
                 const SizedBox(height: 12),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
