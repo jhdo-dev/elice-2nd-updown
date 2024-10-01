@@ -55,6 +55,16 @@
 		<string>We need access to your microphone to record audio.</string>
 		<!-- 여기까지 추가된 권한 설정 -->
 
+		<!-- 푸시 알림 관련 설정 -->
+		<key>UIBackgroundModes</key>
+		<array>
+			<string>remote-notification</string>
+		</array>
+		<key>FirebaseAppDelegateProxyEnabled</key>
+		<false />
+		<key>NSAppleMusicUsageDescription</key>
+		<string>We would like to use Apple Music to play audio in the app.</string>
+
 
 	</dict>
 </plist>
