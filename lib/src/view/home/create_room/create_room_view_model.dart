@@ -6,7 +6,7 @@ import 'package:firebase_storage/firebase_storage.dart'; // 추가된 부분
 import 'package:image_picker/image_picker.dart'; // 추가된 부분
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:up_down/src/provider/home_repository_provider.dart';
-import 'package:up_down/src/view/home/create_room_view_state.dart';
+import 'package:up_down/src/view/home/create_room/create_room_view_state.dart';
 
 part 'create_room_view_model.g.dart';
 
