@@ -7,7 +7,7 @@ class AuthRepository {
   User? get currentUser => fbAuth.currentUser;
 
   ///Auth
-  Future<void> signup({
+  Future<void> signUp({
     required String name,
     required String email,
     required String password,
@@ -31,24 +31,7 @@ class AuthRepository {
     }
   }
 
-  //   try {
-  //     final userCredential = await fbAuth.createUserWithEmailAndPassword(
-  //       email: email,
-  //       password: password,
-  //     );
-
-  //     await usersCollection.doc(userCredential.user!.uid).set({
-  //       'name': name,
-  //       'email': email,
-  //       // 'photo': photo.url,
-  //       'isAdmin': false,
-  //     });
-  //   } catch (e) {
-  //     throw handleException(e);
-  //   }
-  // }
-
-  Future<void> signin({
+  Future<void> signInWithEmail({
     required String email,
     required String password,
   }) async {
@@ -61,6 +44,43 @@ class AuthRepository {
       throw handleException(e);
     }
   }
+
+  // Future<void> signInWithGoogle() async {
+  //   try {
+  //     final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+
+  //     if (googleUser == null) {
+  //       return;
+  //     }
+
+  //     final GoogleSignInAuthentication googleAuth =
+  //         await googleUser.authentication;
+
+  //     final credential = GoogleAuthProvider.credential(
+  //       accessToken: googleAuth.accessToken,
+  //       idToken: googleAuth.idToken,
+  //     );
+  //     final newUser = await _auth.signInWithCredential(credential);
+
+  //     await FirebaseFirestore.instance
+  //         .collection('users')
+  //         .doc(newUser.user!.uid)
+  //         .set({
+  //       'name': newUser.user!.displayName,
+  //       'email': newUser.user!.email,
+  //       // 'photo': photo.url,
+  //       'isAdmin': false,
+  //     });
+
+  //     context.go('/home');
+  //   } catch (e) {
+  //     print('Error signing in with Google: $e');
+
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       SnackBar(content: Text('Failed to sign in with Google: $e')),
+  //     );
+  //   }
+  // }
 
   Future<void> signout() async {
     try {
@@ -78,6 +98,20 @@ class AuthRepository {
     }
   }
 
+  Future<void> changeName(String newName) async {
+    try {
+      await currentUser!.updateProfile(displayName: newName);
+      await currentUser!.reload();
+
+      // Firestore에서 사용자 이름 업데이트
+      await usersCollection.doc(currentUser!.uid).update({
+        'name': newName,
+      });
+    } catch (e) {
+      throw handleException(e);
+    }
+  }
+
   Future<void> sendPasswordResetEmail(String email) async {
     try {
       await fbAuth.sendPasswordResetEmail(email: email);
@@ -86,13 +120,13 @@ class AuthRepository {
     }
   }
 
-  Future<void> sendEmailVerification() async {
-    try {
-      await currentUser!.sendEmailVerification();
-    } catch (e) {
-      throw handleException(e);
-    }
-  }
+// Future<void> sendEmailVerification() async {
+//   try {
+//     await currentUser!.sendEmailVerification();
+//   } catch (e) {
+//     throw handleException(e);
+//   }
+// }
 
   Future<void> reloadUser() async {
     try {
