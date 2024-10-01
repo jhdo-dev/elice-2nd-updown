@@ -9,7 +9,7 @@ import 'package:up_down/src/view/auth/auth_view.dart';
 import 'package:up_down/src/view/setting/setting_view.dart';
 import 'package:up_down/src/view/chat/chat_view.dart';
 import 'package:up_down/src/view/chat/vote/vote_view.dart';
-import 'package:up_down/src/view/home/create_room_view.dart';
+import 'package:up_down/src/view/home/create_room/create_room_view.dart';
 import 'package:up_down/src/view/home/home_view.dart';
 import 'package:up_down/src/view/result/result_view.dart';
 import 'package:up_down/src/view/splash/firebase_error_view.dart';
