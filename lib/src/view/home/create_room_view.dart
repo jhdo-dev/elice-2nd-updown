@@ -1,7 +1,7 @@
-// lib/src/view/home/create_room_view.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:up_down/services/fcm/fcm_service.dart';
 import 'package:up_down/src/view/home/create_room_view_model.dart';
 
 class CreateRoomView extends ConsumerStatefulWidget {
@@ -14,6 +14,9 @@ class CreateRoomView extends ConsumerStatefulWidget {
 class _CreateRoomViewState extends ConsumerState<CreateRoomView> {
   final TextEditingController personNameController = TextEditingController();
   final TextEditingController roomNameController = TextEditingController();
+
+  // PushNotificationService 인스턴스 추가
+  final PushNotificationService fcmService = PushNotificationService();
 
   @override
   void dispose() {
@@ -43,14 +46,19 @@ class _CreateRoomViewState extends ConsumerState<CreateRoomView> {
           children: [
             TextField(
               controller: personNameController,
-              decoration: const InputDecoration(labelText: '인물 이름'),
+              decoration: const InputDecoration(labelText: '인물 이름을 입력해주세요.'),
             ),
             TextField(
               controller: roomNameController,
-              decoration: const InputDecoration(labelText: '방 이름'),
+              decoration: const InputDecoration(labelText: '논란 제목을 입력해주세요.'),
             ),
             const SizedBox(height: 20),
-            // 방 시작 날짜 선택
+            ElevatedButton(
+              onPressed: () async {
+                await viewModel.pickAndUploadImage();
+              },
+              child: Text(state.imageUrl == null ? '이미지 선택' : '이미지 업로드 완료'),
+            ),
             ElevatedButton(
               onPressed: () async {
                 final pickedDate = await selectDate(context);
@@ -62,7 +70,6 @@ class _CreateRoomViewState extends ConsumerState<CreateRoomView> {
                   ? '방 시작 날짜 선택'
                   : '방 시작 날짜: ${state.roomStartDate!.toLocal().toString().substring(0, 10)}'),
             ),
-            // 방 종료 날짜 선택
             ElevatedButton(
               onPressed: () async {
                 final pickedDate = await selectDate(context);
@@ -82,10 +89,33 @@ class _CreateRoomViewState extends ConsumerState<CreateRoomView> {
                     state.roomStartDate != null &&
                     state.roomEndDate != null) {
                   try {
+                    // 방 생성 로직
                     await viewModel.createRoom(
                       personNameController.text,
                       roomNameController.text,
                     );
+
+                    // FCM 서비스를 통해 알림 전송
+                    await fcmService.sendRoomCreationNotification(
+                      roomName: roomNameController.text,
+                      creatorName: personNameController.text,
+                    );
+
+                    // try {
+                    //   HttpsCallable callable = FirebaseFunctions.instanceFor(
+                    //           region: 'asia-northeast3')
+                    //       .httpsCallable('sendPushNotification');
+                    //   final result = await callable.call({
+                    //     'title': "title",
+                    //     'body': "body",
+                    //     'token': "pushToken",
+                    //   });
+                    //   print(
+                    //       'Push notification sent successfully: ${result.data}');
+                    // } on Exception catch (e) {
+                    //   print('Failed to send push notification: $e');
+                    //   // TODO
+                    // }
 
                     // 입력 필드 초기화
                     personNameController.clear();
@@ -93,10 +123,15 @@ class _CreateRoomViewState extends ConsumerState<CreateRoomView> {
 
                     // 방 생성 후 홈으로 이동
                     context.go('/home');
-                  } catch (e) {
-                    // 방 생성 실패 시 에러 메시지 표시
+
+                    // 성공 메시지 표시
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text(e.toString())),
+                      const SnackBar(content: Text('방이 생성되었고 푸시 알림이 전송되었습니다.')),
+                    );
+                  } catch (e) {
+                    print('Error during room creation or notification: $e');
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('오류 발생: ${e.toString()}')),
                     );
                   }
                 } else {

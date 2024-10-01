@@ -7,7 +7,7 @@ part of 'create_room_view_model.dart';
 // **************************************************************************
 
 String _$createRoomViewModelHash() =>
-    r'e283c917651f2427760b2ffa86ccdc9023e4a672';
+    r'2aeda657d105878f01f6efb0cb8489673f583d85';
 
 /// See also [CreateRoomViewModel].
 @ProviderFor(CreateRoomViewModel)
