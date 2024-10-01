@@ -26,6 +26,9 @@ class PopularRoomCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return GestureDetector(
       onTap: () {
+        ref
+            .read(homeRepositoryProvider)
+            .addParticipant(roomId, fbAuth.currentUser!.uid);
         context.goNamed(
           RouteNames.vote,
           pathParameters: {'roomId': roomId}, // roomId를 경로로 전달
