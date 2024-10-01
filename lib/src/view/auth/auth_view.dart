@@ -1,17 +1,11 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:up_down/src/view/auth/password_reset/password_reset_dialog.dart';
 
 import '../../../component/error_dialog.dart';
 import '../../../component/form_fields.dart';
-import '../../../util/helper/firebase_helper.dart';
-import '../../../util/router/route_names.dart';
 import '../../model/custom_error.dart';
 import 'sign_up/sign_up_dialog.dart';
 import 'auth_view_provider.dart';
@@ -28,7 +22,7 @@ class _AuthViewState extends ConsumerState<AuthView> {
   AutovalidateMode _autovalidateMode = AutovalidateMode.disabled;
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  bool _rememberMe = false;
+  bool _rememberMe = true;
 
 //이메일 로그인
   Future<void> _signInWithEmail() async {
@@ -43,10 +37,6 @@ class _AuthViewState extends ConsumerState<AuthView> {
           email: _emailController.text.trim(),
           password: _passwordController.text.trim(),
         );
-
-    // rememberMe 설정을 SharedPreferences에 저장
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('rememberMe', _rememberMe);
   }
 
 // 구글 로그인
