@@ -197,10 +197,12 @@ class _VoteViewState extends ConsumerState<VoteView> {
                               itemBuilder: (context, index) {
                                 final message = messages[index];
                                 return ListTile(
-                                  title: message.message.startsWith(
+                                  title: Text(message.name),
+                                  subtitle: message.message.startsWith(
                                           'http') // 메시지가 URL이면 이미지로 렌더링
                                       ? Image.network(message.message)
                                       : Text(message.message), // 텍스트 메시지
+
                                   trailing:
                                       Text(message.sentAt.toDate().toString()),
                                 );
