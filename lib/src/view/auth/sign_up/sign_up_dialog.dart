@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:up_down/component/form_fields.dart';
 
 import '../../../../component/error_dialog.dart';
@@ -20,7 +21,7 @@ class _SignUpDialogState extends ConsumerState<SignUpDialog> {
   final _formKey = GlobalKey<FormState>();
   AutovalidateMode _autovalidateMode = AutovalidateMode.disabled;
 
-  void _submit() async {
+  void _signUp() async {
     FocusScope.of(context).unfocus();
     setState(() => _autovalidateMode = AutovalidateMode.always);
 
@@ -32,8 +33,6 @@ class _SignUpDialogState extends ConsumerState<SignUpDialog> {
         name: _nameController.text.trim(),
         email: _emailController.text.trim(),
         password: _passwordController.text.trim());
-
-    await Future.delayed(const Duration(seconds: 5)); // 로딩표시 디버깅용
   }
 
   @override
@@ -50,10 +49,15 @@ class _SignUpDialogState extends ConsumerState<SignUpDialog> {
       signupProvider,
       (previous, next) {
         next.whenOrNull(
-          error: (e, st) => errorDialog(
-            context,
-            (e as CustomError),
-          ),
+          error: (e, st) => errorDialog(context, e as CustomError),
+          data: (_) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                    'Welcome, ${_nameController.text}! Thank you for joining us.'),
+              ),
+            );
+          },
         );
       },
     );
@@ -61,9 +65,9 @@ class _SignUpDialogState extends ConsumerState<SignUpDialog> {
     final signupState = ref.watch(signupProvider);
 
     return GestureDetector(
-      onTap: () => FocusScope.of(context).unfocus,
+      onTap: () => FocusScope.of(context).unfocus(),
       child: AlertDialog(
-        title: const Text('Sign Up'),
+        title: const Text('Get Started'),
         content: Form(
           key: _formKey,
           autovalidateMode: _autovalidateMode,
@@ -82,7 +86,7 @@ class _SignUpDialogState extends ConsumerState<SignUpDialog> {
               child: signupState.maybeWhen(
             loading: () => const CircularProgressIndicator(),
             orElse: () => ElevatedButton(
-              onPressed: _submit,
+              onPressed: _signUp,
               child: const Text('Sign Up'),
             ),
           )),

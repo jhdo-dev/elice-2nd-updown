@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:up_down/src/view/home/widgets/chat_room.dart';
-import 'package:up_down/src/view/home/widgets/room_list_view_model.dart';
+import 'package:up_down/src/view/home/widgets/room_list/room_list_view_model.dart';
 
 class RoomListPage extends ConsumerWidget {
   const RoomListPage({super.key});
