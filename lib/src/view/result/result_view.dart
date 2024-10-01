@@ -7,7 +7,7 @@ import 'package:up_down/src/view/result/result_view_model.dart';
 import 'result_view_state.dart';
 
 class ResultView extends ConsumerStatefulWidget {
-  const ResultView({Key? key}) : super(key: key);
+  const ResultView({super.key});
 
   @override
   _ResultViewState createState() => _ResultViewState();
@@ -58,7 +58,7 @@ class _ResultViewState extends ConsumerState<ResultView> {
 class VoteResultCard extends StatelessWidget {
   final VoteResultItem item;
 
-  const VoteResultCard({Key? key, required this.item}) : super(key: key);
+  const VoteResultCard({super.key, required this.item});
 
   @override
   Widget build(BuildContext context) {
@@ -73,106 +73,109 @@ class VoteResultCard extends StatelessWidget {
       child: Card(
         margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
         elevation: 4,
-        child: MouseRegion(
-          cursor:
-              isCompleted ? SystemMouseCursors.basic : SystemMouseCursors.click,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              if (item.imageUrl.isNotEmpty)
-                ClipRRect(
-                  borderRadius:
-                      const BorderRadius.vertical(top: Radius.circular(4)),
-                  child: Image.network(
-                    item.imageUrl,
-                    height: 300,
-                    width: double.infinity,
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) {
-                      return Container(
-                        height: 100,
-                        color: Colors.grey[300],
-                        child: const Center(child: Text('이미지를 불러올 수 없습니다.')),
-                      );
-                    },
+        child: Stack(
+          children: [
+            // 카드의 일반 내용
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (item.imageUrl.isNotEmpty)
+                    ClipRRect(
+                      borderRadius:
+                          const BorderRadius.vertical(top: Radius.circular(4)),
+                      child: Image.network(
+                        item.imageUrl,
+                        height: 300,
+                        width: double.infinity,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) {
+                          return Container(
+                            height: 100,
+                            color: Colors.grey[300],
+                            child:
+                                const Center(child: Text('이미지를 불러올 수 없습니다.')),
+                          );
+                        },
+                      ),
+                    ),
+                  const SizedBox(height: 8),
+                  Text(
+                    item.title,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,
+                    ),
                   ),
-                ),
-              Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      item.title,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18,
-                      ),
+                  const SizedBox(height: 8),
+                  Text(
+                    '참가자 수: ${item.participantCount}',
+                    style: const TextStyle(
+                      fontSize: 14,
+                      color: Colors.grey,
                     ),
-                    const SizedBox(height: 8),
-                    Text(
-                      '참가자 수: ${item.participantCount}',
-                      style: const TextStyle(
-                        fontSize: 14,
-                        color: Colors.grey,
-                      ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    '시작일: ${_formatDate(item.roomStartDate)}',
+                    style: const TextStyle(
+                      fontSize: 14,
+                      color: Colors.grey,
                     ),
-                    const SizedBox(height: 8),
-                    Text(
-                      '시작일: ${_formatDate(item.roomStartDate)}',
-                      style: const TextStyle(
-                        fontSize: 14,
-                        color: Colors.grey,
-                      ),
-                    ),
-                    Row(
-                      children: [
-                        Text(
-                          '종료일: ${_formatDate(item.roomEndDate)}',
-                          style: const TextStyle(
-                            fontSize: 14,
-                            color: Colors.grey,
-                          ),
+                  ),
+                  Row(
+                    children: [
+                      Text(
+                        '종료일: ${_formatDate(item.roomEndDate)}',
+                        style: const TextStyle(
+                          fontSize: 14,
+                          color: Colors.grey,
                         ),
-                        if (isCompleted)
-                          Container(
-                            margin: const EdgeInsets.only(left: 8),
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 8, vertical: 2),
-                            decoration: BoxDecoration(
-                              color: Colors.green,
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: const Text(
-                              '종료',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold,
-                              ),
+                      ),
+                      if (isCompleted)
+                        Container(
+                          margin: const EdgeInsets.only(left: 8),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: Colors.green,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: const Text(
+                            '종료',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
-                      ],
-                    ),
-                    const SizedBox(height: 12),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        _buildPercentageBar(
-                          context,
-                          item.forPercentage,
-                          item.againstPercentage,
-                          item.guiltyCount,
-                          item.notGuiltyCount,
                         ),
-                        _buildWinLoseIndicator(item.isWinner),
-                      ],
-                    ),
-                  ],
-                ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      _buildPercentageBar(
+                        context,
+                        item.forPercentage,
+                        item.againstPercentage,
+                        item.guiltyCount,
+                        item.notGuiltyCount,
+                      ),
+                    ],
+                  ),
+                ],
               ),
-            ],
-          ),
+            ),
+            // 오른쪽에 크게 표시되는 Win/Lose Indicator
+            Positioned(
+              top: 280,
+              right: -20,
+              child: _buildWinLoseIndicator(item.isWinner),
+            ),
+          ],
         ),
       ),
     );
@@ -194,7 +197,7 @@ class VoteResultCard extends StatelessWidget {
           LinearProgressIndicator(
             value: forPercentage / 100,
             backgroundColor: Colors.red[100],
-            valueColor: AlwaysStoppedAnimation<Color>(Colors.red),
+            valueColor: const AlwaysStoppedAnimation<Color>(Colors.red),
           ),
           const SizedBox(height: 8),
           Text(
@@ -203,7 +206,7 @@ class VoteResultCard extends StatelessWidget {
           LinearProgressIndicator(
             value: againstPercentage / 100,
             backgroundColor: Colors.blue[100],
-            valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
+            valueColor: const AlwaysStoppedAnimation<Color>(Colors.blue),
           ),
         ],
       ),
@@ -211,18 +214,15 @@ class VoteResultCard extends StatelessWidget {
   }
 
   Widget _buildWinLoseIndicator(bool isWinner) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      decoration: BoxDecoration(
-        color: isWinner ? Colors.red : Colors.blue,
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Text(
-        isWinner ? '나락' : '구원',
-        style: const TextStyle(
-          color: Colors.white,
-          fontWeight: FontWeight.bold,
-        ),
+    return Image.asset(
+      isWinner ? 'assets/images/down.png' : 'assets/images/up.png',
+      width: 240,
+      height: 240,
+      errorBuilder: (context, error, stackTrace) => Container(
+        width: 80,
+        height: 80,
+        color: Colors.grey[300],
+        child: Center(child: Text(isWinner ? '나락' : '구원')),
       ),
     );
   }
