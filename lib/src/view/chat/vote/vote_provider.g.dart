@@ -6,7 +6,7 @@ part of 'vote_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$judgmentHash() => r'542c4b3fd8e747ecec5118bc4e5652899e670dac';
+String _$judgmentHash() => r'ce4f6f9d5de0ee656987f95e6cd552c8672a1c22';
 
 /// Copied from Dart SDK
 class _SystemHash {
