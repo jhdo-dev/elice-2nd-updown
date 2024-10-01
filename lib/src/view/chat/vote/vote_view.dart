@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:up_down/src/model/custom_error.dart';
+import 'package:up_down/src/model/room.dart';
 import 'package:up_down/src/provider/auth_repository_provider.dart';
 import 'package:up_down/src/provider/home_repository_provider.dart';
 import 'package:up_down/src/view/chat/vote/vote_provider.dart';
@@ -8,7 +9,14 @@ import 'package:up_down/util/helper/firebase_helper.dart';
 
 class VoteView extends ConsumerStatefulWidget {
   final String roomId;
-  const VoteView({super.key, required this.roomId});
+  final String roomName;
+  final String personName;
+  const VoteView({
+    super.key,
+    required this.roomId,
+    required this.roomName,
+    required this.personName,
+  });
 
   @override
   _VoteViewState createState() => _VoteViewState();
@@ -126,7 +134,7 @@ class _VoteViewState extends ConsumerState<VoteView> {
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerTop,
       appBar: AppBar(
-        title: const Text('Chat Room & Vote'),
+        title: Text('[${widget.personName}] ${widget.roomName}'),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(50.0),
           child: messageState.when(
@@ -189,8 +197,12 @@ class _VoteViewState extends ConsumerState<VoteView> {
                               itemBuilder: (context, index) {
                                 final message = messages[index];
                                 return ListTile(
-                                  title: Text(message.name), // 유저 ID 표시
-                                  subtitle: Text(message.message),
+                                  title: Text(message.name),
+                                  subtitle: message.message.startsWith(
+                                          'http') // 메시지가 URL이면 이미지로 렌더링
+                                      ? Image.network(message.message)
+                                      : Text(message.message), // 텍스트 메시지
+
                                   trailing:
                                       Text(message.sentAt.toDate().toString()),
                                 );
@@ -241,6 +253,14 @@ class _VoteViewState extends ConsumerState<VoteView> {
                       labelText: 'Enter message...',
                     ),
                   ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.camera_alt), // 이미지 업로드 버튼
+                  onPressed: () {
+                    ref
+                        .read(judgmentProvider(roomId: widget.roomId).notifier)
+                        .sendImage(roomId: widget.roomId);
+                  },
                 ),
                 IconButton(
                   icon: const Icon(Icons.send),
