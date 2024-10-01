@@ -1,0 +1,9 @@
+{
+  "projects": {
+    "default": "up-down-app",
+    "up": "up-down-app",
+    "up2": "up-down-app"
+  },
+  "targets": {},
+  "etags": {}
+}

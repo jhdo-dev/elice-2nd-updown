@@ -18,6 +18,7 @@ final _privateConstructorUsedError = UnsupportedError(
 mixin _$CreateRoomViewState {
   DateTime? get roomStartDate => throw _privateConstructorUsedError;
   DateTime? get roomEndDate => throw _privateConstructorUsedError;
+  String? get imageUrl => throw _privateConstructorUsedError;
 
   /// Create a copy of CreateRoomViewState
   /// with the given fields replaced by the non-null parameter values.
@@ -32,7 +33,7 @@ abstract class $CreateRoomViewStateCopyWith<$Res> {
           CreateRoomViewState value, $Res Function(CreateRoomViewState) then) =
       _$CreateRoomViewStateCopyWithImpl<$Res, CreateRoomViewState>;
   @useResult
-  $Res call({DateTime? roomStartDate, DateTime? roomEndDate});
+  $Res call({DateTime? roomStartDate, DateTime? roomEndDate, String? imageUrl});
 }
 
 /// @nodoc
@@ -52,6 +53,7 @@ class _$CreateRoomViewStateCopyWithImpl<$Res, $Val extends CreateRoomViewState>
   $Res call({
     Object? roomStartDate = freezed,
     Object? roomEndDate = freezed,
+    Object? imageUrl = freezed,
   }) {
     return _then(_value.copyWith(
       roomStartDate: freezed == roomStartDate
@@ -62,6 +64,10 @@ class _$CreateRoomViewStateCopyWithImpl<$Res, $Val extends CreateRoomViewState>
           ? _value.roomEndDate
           : roomEndDate // ignore: cast_nullable_to_non_nullable
               as DateTime?,
+      imageUrl: freezed == imageUrl
+          ? _value.imageUrl
+          : imageUrl // ignore: cast_nullable_to_non_nullable
+              as String?,
     ) as $Val);
   }
 }
@@ -74,7 +80,7 @@ abstract class _$$CreateRoomViewStateImplCopyWith<$Res>
       __$$CreateRoomViewStateImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({DateTime? roomStartDate, DateTime? roomEndDate});
+  $Res call({DateTime? roomStartDate, DateTime? roomEndDate, String? imageUrl});
 }
 
 /// @nodoc
@@ -92,6 +98,7 @@ class __$$CreateRoomViewStateImplCopyWithImpl<$Res>
   $Res call({
     Object? roomStartDate = freezed,
     Object? roomEndDate = freezed,
+    Object? imageUrl = freezed,
   }) {
     return _then(_$CreateRoomViewStateImpl(
       roomStartDate: freezed == roomStartDate
@@ -102,6 +109,10 @@ class __$$CreateRoomViewStateImplCopyWithImpl<$Res>
           ? _value.roomEndDate
           : roomEndDate // ignore: cast_nullable_to_non_nullable
               as DateTime?,
+      imageUrl: freezed == imageUrl
+          ? _value.imageUrl
+          : imageUrl // ignore: cast_nullable_to_non_nullable
+              as String?,
     ));
   }
 }
@@ -109,16 +120,19 @@ class __$$CreateRoomViewStateImplCopyWithImpl<$Res>
 /// @nodoc
 
 class _$CreateRoomViewStateImpl implements _CreateRoomViewState {
-  _$CreateRoomViewStateImpl({this.roomStartDate, this.roomEndDate});
+  _$CreateRoomViewStateImpl(
+      {this.roomStartDate, this.roomEndDate, this.imageUrl});
 
   @override
   final DateTime? roomStartDate;
   @override
   final DateTime? roomEndDate;
+  @override
+  final String? imageUrl;
 
   @override
   String toString() {
-    return 'CreateRoomViewState(roomStartDate: $roomStartDate, roomEndDate: $roomEndDate)';
+    return 'CreateRoomViewState(roomStartDate: $roomStartDate, roomEndDate: $roomEndDate, imageUrl: $imageUrl)';
   }
 
   @override
@@ -129,11 +143,14 @@ class _$CreateRoomViewStateImpl implements _CreateRoomViewState {
             (identical(other.roomStartDate, roomStartDate) ||
                 other.roomStartDate == roomStartDate) &&
             (identical(other.roomEndDate, roomEndDate) ||
-                other.roomEndDate == roomEndDate));
+                other.roomEndDate == roomEndDate) &&
+            (identical(other.imageUrl, imageUrl) ||
+                other.imageUrl == imageUrl));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, roomStartDate, roomEndDate);
+  int get hashCode =>
+      Object.hash(runtimeType, roomStartDate, roomEndDate, imageUrl);
 
   /// Create a copy of CreateRoomViewState
   /// with the given fields replaced by the non-null parameter values.
@@ -148,12 +165,15 @@ class _$CreateRoomViewStateImpl implements _CreateRoomViewState {
 abstract class _CreateRoomViewState implements CreateRoomViewState {
   factory _CreateRoomViewState(
       {final DateTime? roomStartDate,
-      final DateTime? roomEndDate}) = _$CreateRoomViewStateImpl;
+      final DateTime? roomEndDate,
+      final String? imageUrl}) = _$CreateRoomViewStateImpl;
 
   @override
   DateTime? get roomStartDate;
   @override
   DateTime? get roomEndDate;
+  @override
+  String? get imageUrl;
 
   /// Create a copy of CreateRoomViewState
   /// with the given fields replaced by the non-null parameter values.
