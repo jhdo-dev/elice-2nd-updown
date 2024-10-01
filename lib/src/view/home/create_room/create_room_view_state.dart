@@ -8,5 +8,6 @@ class CreateRoomViewState with _$CreateRoomViewState {
   factory CreateRoomViewState({
     DateTime? roomStartDate,
     DateTime? roomEndDate,
+    String? imageUrl, // imageUrl 필드 추가
   }) = _CreateRoomViewState;
 }
