@@ -3,7 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:up_down/src/view/home/create_room_view_model.dart';
+import 'package:up_down/src/view/home/create_room/create_room_view_model.dart';
 
 class CreateRoomView extends ConsumerStatefulWidget {
   const CreateRoomView({super.key});
