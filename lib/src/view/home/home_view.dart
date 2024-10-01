@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:up_down/src/provider/admin_repository_provider.dart';
 import 'package:up_down/src/view/home/home_view_model.dart';
 import 'package:up_down/src/view/home/widgets/popular_room_card.dart';
-import 'package:up_down/src/view/home/widgets/room_list.dart';
+import 'package:up_down/src/view/home/widgets/room_list/room_list.dart';
 import 'package:go_router/go_router.dart';
 
 class HomeView extends ConsumerWidget {

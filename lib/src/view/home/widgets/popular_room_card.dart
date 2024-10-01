@@ -65,7 +65,7 @@ class PopularRoomCard extends ConsumerWidget {
                 style: const TextStyle(fontSize: 16),
               ),
               Text(
-                'Participants: $participantCount',
+                '참가자 수: $participantCount',
                 style: const TextStyle(fontSize: 14, color: Colors.grey),
               ),
             ],
