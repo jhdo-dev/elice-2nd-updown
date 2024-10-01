@@ -31,7 +31,12 @@ class PopularRoomCard extends ConsumerWidget {
             .addParticipant(roomId, fbAuth.currentUser!.uid);
         context.goNamed(
           RouteNames.vote,
-          pathParameters: {'roomId': roomId}, // roomId를 params로 전달
+          pathParameters: {'roomId': roomId}, // roomId를 경로로 전달
+          extra: {
+            'roomId': roomId,
+            'roomName': roomName,
+            'personName': personName,
+          }, // 필요한 데이터를 Map으로 전달
         );
       },
       child: Card(
@@ -65,7 +70,7 @@ class PopularRoomCard extends ConsumerWidget {
                 style: const TextStyle(fontSize: 16),
               ),
               Text(
-                'Participants: $participantCount',
+                '참가자 수: $participantCount',
                 style: const TextStyle(fontSize: 14, color: Colors.grey),
               ),
             ],
