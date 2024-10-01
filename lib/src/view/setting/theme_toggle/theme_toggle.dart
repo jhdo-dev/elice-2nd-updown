@@ -12,13 +12,19 @@ class ThemeToggle extends ConsumerWidget {
     final themeNotifier = ref.read(themeProvider.notifier);
 
     return ListTile(
-      title: const Text('Dark Mode'),
-      subtitle: Text('Enabled: $isDarkMode'),
+      title: Text(isDarkMode ? 'Dark Mode' : 'Light Mode'),
+      subtitle: const Text('Switch between dark and light themes'),
       trailing: Switch(
         onChanged: (bool? value) {
           themeNotifier.toggleTheme();
         },
-        value: isDarkMode,
+        value: !isDarkMode,
+        thumbIcon:
+            WidgetStateProperty.resolveWith<Icon?>((Set<WidgetState> states) {
+          return !isDarkMode
+              ? const Icon(Icons.wb_sunny)
+              : const Icon(Icons.nightlight_round);
+        }),
       ),
     );
   }
