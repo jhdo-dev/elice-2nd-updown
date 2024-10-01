@@ -108,11 +108,13 @@
 // }
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:up_down/src/model/vote.dart';
 import 'package:up_down/src/model/message.dart';
 import 'package:up_down/src/provider/home_repository_provider.dart';
+import 'package:up_down/src/provider/image_repository_provider.dart';
 import 'package:up_down/src/provider/message_repository_provider.dart';
 import 'package:up_down/src/provider/profile_repository_provider.dart';
 import 'package:up_down/src/provider/vote_repository_provider.dart';
@@ -144,6 +146,41 @@ class Judgment extends _$Judgment {
       },
     )) {
       yield combinedData;
+    }
+  }
+
+  /// 이미지 전송 함수
+  Future<void> sendImage({
+    required String roomId,
+  }) async {
+    try {
+      // ImagePicker로 사용자에게 이미지 선택
+      final ImagePicker picker = ImagePicker();
+      final XFile? image = await picker.pickImage(source: ImageSource.gallery);
+
+      if (image != null) {
+        // Firebase Storage에 이미지 업로드
+        final downloadUrl =
+            await ref.read(imageRepositoryProvider).uploadImage(image);
+
+        if (downloadUrl != null) {
+          // 업로드된 이미지의 다운로드 URL을 메시지로 전송
+          final profile = await ref
+              .read(profileRepositoryProvider)
+              .getProfile(uid: fbAuth.currentUser!.uid);
+          final userName = profile.name;
+
+          await ref.read(messageRepositoryProvider).sendMessage(
+                roomId: roomId,
+                userId: fbAuth.currentUser!.uid,
+                name: userName,
+                message: downloadUrl, // 이미지 URL을 메시지로 전송
+                sentAt: Timestamp.now(),
+              );
+        }
+      }
+    } catch (e) {
+      throw handleException(e); // 에러 처리
     }
   }
 
