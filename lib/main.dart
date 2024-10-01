@@ -49,13 +49,36 @@ void main() async {
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
   // 로컬 알림 설정
+  // 로컬 알림 설정
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
+
+// Android 설정
   const AndroidInitializationSettings initializationSettingsAndroid =
       AndroidInitializationSettings('@mipmap/ic_launcher');
-  final InitializationSettings initializationSettings =
-      InitializationSettings(android: initializationSettingsAndroid);
-  await flutterLocalNotificationsPlugin.initialize(initializationSettings);
+
+// iOS 설정
+  const DarwinInitializationSettings initializationSettingsIOS =
+      DarwinInitializationSettings(
+    requestAlertPermission: true,
+    requestBadgePermission: true,
+    requestSoundPermission: true,
+  );
+
+// 초기화 설정 통합
+  const InitializationSettings initializationSettings = InitializationSettings(
+    android: initializationSettingsAndroid,
+    iOS: initializationSettingsIOS,
+  );
+
+// 플러그인 초기화
+  await flutterLocalNotificationsPlugin.initialize(
+    initializationSettings,
+    onDidReceiveNotificationResponse: (NotificationResponse response) {
+      // 알림 응답 처리 (선택사항)
+      print('알림 응답: ${response.payload}');
+    },
+  );
 
   runApp(
     const ProviderScope(
