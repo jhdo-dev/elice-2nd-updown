@@ -1,24 +1,24 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'route_path.dart';
+part of 'auth_view_provider.dart';
 
 // **************************************************************************
 // RiverpodGenerator
 // **************************************************************************
 
-String _$routeHash() => r'b8db0192f50515e26c984b7188ee59da58b64239';
+String _$signInHash() => r'aa2f80e0f1c30962f767e2768f8614ac18a4eee5';
 
-/// See also [route].
-@ProviderFor(route)
-final routeProvider = AutoDisposeProvider<GoRouter>.internal(
-  route,
-  name: r'routeProvider',
+/// See also [SignIn].
+@ProviderFor(SignIn)
+final signInProvider = AutoDisposeAsyncNotifierProvider<SignIn, void>.internal(
+  SignIn.new,
+  name: r'signInProvider',
   debugGetCreateSourceHash:
-      const bool.fromEnvironment('dart.vm.product') ? null : _$routeHash,
+      const bool.fromEnvironment('dart.vm.product') ? null : _$signInHash,
   dependencies: null,
   allTransitiveDependencies: null,
 );
 
-typedef RouteRef = AutoDisposeProviderRef<GoRouter>;
+typedef _$SignIn = AutoDisposeAsyncNotifier<void>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member
