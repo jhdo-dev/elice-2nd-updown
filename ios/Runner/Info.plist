@@ -32,6 +32,13 @@
 				<string>kakao8651f6dc6fc750797c43905375bead6e</string>
 			</array>
 		</dict>
+				<string>com.googleusercontent.apps.364848733451-qdekrmiqnvfhsahpqeu6i4eu67dtjhbp</string>
+			</array>
+		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+		</dict>
 	</array>
 	<key>CFBundleVersion</key>
 	<string>$(FLUTTER_BUILD_NUMBER)</string>

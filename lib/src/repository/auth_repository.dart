@@ -3,11 +3,13 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart' as kUser;
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:up_down/util/helper/firebase_helper.dart';
 import 'package:up_down/util/helper/handle_exception.dart';
 
 class AuthRepository {
   User? get currentUser => fbAuth.currentUser;
+  final googleSignIn = GoogleSignIn();
 
   ///Auth
   Future<void> signUp({
@@ -143,6 +145,33 @@ class AuthRepository {
   //     );
   //   }
   // }
+  Future<void> signInWithGoogle() async {
+    try {
+      final googleUser = await googleSignIn.signIn();
+      if (googleUser == null) {
+        throw Exception('Google sign in aborted');
+      }
+
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
+
+      final credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+      final newUser = await fbAuth.signInWithCredential(credential);
+
+      await usersCollection.doc(newUser.user!.uid).set({
+        'name': newUser.user!.displayName,
+        'email': newUser.user!.email,
+        // 'photo': photo.url,
+        'isAdmin': false,
+      });
+    } catch (e) {
+      print('google error: $e');
+      throw handleException(e);
+    }
+  }
 
   Future<void> signout() async {
     try {
@@ -206,6 +235,15 @@ class AuthRepository {
       await currentUser!.reauthenticateWithCredential(
         EmailAuthProvider.credential(email: email, password: password),
       );
+    } catch (e) {
+      throw handleException(e);
+    }
+  }
+
+  Future<void> deleteAccount() async {
+    try {
+      await usersCollection.doc(currentUser!.uid).delete();
+      await currentUser!.delete();
     } catch (e) {
       throw handleException(e);
     }
