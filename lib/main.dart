@@ -5,11 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:up_down/services/fcm/fcm_service.dart';
+import 'package:up_down/theme/colors.dart';
 import 'package:up_down/util/router/route_path.dart';
 
 import 'firebase_options.dart';
 import 'src/view/setting/theme_toggle/theme_provider.dart';
-import 'theme/theme.dart';
 
 // 백그라운드 메시지 핸들러
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -96,9 +96,6 @@ class MyApp extends ConsumerWidget {
     final router = ref.watch(routeProvider);
     final isDarkMode = ref.watch(themeProvider);
 
-    final materialTheme =
-        MaterialTheme(Theme.of(context).textTheme); // MaterialTheme 인스턴스 생성
-
     // 포그라운드 메시지 핸들링
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       print("Received a foreground message: ${message.notification?.title}");
@@ -114,7 +111,18 @@ class MyApp extends ConsumerWidget {
     return MaterialApp.router(
       title: 'UP DOWN',
       debugShowCheckedModeBanner: false,
-      theme: isDarkMode ? materialTheme.dark() : materialTheme.light(),
+      theme: ThemeData(
+        colorScheme: isDarkMode
+            ? const ColorScheme.dark(
+                primary: AppColors.darkfocusColor,
+                secondary: Colors.deepPurpleAccent,
+              )
+            : const ColorScheme.light(
+                primary: AppColors.lightfocusColor,
+                secondary: Colors.deepPurpleAccent,
+              ),
+        useMaterial3: true,
+      ),
       routerConfig: router,
     );
   }

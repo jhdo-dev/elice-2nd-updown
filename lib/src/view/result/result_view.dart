@@ -83,8 +83,9 @@ class VoteResultCard extends StatelessWidget {
                 children: [
                   if (item.imageUrl.isNotEmpty)
                     ClipRRect(
-                      borderRadius:
-                          const BorderRadius.vertical(top: Radius.circular(4)),
+                      borderRadius: const BorderRadius.vertical(
+                          top: Radius.circular(12),
+                          bottom: Radius.circular(12)),
                       child: Image.network(
                         item.imageUrl,
                         height: 300,

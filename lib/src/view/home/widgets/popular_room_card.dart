@@ -41,7 +41,7 @@ class PopularRoomCard extends ConsumerWidget {
       },
       child: Card(
         margin: const EdgeInsets.all(8.0),
-        color: Colors.white,
+        // color: Colors.white,
         child: Padding(
           padding: const EdgeInsets.all(5),
           child: Column(
