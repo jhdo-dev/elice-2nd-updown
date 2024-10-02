@@ -74,6 +74,39 @@ class AuthRepository {
     }
   }
 
+  //  //페이스북 로그인
+  //  Future<void> signInWithFacebook() async {
+  //    //^
+  //    try {
+  //      final LoginResult result = await FacebookAuth.instance.login(); //^
+  //
+  //      if (result.status == LoginStatus.success) {
+  //        //^
+  //        final AccessToken accessToken = result.accessToken!; //^
+  //
+  //        final credential =
+  //            FacebookAuthProvider.credential(accessToken.token);
+  //
+  //        final newUser = await fbAuth.signInWithCredential(credential); //^
+  //
+  //        if (newUser.additionalUserInfo?.isNewUser ?? false) {
+  //          //^
+  //          await usersCollection.doc(newUser.user!.uid).set({
+  //            //^
+  //            'name': newUser.user!.displayName, //^
+  //            'email': newUser.user!.email, //^
+  //            'isAdmin': false, //^
+  //          }); //^
+  //        }
+  //      } else {
+  //        throw Exception('Facebook sign in failed: ${result.status}'); //^
+  //      }
+  //    } catch (e) {
+  //      print('facebook error: $e'); //^
+  //      throw handleException(e); //^
+  //    }
+  //  }*/
+
   Future<void> signout() async {
     try {
       await fbAuth.signOut();
