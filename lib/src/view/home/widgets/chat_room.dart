@@ -13,6 +13,7 @@ class ChatRoom extends ConsumerWidget {
   final String roomStartDate;
   final String roomEndDate;
   final String imageUrl; // 추가된 부분: 이미지 URL
+  final List<String> participants; // 추가된 부분: 이미지 URL
 
   const ChatRoom({
     super.key,
@@ -22,6 +23,7 @@ class ChatRoom extends ConsumerWidget {
     required this.roomEndDate,
     required this.imageUrl,
     required this.roomId, // 이미지 URL 매개변수 추가
+    required this.participants,
   });
 
   @override
@@ -38,6 +40,7 @@ class ChatRoom extends ConsumerWidget {
             'roomId': roomId,
             'roomName': roomName,
             'personName': personName,
+            'participants': participants
           }, // 필요한 데이터를 Map으로 전달
         );
       },
