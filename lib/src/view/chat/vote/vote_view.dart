@@ -7,6 +7,8 @@ import 'package:up_down/src/provider/home_repository_provider.dart';
 import 'package:up_down/src/view/chat/vote/vote_provider.dart';
 import 'package:up_down/util/helper/firebase_helper.dart';
 
+import '../../../../component/chat_app_text_field.dart';
+
 class VoteView extends ConsumerStatefulWidget {
   final String roomId;
   final String roomName;
@@ -124,188 +126,186 @@ class _VoteViewState extends ConsumerState<VoteView> {
     return '$date $hour:$minute $period';
   }
 
+  void _sendMessage() {
+    FocusScope.of(context).unfocus();
+    if (_messageController.text.isNotEmpty) {
+      ref.read(judgmentProvider(roomId: widget.roomId).notifier).sendMessage(
+            roomId: widget.roomId,
+            message: _messageController.text,
+          );
+    }
+    _messageController.clear();
+  }
+
   @override
   Widget build(BuildContext context) {
     // `judgmentProvider`에서 투표와 메시지를 함께 가져옴
     final messageState = ref.watch(judgmentProvider(roomId: widget.roomId));
 
-    return Scaffold(
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          messageState.whenOrNull(data: (voteViewState) {
-            final userId = fbAuth.currentUser!.uid;
-            final vote = voteViewState.vote;
-
-            // 참가자에 대한 투표 정보를 확인하고 결과를 다이얼로그에 표시
-            if (vote.participants.containsKey(userId)) {
-              final userVote = vote.participants[userId]!;
-              final voteChoice = userVote ? '잘못했다' : '잘못하지 않았다';
-              _showAlreadyVotedDialog(voteChoice);
-            } else {
-              _showVoteDialog();
-            }
-          });
-        },
-        child: Icon(Icons.how_to_vote),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerTop,
-      appBar: AppBar(
-        actions: [
-          IconButton(
-            onPressed: () {},
-            icon: Icon(Icons.menu),
-          ),
-        ],
-        title: Text('[${widget.personName}] ${widget.roomName}'),
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(50.0),
-          child: messageState.when(
-            data: (voteViewState) {
+    return GestureDetector(
+      onTap: FocusScope.of(context).unfocus,
+      child: Scaffold(
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            messageState.whenOrNull(data: (voteViewState) {
+              final userId = fbAuth.currentUser!.uid;
               final vote = voteViewState.vote;
-              final voteRatio =
-                  _calculateVoteRatio(vote.guiltyCount, vote.notGuiltyCount);
 
-              return Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text('잘못한 사람: ${vote.guiltyCount}',
-                            style: TextStyle(color: Colors.red)),
-                        Text('잘못하지 않은 사람: ${vote.notGuiltyCount}',
-                            style: TextStyle(color: Colors.green)),
-                      ],
-                    ),
-                  ),
-                  // LinearProgressIndicator로 투표 비율 표시
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 16.0, vertical: 8.0),
-                    child: LinearProgressIndicator(
-                      value: voteRatio, // 투표 비율에 따라 프로그레스 바 업데이트
-                      backgroundColor: Colors.green,
-                      valueColor: AlwaysStoppedAnimation<Color>(Colors.red),
-                    ),
-                  ),
-                ],
-              );
-            },
-            error: (e, _) {
-              return const SizedBox();
-            },
-            loading: () => const LinearProgressIndicator(),
-          ),
+              // 참가자에 대한 투표 정보를 확인하고 결과를 다이얼로그에 표시
+              if (vote.participants.containsKey(userId)) {
+                final userVote = vote.participants[userId]!;
+                final voteChoice = userVote ? '잘못했다' : '잘못하지 않았다';
+                _showAlreadyVotedDialog(voteChoice);
+              } else {
+                _showVoteDialog();
+              }
+            });
+          },
+          child: Icon(Icons.how_to_vote),
         ),
-      ),
-      body: Column(
-        children: [
-          // 메시지와 투표 상태를 동시에 처리
-          Expanded(
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerTop,
+        appBar: AppBar(
+          actions: [
+            IconButton(
+              onPressed: () {},
+              icon: Icon(Icons.menu),
+            ),
+          ],
+          title: Text('[${widget.personName}] ${widget.roomName}'),
+          bottom: PreferredSize(
+            preferredSize: const Size.fromHeight(50.0),
             child: messageState.when(
               data: (voteViewState) {
-                final messages = voteViewState.messages;
+                final vote = voteViewState.vote;
+                final voteRatio =
+                    _calculateVoteRatio(vote.guiltyCount, vote.notGuiltyCount);
 
                 return Column(
                   children: [
-                    // 채팅 메시지 표시
-                    Expanded(
-                      child: messages.isEmpty
-                          ? const Center(child: Text('No messages yet'))
-                          : ListView.builder(
-                              reverse: true,
-                              itemCount: messages.length,
-                              itemBuilder: (context, index) {
-                                final message = messages[index];
-                                return ListTile(
-                                  title: Text(message.name),
-                                  subtitle: message.message.startsWith(
-                                          'http') // 메시지가 URL이면 이미지로 렌더링
-                                      //이미지 크기 세팅
-                                      ? Image.network(message.message)
-                                      : Text(message.message), // 텍스트 메시지
-
-                                  trailing: Text(
-                                      _formatDateTime(message.sentAt.toDate())
-                                          .toString()),
-                                );
-                              },
-                            ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text('잘못한 사람: ${vote.guiltyCount}',
+                              style: TextStyle(color: Colors.red)),
+                          Text('잘못하지 않은 사람: ${vote.notGuiltyCount}',
+                              style: TextStyle(color: Colors.green)),
+                        ],
+                      ),
+                    ),
+                    // LinearProgressIndicator로 투표 비율 표시
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16.0, vertical: 8.0),
+                      child: LinearProgressIndicator(
+                        value: voteRatio, // 투표 비율에 따라 프로그레스 바 업데이트
+                        backgroundColor: Colors.green,
+                        valueColor: AlwaysStoppedAnimation<Color>(Colors.red),
+                      ),
                     ),
                   ],
                 );
               },
               error: (e, _) {
-                if (e is CustomError) {
-                  return Center(
-                    child: Text(
-                      'code: ${e.code}\nplugin: ${e.plugin}\nmessage: ${e.message}',
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        color: Colors.red,
-                        fontSize: 18,
-                      ),
-                    ),
-                  );
-                } else {
-                  return Center(
-                    child: Text(
-                      'Unexpected error: $e',
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        color: Colors.red,
-                        fontSize: 18,
-                      ),
-                    ),
-                  );
-                }
+                return const SizedBox();
               },
-              loading: () => const Center(
-                child: CircularProgressIndicator(),
-              ),
+              loading: () => const LinearProgressIndicator(),
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: _messageController,
-                    decoration: const InputDecoration(
-                      labelText: 'Enter message...',
-                    ),
-                  ),
+        ),
+        body: Column(
+          children: [
+            // 메시지와 투표 상태를 동시에 처리
+            Expanded(
+              child: messageState.when(
+                data: (voteViewState) {
+                  final messages = voteViewState.messages;
+
+                  return Column(
+                    children: [
+                      // 채팅 메시지 표시
+                      Expanded(
+                        child: messages.isEmpty
+                            ? const Center(child: Text('No messages yet'))
+                            : ListView.builder(
+                                reverse: true,
+                                itemCount: messages.length,
+                                itemBuilder: (context, index) {
+                                  final message = messages[index];
+                                  return ListTile(
+                                    title: Text(message.name),
+                                    subtitle: message.message.startsWith(
+                                            'http') // 메시지가 URL이면 이미지로 렌더링
+                                        //이미지 크기 세팅
+                                        ? Image.network(message.message)
+                                        : Text(message.message), // 텍스트 메시지
+
+                                    trailing: Text(
+                                        _formatDateTime(message.sentAt.toDate())
+                                            .toString()),
+                                  );
+                                },
+                              ),
+                      ),
+                    ],
+                  );
+                },
+                error: (e, _) {
+                  if (e is CustomError) {
+                    return Center(
+                      child: Text(
+                        'code: ${e.code}\nplugin: ${e.plugin}\nmessage: ${e.message}',
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          color: Colors.red,
+                          fontSize: 18,
+                        ),
+                      ),
+                    );
+                  } else {
+                    return Center(
+                      child: Text(
+                        'Unexpected error: $e',
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          color: Colors.red,
+                          fontSize: 18,
+                        ),
+                      ),
+                    );
+                  }
+                },
+                loading: () => const Center(
+                  child: CircularProgressIndicator(),
                 ),
-                IconButton(
-                  icon: const Icon(Icons.camera_alt), // 이미지 업로드 버튼
-                  onPressed: () {
-                    ref
-                        .read(judgmentProvider(roomId: widget.roomId).notifier)
-                        .sendImage(roomId: widget.roomId);
-                  },
-                ),
-                IconButton(
-                  icon: const Icon(Icons.send),
-                  onPressed: () {
-                    // 메시지 전송
-                    if (_messageController.text.isNotEmpty) {
+              ),
+            ),
+
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.camera_alt), // 이미지 업로드 버튼
+                    onPressed: () {
                       ref
                           .read(
                               judgmentProvider(roomId: widget.roomId).notifier)
-                          .sendMessage(
-                            roomId: widget.roomId,
-                            message: _messageController.text,
-                          );
-                    }
-                    _messageController.clear();
-                  },
-                )
-              ],
+                          .sendImage(roomId: widget.roomId);
+                    },
+                  ),
+                  Expanded(
+                    child: ChatAppTextField(
+                      controller: _messageController,
+                      onPressed: _sendMessage,
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
