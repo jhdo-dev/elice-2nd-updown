@@ -18,7 +18,7 @@ class HomeView extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Home'),
+        title: const Text('핫이슈와 인물들'),
       ),
       body: Column(
         children: [

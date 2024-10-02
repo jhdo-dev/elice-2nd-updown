@@ -86,7 +86,7 @@ class ChatRoom extends ConsumerWidget {
             Container(
               width: 1,
               height: 75,
-              color: Colors.deepPurple,
+              color: Colors.redAccent,
             ),
             const SizedBox(width: 14.0),
             Expanded(
