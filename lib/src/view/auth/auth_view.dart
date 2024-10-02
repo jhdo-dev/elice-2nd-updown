@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -10,8 +9,8 @@ import 'package:up_down/src/view/auth/password_reset/password_reset_dialog.dart'
 import '../../../component/error_dialog.dart';
 import '../../../component/form_fields.dart';
 import '../../model/custom_error.dart';
-import 'sign_up/sign_up_dialog.dart';
 import 'auth_view_provider.dart';
+import 'sign_up/sign_up_dialog.dart';
 
 class AuthView extends ConsumerStatefulWidget {
   const AuthView({super.key});
@@ -55,33 +54,20 @@ class _AuthViewState extends ConsumerState<AuthView> {
     }
   }
 
-  //페이스북 로그인
-  // Future<void> _signInWithFacebook() async {
-  //   //^
-  //   try {
-  //     final LoginResult result = await FacebookAuth.instance.login();
-
-  //     if (result.status == LoginStatus.success) {
-  //       final AccessToken accessToken = result.accessToken!;
-
-  //       final OAuthCredential credential =
-  //           FacebookAuthProvider.credential(accessToken.tokenString);
-
-  //       // final UserCredential userCredential =
-  //       //     await _auth.signInWithCredential(credential);
-
-  //       if (!mounted) return;
-  //       context.go('/home');
-  //     } else {
-  //       throw Exception('Facebook login failed');
-  //     }
-  //   } catch (e) {
-  //     print('Error signing in with Facebook: $e');
-  //     ScaffoldMessenger.of(context).showSnackBar(
-  //       SnackBar(content: Text('Failed to sign in with Facebook: $e')),
-  //     );
-  //   }
-  // }
+  // 페이스북 로그인
+  Future<void> _signInWithFacebook() async {
+    //^
+    try {
+      await ref.read(signInProvider.notifier).signInWithFacebook(); //^
+    } catch (e) {
+      print('Error signing in with Facebook: $e'); //^
+      if (!mounted) return; //^
+      ScaffoldMessenger.of(context).showSnackBar(
+        //^
+        SnackBar(content: Text('Failed to sign in with Facebook: $e')), //^
+      ); //^
+    }
+  }
 
   @override
   void dispose() {

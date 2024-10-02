@@ -11,7 +11,8 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 
-
+    <!-- Facebook SDK를 위한 인터넷 권한 -->
+    <uses-permission android:name="android.permission.INTERNET"/> <!-- 이미 존재함 -->
 
     <application
         android:label="up_down_app"
@@ -77,6 +78,32 @@
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
             android:resource="@drawable/ic_notification" /> <!-- 리소스가 존재해야 함 -->
+
+        <!-- Facebook SDK를 위한 메타데이터 추가 -->
+        <meta-data
+            android:name="com.facebook.sdk.ApplicationId"
+            android:value="@string/facebook_app_id" /> <!--^-->
+        <meta-data
+            android:name="com.facebook.sdk.ClientToken"
+            android:value="@string/facebook_client_token" /> <!--^-->
+
+        <!-- FacebookActivity 선언 -->
+        <activity
+            android:name="com.facebook.FacebookActivity"
+            android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
+            android:label="@string/app_name" /> <!--^-->
+
+        <!-- CustomTabActivity 선언 -->
+        <activity
+            android:name="com.facebook.CustomTabActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="@string/fb_login_protocol_scheme" /> <!--^-->
+            </intent-filter>
+        </activity>
 
     </application>
 
