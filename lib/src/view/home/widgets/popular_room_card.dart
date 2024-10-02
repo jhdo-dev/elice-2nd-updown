@@ -7,18 +7,20 @@ import 'package:up_down/util/helper/firebase_helper.dart';
 import 'package:up_down/util/router/route_names.dart';
 
 class PopularRoomCard extends ConsumerWidget {
+  final String personName;
   final String roomId;
   final String roomName;
-  final String personName;
-  final String imageUrl;
-  final int participantCount; // 추가된 필드
+  final String imageUrl; // 추가된 부분: 이미지 URL
+  final List<String> participants;
+  final int participantCount;
 
   const PopularRoomCard({
     super.key,
-    required this.roomId,
-    required this.roomName,
     required this.personName,
+    required this.roomName,
     required this.imageUrl,
+    required this.roomId, // 이미지 URL 매개변수 추가
+    required this.participants,
     required this.participantCount,
   });
 
@@ -36,6 +38,7 @@ class PopularRoomCard extends ConsumerWidget {
             'roomId': roomId,
             'roomName': roomName,
             'personName': personName,
+            'participants': participants
           }, // 필요한 데이터를 Map으로 전달
         );
       },

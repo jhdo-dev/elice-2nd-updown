@@ -34,6 +34,7 @@ class HomeView extends ConsumerWidget {
                         personName: room.personName,
                         imageUrl: room.imageUrl,
                         participantCount: room.participantCount,
+                        participants: room.participants,
                       );
                     }).toList(),
                   ),
