@@ -34,7 +34,7 @@ class _ResultViewState extends ConsumerState<ResultView> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('투표 결과'),
-        backgroundColor: Colors.red,
+        // backgroundColor: Colors.red,
       ),
       body: state.when(
         loading: () => const Center(child: CircularProgressIndicator()),
@@ -83,8 +83,9 @@ class VoteResultCard extends StatelessWidget {
                 children: [
                   if (item.imageUrl.isNotEmpty)
                     ClipRRect(
-                      borderRadius:
-                          const BorderRadius.vertical(top: Radius.circular(4)),
+                      borderRadius: const BorderRadius.vertical(
+                          top: Radius.circular(12),
+                          bottom: Radius.circular(12)),
                       child: Image.network(
                         item.imageUrl,
                         height: 300,
