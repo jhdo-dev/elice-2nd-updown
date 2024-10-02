@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:up_down/src/provider/auth_repository_provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:up_down/src/view/auth/password_reset/password_reset_dialog.dart';
 
 import '../../../component/error_dialog.dart';
@@ -177,13 +175,16 @@ class _AuthViewState extends ConsumerState<AuthView> {
                         color: const Color(0xFF0966FF),
                       ),
                     ),
+                    const SizedBox(
+                      width: 20,
+                    ),
                     OutlinedButton(
                       onPressed: () async {
                         try {
                           await ref
                               .read(authRepositoryProvider)
                               .signInWithKakao();
-                          if (!mounted) return;
+                          if (!context.mounted) return;
                           context.go('/home'); // 로그인 성공 후 홈 화면으로 이동
                         } catch (e) {
                           ScaffoldMessenger.of(context).showSnackBar(
@@ -194,23 +195,12 @@ class _AuthViewState extends ConsumerState<AuthView> {
                         }
                       },
                       child: Image.asset(
-                        "assets/images/kakao_login_medium_narrow.png",
+                        "assets/images/kakao.png",
                         width: 25,
                         fit: BoxFit.fill,
+                        color: const Color(0xFFFEE500),
                       ),
                     ),
-                    const SizedBox(
-                      width: 20,
-                    ),
-                    // OutlinedButton(
-                    //   onPressed: _signInWithFacebook,
-                    //   child: Image.asset(
-                    //     "assets/icons/facebook.png",
-                    //     width: 25,
-                    //     fit: BoxFit.fill,
-                    //     color: const Color(0xFF0966FF),
-                    //   ),
-                    // ),
                   ],
                 ),
                 Row(
