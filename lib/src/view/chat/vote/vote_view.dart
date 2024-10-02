@@ -200,29 +200,45 @@ class _VoteViewState extends ConsumerState<VoteView> {
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          messageState.whenOrNull(data: (voteViewState) {
-            final userId = fbAuth.currentUser!.uid;
-            final vote = voteViewState.vote;
+      // floatingActionButton: FloatingActionButton(
+      //   onPressed: () {
+      //     messageState.whenOrNull(data: (voteViewState) {
+      //       final userId = fbAuth.currentUser!.uid;
+      //       final vote = voteViewState.vote;
 
-            // 참가자에 대한 투표 정보를 확인하고 결과를 다이얼로그에 표시
-            if (vote.participants.containsKey(userId)) {
-              final userVote = vote.participants[userId]!;
-              final voteChoice = userVote ? '잘못했다' : '잘못하지 않았다';
-              _showAlreadyVotedDialog(voteChoice);
-            } else {
-              _showVoteDialog();
-            }
-          });
-        },
-        child: const Icon(Icons.how_to_vote),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerTop,
+      //       // 참가자에 대한 투표 정보를 확인하고 결과를 다이얼로그에 표시
+      //       if (vote.participants.containsKey(userId)) {
+      //         final userVote = vote.participants[userId]!;
+      //         final voteChoice = userVote ? '잘못했다' : '잘못하지 않았다';
+      //         _showAlreadyVotedDialog(voteChoice);
+      //       } else {
+      //         _showVoteDialog();
+      //       }
+      //     });
+      //   },
+      //   child: const Icon(Icons.how_to_vote),
+      // ),
+      // floatingActionButtonLocation: FloatingActionButtonLocation.centerTop,
       appBar: AppBar(
         centerTitle: true,
         actions: [
-          IconButton(onPressed: () {}, icon: const Icon(Icons.how_to_vote)),
+          IconButton(
+              onPressed: () {
+                messageState.whenOrNull(data: (voteViewState) {
+                  final userId = fbAuth.currentUser!.uid;
+                  final vote = voteViewState.vote;
+
+                  // 참가자에 대한 투표 정보를 확인하고 결과를 다이얼로그에 표시
+                  if (vote.participants.containsKey(userId)) {
+                    final userVote = vote.participants[userId]!;
+                    final voteChoice = userVote ? '잘못했다' : '잘못하지 않았다';
+                    _showAlreadyVotedDialog(voteChoice);
+                  } else {
+                    _showVoteDialog();
+                  }
+                });
+              },
+              icon: const Icon(Icons.how_to_vote)),
           Builder(
             builder: (context) {
               return IconButton(
