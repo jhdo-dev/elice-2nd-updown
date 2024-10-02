@@ -7,6 +7,7 @@ import 'package:up_down/src/provider/auth_repository_provider.dart';
 import 'package:up_down/src/provider/home_repository_provider.dart';
 import 'package:up_down/src/provider/message_repository_provider.dart';
 import 'package:up_down/src/view/chat/vote/vote_provider.dart';
+import 'package:up_down/theme/colors.dart';
 import 'package:up_down/util/helper/firebase_helper.dart';
 
 import '../../../../component/chat_app_text_field.dart';
@@ -16,11 +17,13 @@ class VoteView extends ConsumerStatefulWidget {
   final String roomId;
   final String roomName;
   final String personName;
+  final List<String> participants;
   const VoteView({
     super.key,
     required this.roomId,
     required this.roomName,
     required this.personName,
+    required this.participants,
   });
 
   @override
@@ -31,10 +34,37 @@ class _VoteViewState extends ConsumerState<VoteView> {
   final TextEditingController _messageController = TextEditingController();
   final userId = fbAuth.currentUser!.uid;
 
+  // 참가자 이름 리스트를 담을 상태 변수
+  List<String> participantNames = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadParticipantNames(); // Firestore에서 참가자 이름을 가져옴
+  }
+
   @override
   void dispose() {
     _messageController.dispose();
     super.dispose();
+  }
+
+  // Firestore에서 participants 리스트의 userId를 personName으로 변환하는 함수
+  Future<void> _loadParticipantNames() async {
+    final List<String> names = [];
+
+    for (String userId in widget.participants) {
+      final userDoc = await usersCollection.doc(userId).get();
+      if (userDoc.exists) {
+        final userName = userDoc.data()?['name'] ?? 'Unknown';
+        names.add(userName);
+      }
+    }
+
+    // 상태 업데이트: 참가자 이름 리스트
+    setState(() {
+      participantNames = names;
+    });
   }
 
   // 투표 다이얼로그 표시 함수
@@ -45,6 +75,7 @@ class _VoteViewState extends ConsumerState<VoteView> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text('투표하기'),
+          content: const SingleChildScrollView(
           content: const SingleChildScrollView(
             child: ListBody(
               children: <Widget>[
@@ -145,42 +176,99 @@ class _VoteViewState extends ConsumerState<VoteView> {
     // `judgmentProvider`에서 투표와 메시지를 함께 가져옴
     final messageState = ref.watch(judgmentProvider(roomId: widget.roomId));
 
-    return GestureDetector(
-      onTap: FocusScope.of(context).unfocus,
-      child: Scaffold(
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            messageState.whenOrNull(data: (voteViewState) {
-              final vote = voteViewState.vote;
-
-              // 참가자에 대한 투표 정보를 확인하고 결과를 다이얼로그에 표시
-              if (vote.participants.containsKey(userId)) {
-                final userVote = vote.participants[userId]!;
-                final voteChoice = userVote ? '잘못했다' : '잘못하지 않았다';
-                _showAlreadyVotedDialog(voteChoice);
-              } else {
-                _showVoteDialog();
-              }
-            });
-          },
-          child: const Icon(Icons.how_to_vote),
-        ),
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerTop,
-        appBar: AppBar(
-          actions: [
-            IconButton(
-              onPressed: () {},
-              icon: const Icon(Icons.menu),
+    return Scaffold(
+      endDrawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: <Widget>[
+            const DrawerHeader(
+              decoration: BoxDecoration(
+                color: Colors.blue,
+              ),
+              child: Text(
+                'Participants',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 24,
+                ),
+              ),
             ),
+            if (participantNames.isEmpty)
+              const ListTile(
+                title: Text('참가자가 없습니다'),
+              )
+            else
+              ...participantNames.map((name) => ListTile(
+                    title: Text(name),
+                  )),
           ],
-          title: Text('[${widget.personName}] ${widget.roomName}'),
-          bottom: PreferredSize(
-            preferredSize: const Size.fromHeight(50.0),
-            child: messageState.when(
-              data: (voteViewState) {
+        ),
+      ),
+      // floatingActionButton: FloatingActionButton(
+      //   onPressed: () {
+      //     messageState.whenOrNull(data: (voteViewState) {
+      //       final userId = fbAuth.currentUser!.uid;
+      //       final vote = voteViewState.vote;
+
+      //       // 참가자에 대한 투표 정보를 확인하고 결과를 다이얼로그에 표시
+      //       if (vote.participants.containsKey(userId)) {
+      //         final userVote = vote.participants[userId]!;
+      //         final voteChoice = userVote ? '잘못했다' : '잘못하지 않았다';
+      //         _showAlreadyVotedDialog(voteChoice);
+      //       } else {
+      //         _showVoteDialog();
+      //       }
+      //     });
+      //   },
+      //   child: const Icon(Icons.how_to_vote),
+      // ),
+      // floatingActionButtonLocation: FloatingActionButtonLocation.centerTop,
+      appBar: AppBar(
+        centerTitle: true,
+        actions: [
+          IconButton(
+            onPressed: () {
+              messageState.whenOrNull(data: (voteViewState) {
+                final userId = fbAuth.currentUser!.uid;
                 final vote = voteViewState.vote;
-                final voteRatio =
-                    _calculateVoteRatio(vote.guiltyCount, vote.notGuiltyCount);
+
+                // 참가자에 대한 투표 정보를 확인하고 결과를 다이얼로그에 표시
+                if (vote.participants.containsKey(userId)) {
+                  final userVote = vote.participants[userId]!;
+                  final voteChoice = userVote ? '잘못했다' : '잘못하지 않았다';
+                  _showAlreadyVotedDialog(voteChoice);
+                } else {
+                  _showVoteDialog();
+                }
+              });
+            },
+            icon: Image.asset(
+              'assets/icons/vote_icon.png',
+              width: 28,
+              height: 28,
+            ),
+          ),
+          Builder(
+            builder: (context) {
+              return IconButton(
+                icon: const Icon(Icons.menu),
+                onPressed: () {
+                  _loadParticipantNames();
+                  // Builder로 제공된 context를 사용하여 드로어를 엽니다
+                  Scaffold.of(context).openEndDrawer();
+                },
+              );
+            },
+          ),
+        ],
+        title: Text('[${widget.personName}] ${widget.roomName}'),
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(50.0),
+          child: messageState.when(
+            data: (voteViewState) {
+              final vote = voteViewState.vote;
+              final voteRatio =
+                  _calculateVoteRatio(vote.guiltyCount, vote.notGuiltyCount);
 
                 return Column(
                   children: [
@@ -189,18 +277,32 @@ class _VoteViewState extends ConsumerState<VoteView> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text('잘못한 사람: ${vote.guiltyCount}',
-                              style: const TextStyle(color: Colors.red)),
-                          Text('잘못하지 않은 사람: ${vote.notGuiltyCount}',
-                              style: const TextStyle(color: Colors.green)),
-                        ],
-                      ),
+                          Text(
+                          '잘못했다: ${vote.guiltyCount}',
+                          style: const TextStyle(
+                            color: Colors.red,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                        ),
+                          Text(
+                          '잘못하지 않았다: ${vote.notGuiltyCount}',
+                          style: const TextStyle(
+                            color: Colors.green,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                        ),
+                      ],
                     ),
+                  ),
                     // LinearProgressIndicator로 투표 비율 표시
                     Padding(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 16.0, vertical: 8.0),
                       child: LinearProgressIndicator(
+                        borderRadius: BorderRadius.circular(5),
+                      minHeight: 10,
                         value: voteRatio, // 투표 비율에 따라 프로그레스 바 업데이트
                         backgroundColor: Colors.green,
                         valueColor:
@@ -314,7 +416,6 @@ class _VoteViewState extends ConsumerState<VoteView> {
             child: CircularProgressIndicator(),
           ),
         ),
-      ),
-    );
+      );
   }
 }
