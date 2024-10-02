@@ -4,10 +4,12 @@ import 'package:up_down/src/model/custom_error.dart';
 import 'package:up_down/src/model/room.dart';
 import 'package:up_down/src/provider/auth_repository_provider.dart';
 import 'package:up_down/src/provider/home_repository_provider.dart';
+import 'package:up_down/src/provider/message_repository_provider.dart';
 import 'package:up_down/src/view/chat/vote/vote_provider.dart';
 import 'package:up_down/util/helper/firebase_helper.dart';
 
 import '../../../../component/chat_app_text_field.dart';
+import '../../../../component/message_bubble.dart';
 
 class VoteView extends ConsumerStatefulWidget {
   final String roomId;
@@ -233,18 +235,28 @@ class _VoteViewState extends ConsumerState<VoteView> {
                                 itemCount: messages.length,
                                 itemBuilder: (context, index) {
                                   final message = messages[index];
-                                  return ListTile(
-                                    title: Text(message.name),
-                                    subtitle: message.message.startsWith(
-                                            'http') // 메시지가 URL이면 이미지로 렌더링
-                                        //이미지 크기 세팅
-                                        ? Image.network(message.message)
-                                        : Text(message.message), // 텍스트 메시지
+                                  // return ListTile(
+                                  //   title: Text(message.name),
+                                  //   subtitle: message.message.startsWith(
+                                  //           'http') // 메시지가 URL이면 이미지로 렌더링
+                                  //       //이미지 크기 세팅
+                                  //       ? Image.network(message.message)
+                                  //       : Text(message.message), // 텍스트 메시지
 
-                                    trailing: Text(
-                                        _formatDateTime(message.sentAt.toDate())
-                                            .toString()),
-                                  );
+                                  //   trailing: Text(
+                                  //       _formatDateTime(message.sentAt.toDate())
+                                  //           .toString()),
+                                  // );
+                                  return MessageBubble(
+                                      name: message.name,
+                                      message: message.message.startsWith(
+                                              'http') // 메시지가 URL이면 이미지로 렌더링
+                                          //이미지 크기 세팅
+                                          ? Image.network(message.message)
+                                          : Text(message.message), // 텍스트 메시지
+                                      time: _formatDateTime(
+                                              message.sentAt.toDate())
+                                          .toString());
                                 },
                               ),
                       ),

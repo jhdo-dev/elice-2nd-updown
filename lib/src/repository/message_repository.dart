@@ -55,4 +55,22 @@ class MessageRepository {
       throw handleException(e);
     }
   }
+
+  Future<bool> isCurrentUserMessage() async {
+    // 현재 인증된 사용자 가져오기
+    User? currentUser = fbAuth.currentUser;
+    if (currentUser == null) {
+      return false;
+    }
+
+    // Firestore에서 messageId에 해당하는 문서 가져오기
+    DocumentSnapshot messageSnapshot = await FirebaseFirestore.instance
+        .collection('message')
+        .doc(messageId)
+        .get();
+
+    // message의 userId와 현재 사용자의 uid 비교
+    String userId = messageSnapshot['userId'];
+    return userId == currentUser.uid;
+  }
 }
