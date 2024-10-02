@@ -45,15 +45,15 @@ class _DeleteAccountDialogState extends ConsumerState<DeleteAccountDialog> {
       child: AlertDialog(
         title: const Text('Delete Account'),
         content: const Text(
-            'Are you sure you want to delete your account?\nThis action cannot be undone.'),
+            'Are you sure you want to delete your account? This action cannot be undone.'),
         actions: [
-          ElevatedButton(
+          TextButton(
             onPressed: () {
               GoRouter.of(context).pop();
             },
             child: const Text('Cancle'),
           ),
-          ElevatedButton(
+          TextButton(
             onPressed: () => _deleteAccount(),
             child: const Text('Delete'),
           ),
