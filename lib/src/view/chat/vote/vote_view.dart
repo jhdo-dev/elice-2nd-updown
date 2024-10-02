@@ -5,6 +5,7 @@ import 'package:up_down/src/model/room.dart';
 import 'package:up_down/src/provider/auth_repository_provider.dart';
 import 'package:up_down/src/provider/home_repository_provider.dart';
 import 'package:up_down/src/view/chat/vote/vote_provider.dart';
+import 'package:up_down/theme/colors.dart';
 import 'package:up_down/util/helper/firebase_helper.dart';
 
 import '../../../../component/chat_app_text_field.dart';
@@ -41,9 +42,9 @@ class _VoteViewState extends ConsumerState<VoteView> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text('투표하기'),
-          content: SingleChildScrollView(
+          content: const SingleChildScrollView(
             child: ListBody(
-              children: const <Widget>[
+              children: <Widget>[
                 Text('투표는 신중하게 딱 한번만 가능합니다.'),
                 SizedBox(height: 10),
                 Text('어느 쪽에 투표하시겠습니까?'),
@@ -145,33 +146,52 @@ class _VoteViewState extends ConsumerState<VoteView> {
     return GestureDetector(
       onTap: FocusScope.of(context).unfocus,
       child: Scaffold(
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            messageState.whenOrNull(data: (voteViewState) {
-              final userId = fbAuth.currentUser!.uid;
-              final vote = voteViewState.vote;
+        // floatingActionButton: FloatingActionButton.large(
+        //   shape: const CircleBorder(),
+        //   onPressed: () {
+        //     messageState.whenOrNull(data: (voteViewState) {
+        //       final userId = fbAuth.currentUser!.uid;
+        //       final vote = voteViewState.vote;
 
-              // 참가자에 대한 투표 정보를 확인하고 결과를 다이얼로그에 표시
-              if (vote.participants.containsKey(userId)) {
-                final userVote = vote.participants[userId]!;
-                final voteChoice = userVote ? '잘못했다' : '잘못하지 않았다';
-                _showAlreadyVotedDialog(voteChoice);
-              } else {
-                _showVoteDialog();
-              }
-            });
-          },
-          child: Icon(Icons.how_to_vote),
-        ),
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerTop,
+        //       // 참가자에 대한 투표 정보를 확인하고 결과를 다이얼로그에 표시
+        //       if (vote.participants.containsKey(userId)) {
+        //         final userVote = vote.participants[userId]!;
+        //         final voteChoice = userVote ? '잘못했다' : '잘못하지 않았다';
+        //         _showAlreadyVotedDialog(voteChoice);
+        //       } else {
+        //         _showVoteDialog();
+        //       }
+        //     });
+        //   },
+        //   child: const Icon(Icons.how_to_vote),
+        // ),
+        // floatingActionButtonLocation: FloatingActionButtonLocation.centerTop,
         appBar: AppBar(
           actions: [
             IconButton(
+                onPressed: () {
+                  messageState.whenOrNull(data: (voteViewState) {
+                    final userId = fbAuth.currentUser!.uid;
+                    final vote = voteViewState.vote;
+
+                    // 참가자에 대한 투표 정보를 확인하고 결과를 다이얼로그에 표시
+                    if (vote.participants.containsKey(userId)) {
+                      final userVote = vote.participants[userId]!;
+                      final voteChoice = userVote ? '잘못했다' : '잘못하지 않았다';
+                      _showAlreadyVotedDialog(voteChoice);
+                    } else {
+                      _showVoteDialog();
+                    }
+                  });
+                },
+                icon: const Icon(Icons.how_to_vote)),
+            IconButton(
               onPressed: () {},
-              icon: Icon(Icons.menu),
+              icon: const Icon(Icons.menu),
             ),
           ],
-          title: Text('[${widget.personName}] ${widget.roomName}'),
+          title:
+              Center(child: Text('[${widget.personName}] ${widget.roomName}')),
           bottom: PreferredSize(
             preferredSize: const Size.fromHeight(50.0),
             child: messageState.when(
@@ -188,9 +208,9 @@ class _VoteViewState extends ConsumerState<VoteView> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text('잘못한 사람: ${vote.guiltyCount}',
-                              style: TextStyle(color: Colors.red)),
+                              style: const TextStyle(color: Colors.red)),
                           Text('잘못하지 않은 사람: ${vote.notGuiltyCount}',
-                              style: TextStyle(color: Colors.green)),
+                              style: const TextStyle(color: Colors.green)),
                         ],
                       ),
                     ),
@@ -199,9 +219,11 @@ class _VoteViewState extends ConsumerState<VoteView> {
                       padding: const EdgeInsets.symmetric(
                           horizontal: 16.0, vertical: 8.0),
                       child: LinearProgressIndicator(
+                        minHeight: 10,
                         value: voteRatio, // 투표 비율에 따라 프로그레스 바 업데이트
                         backgroundColor: Colors.green,
-                        valueColor: AlwaysStoppedAnimation<Color>(Colors.red),
+                        valueColor:
+                            const AlwaysStoppedAnimation<Color>(Colors.red),
                       ),
                     ),
                   ],
@@ -234,9 +256,11 @@ class _VoteViewState extends ConsumerState<VoteView> {
                                 itemBuilder: (context, index) {
                                   final message = messages[index];
                                   return ListTile(
-                                    title: Text(message.name),
+                                    title: Text(
+                                      message.name,
+                                    ),
                                     subtitle: message.message.startsWith(
-                                            'http') // 메시지가 URL이면 이미지로 렌더링
+                                            'http') // 메시지가 UColor.fromARGB(255, 131, 32, 32)더링
                                         //이미지 크기 세팅
                                         ? Image.network(message.message)
                                         : Text(message.message), // 텍스트 메시지
