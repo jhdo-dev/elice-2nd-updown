@@ -11,11 +11,13 @@ class VoteView extends ConsumerStatefulWidget {
   final String roomId;
   final String roomName;
   final String personName;
+  final List<String> participants;
   const VoteView({
     super.key,
     required this.roomId,
     required this.roomName,
     required this.personName,
+    required this.participants,
   });
 
   @override
@@ -25,10 +27,37 @@ class VoteView extends ConsumerStatefulWidget {
 class _VoteViewState extends ConsumerState<VoteView> {
   final TextEditingController _messageController = TextEditingController();
 
+  // 참가자 이름 리스트를 담을 상태 변수
+  List<String> participantNames = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadParticipantNames(); // Firestore에서 참가자 이름을 가져옴
+  }
+
   @override
   void dispose() {
     _messageController.dispose();
     super.dispose();
+  }
+
+  // Firestore에서 participants 리스트의 userId를 personName으로 변환하는 함수
+  Future<void> _loadParticipantNames() async {
+    final List<String> names = [];
+
+    for (String userId in widget.participants) {
+      final userDoc = await usersCollection.doc(userId).get();
+      if (userDoc.exists) {
+        final userName = userDoc.data()?['name'] ?? 'Unknown';
+        names.add(userName);
+      }
+    }
+
+    // 상태 업데이트: 참가자 이름 리스트
+    setState(() {
+      participantNames = names;
+    });
   }
 
   // 투표 다이얼로그 표시 함수
@@ -130,6 +159,33 @@ class _VoteViewState extends ConsumerState<VoteView> {
     final messageState = ref.watch(judgmentProvider(roomId: widget.roomId));
 
     return Scaffold(
+      endDrawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: <Widget>[
+            DrawerHeader(
+              decoration: BoxDecoration(
+                color: Colors.blue,
+              ),
+              child: Text(
+                'Participants',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 24,
+                ),
+              ),
+            ),
+            if (participantNames.isEmpty)
+              ListTile(
+                title: Text('참가자가 없습니다'),
+              )
+            else
+              ...participantNames.map((name) => ListTile(
+                    title: Text(name),
+                  )),
+          ],
+        ),
+      ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           messageState.whenOrNull(data: (voteViewState) {
@@ -151,9 +207,17 @@ class _VoteViewState extends ConsumerState<VoteView> {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerTop,
       appBar: AppBar(
         actions: [
-          IconButton(
-            onPressed: () {},
-            icon: Icon(Icons.menu),
+          Builder(
+            builder: (context) {
+              return IconButton(
+                icon: Icon(Icons.menu),
+                onPressed: () {
+                  _loadParticipantNames();
+                  // Builder로 제공된 context를 사용하여 드로어를 엽니다
+                  Scaffold.of(context).openEndDrawer();
+                },
+              );
+            },
           ),
         ],
         title: Text('[${widget.personName}] ${widget.roomName}'),
