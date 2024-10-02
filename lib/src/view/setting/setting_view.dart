@@ -58,9 +58,6 @@ class _SettingViewState extends ConsumerState<SettingView> {
                     contentPadding: const EdgeInsets.all(20),
                   ),
                 ),
-                // const FlutterLogo(size: 72.0),
-                // Text(appUser.name),
-                // Text(appUser.email),
                 ListTile(
                   title: const Text(
                     '닉네임 변경',
