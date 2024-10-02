@@ -69,6 +69,7 @@ class CreateRoomViewModel extends _$CreateRoomViewModel {
           'https://firebasestorage.googleapis.com/v0/b/up-down-app.appspot.com/o/default_profile.png?alt=media&token=67dbee77-5ac9-4000-87c2-8357d9a38c12', // 기본 이미지 URL
       'participantCount': 0, // 참가자 수 초기화
       'createdAt': Timestamp.now(),
+      'participant': [],
     });
     // 방 생성 후 result_view 갱신 (결과 목록 다시 불러오기)
     //
