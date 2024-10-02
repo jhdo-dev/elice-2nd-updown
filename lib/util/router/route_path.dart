@@ -154,17 +154,23 @@ GoRouter route(RouteRef ref) {
                       path: 'vote/:roomId',
                       name: RouteNames.vote,
                       builder: (context, state) {
-                        // extra에서 roomId, roomName, personName 값을 가져옴
-                        final extraData = state.extra as Map<String, String>;
+                        // extra에서 roomId, roomName, personName, participants 값을 가져옴
+                        final extraData = state.extra as Map<String, dynamic>;
 
-                        final roomId = extraData['roomId']!;
-                        final roomName = extraData['roomName']!;
-                        final personName = extraData['personName']!;
+                        // 각각의 값들을 명시적으로 String 또는 List<String>으로 변환
+                        final roomId = extraData['roomId'] as String;
+                        final roomName = extraData['roomName'] as String;
+                        final personName = extraData['personName'] as String;
+
+                        // participants는 List<String> 타입으로 캐스팅
+                        final participants = List<String>.from(
+                            extraData['participants'] as List);
 
                         return VoteView(
                           roomId: roomId,
                           roomName: roomName,
                           personName: personName,
+                          participants: participants,
                         );
                       },
                     ),

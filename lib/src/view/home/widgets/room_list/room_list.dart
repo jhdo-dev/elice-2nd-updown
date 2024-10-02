@@ -33,6 +33,7 @@ class RoomListPage extends ConsumerWidget {
               roomStartDate: roomStartDate,
               roomEndDate: roomEndDate,
               imageUrl: room.imageUrl,
+              participants: room.participants,
             );
           },
         );
