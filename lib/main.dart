@@ -4,6 +4,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:up_down/services/fcm/fcm_service.dart';
 import 'package:up_down/theme/colors.dart';
 import 'package:up_down/util/router/route_path.dart';
@@ -79,6 +80,11 @@ void main() async {
       // 알림 응답 처리 (선택사항)
       print('알림 응답: ${response.payload}');
     },
+  );
+
+  KakaoSdk.init(
+    nativeAppKey: '8651f6dc6fc750797c43905375bead6e',
+    javaScriptAppKey: '5990f0f6119e8cad08a8141738412106',
   );
 
   runApp(

@@ -75,13 +75,10 @@ class HomeRepositoryImpl implements HomeRepository {
   Future<void> addParticipant(String roomId, String userId) async {
     DocumentReference roomRef = _firestore.collection('rooms').doc(roomId);
 
-    await roomRef.collection('participants').doc(userId).set({
-      'userId': userId,
-      'joinedAt': Timestamp.now(),
-    });
-
+    // participants 리스트에 userId 추가
     await roomRef.update({
-      'participantCount': FieldValue.increment(1),
+      'participants': FieldValue.arrayUnion([userId]), // 유저를 리스트에 추가
+      'participantCount': FieldValue.increment(1), // 참가자 수 증가
     });
   }
 
@@ -89,10 +86,10 @@ class HomeRepositoryImpl implements HomeRepository {
   Future<void> removeParticipant(String roomId, String userId) async {
     DocumentReference roomRef = _firestore.collection('rooms').doc(roomId);
 
-    await roomRef.collection('participants').doc(userId).delete();
-
+    // participants 리스트에서 userId 제거
     await roomRef.update({
-      'participantCount': FieldValue.increment(-1),
+      'participants': FieldValue.arrayRemove([userId]), // 유저를 리스트에서 제거
+      'participantCount': FieldValue.increment(-1), // 참가자 수 감소
     });
   }
 }

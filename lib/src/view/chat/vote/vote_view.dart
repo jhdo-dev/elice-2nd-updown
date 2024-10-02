@@ -14,11 +14,13 @@ class VoteView extends ConsumerStatefulWidget {
   final String roomId;
   final String roomName;
   final String personName;
+  final List<String> participants;
   const VoteView({
     super.key,
     required this.roomId,
     required this.roomName,
     required this.personName,
+    required this.participants,
   });
 
   @override
@@ -28,10 +30,37 @@ class VoteView extends ConsumerStatefulWidget {
 class _VoteViewState extends ConsumerState<VoteView> {
   final TextEditingController _messageController = TextEditingController();
 
+  // 참가자 이름 리스트를 담을 상태 변수
+  List<String> participantNames = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadParticipantNames(); // Firestore에서 참가자 이름을 가져옴
+  }
+
   @override
   void dispose() {
     _messageController.dispose();
     super.dispose();
+  }
+
+  // Firestore에서 participants 리스트의 userId를 personName으로 변환하는 함수
+  Future<void> _loadParticipantNames() async {
+    final List<String> names = [];
+
+    for (String userId in widget.participants) {
+      final userDoc = await usersCollection.doc(userId).get();
+      if (userDoc.exists) {
+        final userName = userDoc.data()?['name'] ?? 'Unknown';
+        names.add(userName);
+      }
+    }
+
+    // 상태 업데이트: 참가자 이름 리스트
+    setState(() {
+      participantNames = names;
+    });
   }
 
   // 투표 다이얼로그 표시 함수
@@ -143,62 +172,76 @@ class _VoteViewState extends ConsumerState<VoteView> {
     // `judgmentProvider`에서 투표와 메시지를 함께 가져옴
     final messageState = ref.watch(judgmentProvider(roomId: widget.roomId));
 
-    return GestureDetector(
-      onTap: FocusScope.of(context).unfocus,
-      child: Scaffold(
-        // floatingActionButton: FloatingActionButton.large(
-        //   shape: const CircleBorder(),
-        //   onPressed: () {
-        //     messageState.whenOrNull(data: (voteViewState) {
-        //       final userId = fbAuth.currentUser!.uid;
-        //       final vote = voteViewState.vote;
-
-        //       // 참가자에 대한 투표 정보를 확인하고 결과를 다이얼로그에 표시
-        //       if (vote.participants.containsKey(userId)) {
-        //         final userVote = vote.participants[userId]!;
-        //         final voteChoice = userVote ? '잘못했다' : '잘못하지 않았다';
-        //         _showAlreadyVotedDialog(voteChoice);
-        //       } else {
-        //         _showVoteDialog();
-        //       }
-        //     });
-        //   },
-        //   child: const Icon(Icons.how_to_vote),
-        // ),
-        // floatingActionButtonLocation: FloatingActionButtonLocation.centerTop,
-        appBar: AppBar(
-          actions: [
-            IconButton(
-                onPressed: () {
-                  messageState.whenOrNull(data: (voteViewState) {
-                    final userId = fbAuth.currentUser!.uid;
-                    final vote = voteViewState.vote;
-
-                    // 참가자에 대한 투표 정보를 확인하고 결과를 다이얼로그에 표시
-                    if (vote.participants.containsKey(userId)) {
-                      final userVote = vote.participants[userId]!;
-                      final voteChoice = userVote ? '잘못했다' : '잘못하지 않았다';
-                      _showAlreadyVotedDialog(voteChoice);
-                    } else {
-                      _showVoteDialog();
-                    }
-                  });
-                },
-                icon: const Icon(Icons.how_to_vote)),
-            IconButton(
-              onPressed: () {},
-              icon: const Icon(Icons.menu),
+    return Scaffold(
+      endDrawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: <Widget>[
+            const DrawerHeader(
+              decoration: BoxDecoration(
+                color: Colors.blue,
+              ),
+              child: Text(
+                'Participants',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 24,
+                ),
+              ),
             ),
+            if (participantNames.isEmpty)
+              const ListTile(
+                title: Text('참가자가 없습니다'),
+              )
+            else
+              ...participantNames.map((name) => ListTile(
+                    title: Text(name),
+                  )),
           ],
-          title:
-              Center(child: Text('[${widget.personName}] ${widget.roomName}')),
-          bottom: PreferredSize(
-            preferredSize: const Size.fromHeight(50.0),
-            child: messageState.when(
-              data: (voteViewState) {
-                final vote = voteViewState.vote;
-                final voteRatio =
-                    _calculateVoteRatio(vote.guiltyCount, vote.notGuiltyCount);
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          messageState.whenOrNull(data: (voteViewState) {
+            final userId = fbAuth.currentUser!.uid;
+            final vote = voteViewState.vote;
+
+            // 참가자에 대한 투표 정보를 확인하고 결과를 다이얼로그에 표시
+            if (vote.participants.containsKey(userId)) {
+              final userVote = vote.participants[userId]!;
+              final voteChoice = userVote ? '잘못했다' : '잘못하지 않았다';
+              _showAlreadyVotedDialog(voteChoice);
+            } else {
+              _showVoteDialog();
+            }
+          });
+        },
+        child: const Icon(Icons.how_to_vote),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerTop,
+      appBar: AppBar(
+        actions: [
+          Builder(
+            builder: (context) {
+              return IconButton(
+                icon: const Icon(Icons.menu),
+                onPressed: () {
+                  _loadParticipantNames();
+                  // Builder로 제공된 context를 사용하여 드로어를 엽니다
+                  Scaffold.of(context).openEndDrawer();
+                },
+              );
+            },
+          ),
+        ],
+        title: Text('[${widget.personName}] ${widget.roomName}'),
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(50.0),
+          child: messageState.when(
+            data: (voteViewState) {
+              final vote = voteViewState.vote;
+              final voteRatio =
+                  _calculateVoteRatio(vote.guiltyCount, vote.notGuiltyCount);
 
                 return Column(
                   children: [
@@ -331,6 +374,6 @@ class _VoteViewState extends ConsumerState<VoteView> {
           ],
         ),
       ),
-    );
+    )
   }
 }

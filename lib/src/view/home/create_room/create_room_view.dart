@@ -45,103 +45,64 @@ class _CreateRoomViewState extends ConsumerState<CreateRoomView> {
           IconButton(
             icon: const Icon(Icons.check),
             onPressed: () async {
-              // if (personNameController.text.isNotEmpty &&
-              //       roomNameController.text.isNotEmpty &&
-              //       state.roomStartDate != null &&
-              //       state.roomEndDate != null) {
-              //     try {
-              //       // 방 생성 로직
-              //       await viewModel.createRoom(
-              //         personNameController.text,
-              //         roomNameController.text,
-              //       );
+              if (personNameController.text.isNotEmpty &&
+                    roomNameController.text.isNotEmpty &&
+                    state.roomStartDate != null &&
+                    state.roomEndDate != null) {
+                  try {
+                    // 방 생성 로직
+                    await viewModel.createRoom(
+                      personNameController.text,
+                      roomNameController.text,
+                    );
 
-              //       // FCM 서비스를 통해 알림 전송
-              //       await fcmService.sendRoomCreationNotification(
-              //         roomName: roomNameController.text,
-              //         creatorName: personNameController.text,
-              //       );
+                    // FCM 서비스를 통해 알림 전송
+                    await fcmService.sendRoomCreationNotification(
+                      roomName: roomNameController.text,
+                      creatorName: personNameController.text,
+                    );
 
-              //       // try {
-              //       //   HttpsCallable callable = FirebaseFunctions.instanceFor(
-              //       //           region: 'asia-northeast3')
-              //       //       .httpsCallable('sendPushNotification');
-              //       //   final result = await callable.call({
-              //       //     'title': "title",
-              //       //     'body': "body",
-              //       //     'token': "pushToken",
-              //       //   });
-              //       //   print(
-              //       //       'Push notification sent successfully: ${result.data}');
-              //       // } on Exception catch (e) {
-              //       //   print('Failed to send push notification: $e');
-              //       //   // TODO
-              //       // }
+                    // try {
+                    //   HttpsCallable callable = FirebaseFunctions.instanceFor(
+                    //           region: 'asia-northeast3')
+                    //       .httpsCallable('sendPushNotification');
+                    //   final result = await callable.call({
+                    //     'title': "title",
+                    //     'body': "body",
+                    //     'token': "pushToken",
+                    //   });
+                    //   print(
+                    //       'Push notification sent successfully: ${result.data}');
+                    // } on Exception catch (e) {
+                    //   print('Failed to send push notification: $e');
+                    //   // TODO
+                    // }
 
-              //       // 입력 필드 초기화
-              //       personNameController.clear();
-              //       roomNameController.clear();
+                    // 입력 필드 초기화
+                    personNameController.clear();
+                    roomNameController.clear();
 
-              //       // 방 생성 후 홈으로 이동
-              //       context.go('/home');
+                    // 방 생성 후 홈으로 이동
+                    context.go('/home');
 
-              //       // 성공 메시지 표시
-              //       ScaffoldMessenger.of(context).showSnackBar(
-              //         const SnackBar(content: Text('방이 생성되었고 푸시 알림이 전송되었습니다.')),
-              //       );
-              //     } catch (e) {
-              //       print('Error during room creation or notification: $e');
-              //       ScaffoldMessenger.of(context).showSnackBar(
-              //         SnackBar(content: Text('오류 발생: ${e.toString()}')),
-              //       );
-              //     }
-              //   } else {
-              //     // 필수 입력 항목이 누락된 경우 경고 메시지 표시
-              //     ScaffoldMessenger.of(context).showSnackBar(
-              //       const SnackBar(content: Text('모든 필드를 입력해주세요.')),
-              //     );
-              //   }
+                    // 성공 메시지 표시
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('방이 생성되었고 푸시 알림이 전송되었습니다.')),
+                    );
+                  } catch (e) {
+                    print('Error during room creation or notification: $e');
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('오류 발생: ${e.toString()}')),
+                    );
+                  }
+                } else {
+                  // 필수 입력 항목이 누락된 경우 경고 메시지 표시
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('모든 필드를 입력해주세요.')),
+                  );
+                }
               // 입력 필드 및 날짜 선택 상태 확인
-              if (personNameController.text.isEmpty) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('인물 이름을 입력해주세요.')),
-                );
-                return;
-              }
 
-              if (roomNameController.text.isEmpty) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('논란 제목을 입력해주세요.')),
-                );
-                return;
-              }
-
-              if (state.roomStartDate == null) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('방 시작 날짜를 선택해주세요.')),
-                );
-                return;
-              }
-
-              if (state.roomEndDate == null) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('방 종료 날짜를 선택해주세요.')),
-                );
-                return;
-              }
-
-              // 모든 필드가 입력되었을 때 방 생성 로직 실행
-              await viewModel.createRoom(
-                personNameController.text,
-                roomNameController.text,
-              );
-
-              // 입력 필드 초기화
-              personNameController.clear();
-              roomNameController.clear();
-
-              // 방 생성 후 홈으로 이동
-              context.go('/home');
             },
           ),
         ],
