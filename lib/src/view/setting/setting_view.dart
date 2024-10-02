@@ -58,6 +58,7 @@ class _SettingViewState extends ConsumerState<SettingView> {
                 // const FlutterLogo(size: 72.0),
                 // Text(appUser.name),
                 // Text(appUser.email),
+                // https://aliencoder.tistory.com/81
                 ListTile(
                   title: const Text('Change Name'),
                   onTap: () => showDialog(
