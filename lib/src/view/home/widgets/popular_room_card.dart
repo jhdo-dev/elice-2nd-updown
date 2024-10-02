@@ -56,8 +56,14 @@ class PopularRoomCard extends ConsumerWidget {
                   height: 90,
                   fit: BoxFit.cover,
                   errorBuilder: (context, error, stackTrace) {
-                    return const Icon(Icons.error,
-                        size: 100, color: Colors.red);
+                    return ClipOval(
+                      child: Image.asset(
+                        'assets/images/default_profile_black.png',
+                        width: 90,
+                        height: 90,
+                        fit: BoxFit.cover,
+                      ),
+                    );
                   },
                 ),
               ),
