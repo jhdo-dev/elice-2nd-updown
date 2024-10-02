@@ -220,7 +220,9 @@ class _VoteViewState extends ConsumerState<VoteView> {
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerTop,
       appBar: AppBar(
+        centerTitle: true,
         actions: [
+          IconButton(onPressed: () {}, icon: const Icon(Icons.how_to_vote)),
           Builder(
             builder: (context) {
               return IconButton(
@@ -243,137 +245,135 @@ class _VoteViewState extends ConsumerState<VoteView> {
               final voteRatio =
                   _calculateVoteRatio(vote.guiltyCount, vote.notGuiltyCount);
 
+              return Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text('잘못한 사람: ${vote.guiltyCount}',
+                            style: const TextStyle(color: Colors.red)),
+                        Text('잘못하지 않은 사람: ${vote.notGuiltyCount}',
+                            style: const TextStyle(color: Colors.green)),
+                      ],
+                    ),
+                  ),
+                  // LinearProgressIndicator로 투표 비율 표시
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16.0, vertical: 8.0),
+                    child: LinearProgressIndicator(
+                      minHeight: 10,
+                      value: voteRatio, // 투표 비율에 따라 프로그레스 바 업데이트
+                      backgroundColor: Colors.green,
+                      valueColor:
+                          const AlwaysStoppedAnimation<Color>(Colors.red),
+                    ),
+                  ),
+                ],
+              );
+            },
+            error: (e, _) {
+              return const SizedBox();
+            },
+            loading: () => const LinearProgressIndicator(),
+          ),
+        ),
+      ),
+      body: Column(
+        children: [
+          // 메시지와 투표 상태를 동시에 처리
+          Expanded(
+            child: messageState.when(
+              data: (voteViewState) {
+                final messages = voteViewState.messages;
+
                 return Column(
                   children: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text('잘못한 사람: ${vote.guiltyCount}',
-                              style: const TextStyle(color: Colors.red)),
-                          Text('잘못하지 않은 사람: ${vote.notGuiltyCount}',
-                              style: const TextStyle(color: Colors.green)),
-                        ],
-                      ),
-                    ),
-                    // LinearProgressIndicator로 투표 비율 표시
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 16.0, vertical: 8.0),
-                      child: LinearProgressIndicator(
-                        minHeight: 10,
-                        value: voteRatio, // 투표 비율에 따라 프로그레스 바 업데이트
-                        backgroundColor: Colors.green,
-                        valueColor:
-                            const AlwaysStoppedAnimation<Color>(Colors.red),
-                      ),
+                    // 채팅 메시지 표시
+                    Expanded(
+                      child: messages.isEmpty
+                          ? const Center(child: Text('No messages yet'))
+                          : ListView.builder(
+                              reverse: true,
+                              itemCount: messages.length,
+                              itemBuilder: (context, index) {
+                                final message = messages[index];
+                                return ListTile(
+                                  title: Text(
+                                    message.name,
+                                  ),
+                                  subtitle: message.message.startsWith(
+                                          'http') // 메시지가 UColor.fromARGB(255, 131, 32, 32)더링
+                                      //이미지 크기 세팅
+                                      ? Image.network(message.message)
+                                      : Text(message.message), // 텍스트 메시지
+
+                                  trailing: Text(
+                                      _formatDateTime(message.sentAt.toDate())
+                                          .toString()),
+                                );
+                              },
+                            ),
                     ),
                   ],
                 );
               },
               error: (e, _) {
-                return const SizedBox();
+                if (e is CustomError) {
+                  return Center(
+                    child: Text(
+                      'code: ${e.code}\nplugin: ${e.plugin}\nmessage: ${e.message}',
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        color: Colors.red,
+                        fontSize: 18,
+                      ),
+                    ),
+                  );
+                } else {
+                  return Center(
+                    child: Text(
+                      'Unexpected error: $e',
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        color: Colors.red,
+                        fontSize: 18,
+                      ),
+                    ),
+                  );
+                }
               },
-              loading: () => const LinearProgressIndicator(),
+              loading: () => const Center(
+                child: CircularProgressIndicator(),
+              ),
             ),
           ),
-        ),
-        body: Column(
-          children: [
-            // 메시지와 투표 상태를 동시에 처리
-            Expanded(
-              child: messageState.when(
-                data: (voteViewState) {
-                  final messages = voteViewState.messages;
 
-                  return Column(
-                    children: [
-                      // 채팅 메시지 표시
-                      Expanded(
-                        child: messages.isEmpty
-                            ? const Center(child: Text('No messages yet'))
-                            : ListView.builder(
-                                reverse: true,
-                                itemCount: messages.length,
-                                itemBuilder: (context, index) {
-                                  final message = messages[index];
-                                  return ListTile(
-                                    title: Text(
-                                      message.name,
-                                    ),
-                                    subtitle: message.message.startsWith(
-                                            'http') // 메시지가 UColor.fromARGB(255, 131, 32, 32)더링
-                                        //이미지 크기 세팅
-                                        ? Image.network(message.message)
-                                        : Text(message.message), // 텍스트 메시지
-
-                                    trailing: Text(
-                                        _formatDateTime(message.sentAt.toDate())
-                                            .toString()),
-                                  );
-                                },
-                              ),
-                      ),
-                    ],
-                  );
-                },
-                error: (e, _) {
-                  if (e is CustomError) {
-                    return Center(
-                      child: Text(
-                        'code: ${e.code}\nplugin: ${e.plugin}\nmessage: ${e.message}',
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(
-                          color: Colors.red,
-                          fontSize: 18,
-                        ),
-                      ),
-                    );
-                  } else {
-                    return Center(
-                      child: Text(
-                        'Unexpected error: $e',
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(
-                          color: Colors.red,
-                          fontSize: 18,
-                        ),
-                      ),
-                    );
-                  }
-                },
-                loading: () => const Center(
-                  child: CircularProgressIndicator(),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.camera_alt), // 이미지 업로드 버튼
+                  onPressed: () {
+                    ref
+                        .read(judgmentProvider(roomId: widget.roomId).notifier)
+                        .sendImage(roomId: widget.roomId);
+                  },
                 ),
-              ),
-            ),
-
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Row(
-                children: [
-                  IconButton(
-                    icon: const Icon(Icons.camera_alt), // 이미지 업로드 버튼
-                    onPressed: () {
-                      ref
-                          .read(
-                              judgmentProvider(roomId: widget.roomId).notifier)
-                          .sendImage(roomId: widget.roomId);
-                    },
+                Expanded(
+                  child: ChatAppTextField(
+                    controller: _messageController,
+                    onPressed: _sendMessage,
                   ),
-                  Expanded(
-                    child: ChatAppTextField(
-                      controller: _messageController,
-                      onPressed: _sendMessage,
-                    ),
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
-    )
+    );
   }
 }
