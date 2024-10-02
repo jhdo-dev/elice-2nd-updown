@@ -77,7 +77,7 @@ class _PasswordResetDialogState extends ConsumerState<PasswordResetDialog> {
           Center(
               child: resetPwdState.maybeWhen(
             loading: () => const CircularProgressIndicator(),
-            orElse: () => ElevatedButton(
+            orElse: () => TextButton(
               onPressed: _sendPasswordResetEmail,
               child: const Text('Send'),
             ),
