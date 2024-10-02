@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:up_down/src/model/message.dart';
-import 'package:up_down/src/provider/message_repository_provider.dart';
 
 class MessageBubble extends ConsumerWidget {
   const MessageBubble({
