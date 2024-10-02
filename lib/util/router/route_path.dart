@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:up_down/component/page_not_found.dart';
 import 'package:up_down/component/scaffold_with_nav_bar.dart';
-import 'package:up_down/src/model/room.dart';
 import 'package:up_down/src/provider/auth_repository_provider.dart';
 import 'package:up_down/src/view/auth/auth_view.dart';
 import 'package:up_down/src/view/setting/setting_view.dart';
@@ -16,8 +15,6 @@ import 'package:up_down/src/view/result/result_view.dart';
 import 'package:up_down/src/view/splash/firebase_error_view.dart';
 import 'package:up_down/src/view/splash/splash_view.dart';
 import 'package:up_down/util/router/route_names.dart';
-
-import '../helper/firebase_helper.dart';
 
 part 'route_path.g.dart';
 
@@ -34,7 +31,7 @@ GoRouter route(RouteRef ref) {
       ///웹에서 다른 주소로 접속을 할 때 redirect을 사용해서 잘못된 접근을 막을 수 있음.
       ///앱에서는 상대적으로 덜 중요해서 로그인의 여부만 잘 관리해도 될 것 같음.
 
-      redirect: (context, state) {
+      redirect: (context, state) async {
         if (authState is AsyncLoading<User?>) {
           return '/splash';
         }
@@ -79,27 +76,6 @@ GoRouter route(RouteRef ref) {
             return const AuthView();
           },
         ),
-        // GoRoute(
-        //   path: '/signup',
-        //   name: RouteNames.signup,
-        //   builder: (context, state) {
-        //     return const SignupView();
-        //   },
-        // ),
-        // GoRoute(
-        //   path: '/resetPassword',
-        //   name: RouteNames.resetPassword,
-        //   builder: (context, state) {
-        //     return const ResetPasswordView();
-        //   },
-        // ),
-        // GoRoute(
-        //   path: '/verifyEmail',
-        //   name: RouteNames.verifyEmail,
-        //   builder: (context, state) {
-        //     return const VerifyEmailView();
-        //   },
-        // ),
 
         ///Bottom Navigation
         StatefulShellRoute.indexedStack(
@@ -109,22 +85,6 @@ GoRouter route(RouteRef ref) {
           branches: [
             StatefulShellBranch(
               routes: [
-                // GoRoute(
-                //   path: '/home',
-                //   name: RouteNames.home,
-                //   builder: (context, state) {
-                //     return const HomeView();
-                //   },
-                //   routes: [
-                //     GoRoute(
-                //       path: 'changePassword',
-                //       name: RouteNames.changePassword,
-                //       builder: (context, state) {
-                //         return const ChangePasswordView();
-                //       },
-                //     ),
-                //   ],
-                // ),
                 GoRoute(
                   path: '/home',
                   name: RouteNames.home,

@@ -116,11 +116,18 @@ class MyApp extends ConsumerWidget {
     return MaterialApp.router(
       title: 'UP DOWN',
       debugShowCheckedModeBanner: false,
-      // theme: ThemeData(
-      //   colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-      //   useMaterial3: true,
-      // ),
-      theme: isDarkMode ? ThemeData.dark() : ThemeData.light(),
+      theme: ThemeData(
+        colorScheme: isDarkMode
+            ? const ColorScheme.dark(
+                primary: Colors.deepPurple,
+                secondary: Colors.deepPurpleAccent,
+              )
+            : const ColorScheme.light(
+                primary: Colors.deepPurple,
+                secondary: Colors.deepPurpleAccent,
+              ),
+        useMaterial3: true,
+      ),
       routerConfig: router,
     );
   }
