@@ -48,7 +48,10 @@ class MessageBubble extends ConsumerWidget {
                       _formatDateTime(message.sentAt.toDate()).toString(),
                       style: TextStyle(
                         fontSize: 10,
-                        color: Colors.white.withOpacity(0.5),
+                        color: Theme.of(context)
+                            .colorScheme
+                            .onSurface
+                            .withOpacity(0.5),
                       ),
                     ),
                   ],
