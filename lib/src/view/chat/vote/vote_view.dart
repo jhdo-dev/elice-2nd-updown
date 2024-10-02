@@ -223,22 +223,27 @@ class _VoteViewState extends ConsumerState<VoteView> {
         centerTitle: true,
         actions: [
           IconButton(
-              onPressed: () {
-                messageState.whenOrNull(data: (voteViewState) {
-                  final userId = fbAuth.currentUser!.uid;
-                  final vote = voteViewState.vote;
+            onPressed: () {
+              messageState.whenOrNull(data: (voteViewState) {
+                final userId = fbAuth.currentUser!.uid;
+                final vote = voteViewState.vote;
 
-                  // 참가자에 대한 투표 정보를 확인하고 결과를 다이얼로그에 표시
-                  if (vote.participants.containsKey(userId)) {
-                    final userVote = vote.participants[userId]!;
-                    final voteChoice = userVote ? '잘못했다' : '잘못하지 않았다';
-                    _showAlreadyVotedDialog(voteChoice);
-                  } else {
-                    _showVoteDialog();
-                  }
-                });
-              },
-              icon: const Icon(Icons.how_to_vote)),
+                // 참가자에 대한 투표 정보를 확인하고 결과를 다이얼로그에 표시
+                if (vote.participants.containsKey(userId)) {
+                  final userVote = vote.participants[userId]!;
+                  final voteChoice = userVote ? '잘못했다' : '잘못하지 않았다';
+                  _showAlreadyVotedDialog(voteChoice);
+                } else {
+                  _showVoteDialog();
+                }
+              });
+            },
+            icon: Image.asset(
+              'assets/icons/vote_icon.png',
+              width: 28,
+              height: 28,
+            ),
+          ),
           Builder(
             builder: (context) {
               return IconButton(
@@ -268,10 +273,22 @@ class _VoteViewState extends ConsumerState<VoteView> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text('잘못한 사람: ${vote.guiltyCount}',
-                            style: const TextStyle(color: Colors.red)),
-                        Text('잘못하지 않은 사람: ${vote.notGuiltyCount}',
-                            style: const TextStyle(color: Colors.green)),
+                        Text(
+                          '잘못했다: ${vote.guiltyCount}',
+                          style: const TextStyle(
+                            color: Colors.red,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                        ),
+                        Text(
+                          '잘못하지 않았다: ${vote.notGuiltyCount}',
+                          style: const TextStyle(
+                            color: Colors.green,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -280,6 +297,7 @@ class _VoteViewState extends ConsumerState<VoteView> {
                     padding: const EdgeInsets.symmetric(
                         horizontal: 16.0, vertical: 8.0),
                     child: LinearProgressIndicator(
+                      borderRadius: BorderRadius.circular(5),
                       minHeight: 10,
                       value: voteRatio, // 투표 비율에 따라 프로그레스 바 업데이트
                       backgroundColor: Colors.green,
