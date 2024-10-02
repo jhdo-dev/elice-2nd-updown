@@ -179,10 +179,10 @@ class _VoteViewState extends ConsumerState<VoteView> {
           children: <Widget>[
             const DrawerHeader(
               decoration: BoxDecoration(
-                color: Colors.blue,
+                color: AppColors.focusRedColor,
               ),
               child: Text(
-                'Participants',
+                '토론 참가자 목록',
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 24,
@@ -302,7 +302,7 @@ class _VoteViewState extends ConsumerState<VoteView> {
                       value: voteRatio, // 투표 비율에 따라 프로그레스 바 업데이트
                       backgroundColor: Colors.green,
                       valueColor:
-                          const AlwaysStoppedAnimation<Color>(Colors.red),
+                          const AlwaysStoppedAnimation<Color>(Colors.redAccent),
                     ),
                   ),
                 ],
@@ -328,7 +328,7 @@ class _VoteViewState extends ConsumerState<VoteView> {
                     // 채팅 메시지 표시
                     Expanded(
                       child: messages.isEmpty
-                          ? const Center(child: Text('No messages yet'))
+                          ? const Center(child: Text('메시지가 아직 없습니다'))
                           : ListView.builder(
                               reverse: true,
                               itemCount: messages.length,
@@ -337,6 +337,8 @@ class _VoteViewState extends ConsumerState<VoteView> {
                                 return ListTile(
                                   title: Text(
                                     message.name,
+                                    style: const TextStyle(
+                                        fontWeight: FontWeight.bold),
                                   ),
                                   subtitle: message.message.startsWith(
                                           'http') // 메시지가 UColor.fromARGB(255, 131, 32, 32)더링
