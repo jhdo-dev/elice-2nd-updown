@@ -1,5 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart' as kUser;
 import 'package:up_down/util/helper/firebase_helper.dart';
 import 'package:up_down/util/helper/handle_exception.dart';
 
@@ -42,6 +45,65 @@ class AuthRepository {
       );
     } catch (e) {
       throw handleException(e);
+    }
+  }
+
+  Future<void> signInWithKakao() async {
+    try {
+      kUser.OAuthToken token;
+
+      // 카카오톡 실행 가능 여부 확인 후 로그인 진행
+      if (await kUser.isKakaoTalkInstalled()) {
+        token = await kUser.UserApi.instance.loginWithKakaoTalk();
+        print('카카오톡으로 로그인 성공');
+      } else {
+        token = await kUser.UserApi.instance.loginWithKakaoAccount();
+        print('카카오계정으로 로그인 성공');
+      }
+
+      // 카카오 로그인 후 토큰 확인
+      final accessToken = token.accessToken; // 액세스 토큰
+      final idToken = token.idToken; // ID 토큰 (null일 수 있음, OIDC 설정에 따라 다름)
+
+      // Firebase OAuthProvider 설정
+      var provider = OAuthProvider("oidc.updown");
+
+      // 자격 증명 생성
+      final credential = provider.credential(
+        idToken: idToken, // OIDC 설정에서 ID 토큰이 필요하다면 사용
+        accessToken: accessToken,
+      );
+
+      // Firebase 인증 완료
+      final userCredential =
+          await FirebaseAuth.instance.signInWithCredential(credential);
+      final firebaseUser = userCredential.user;
+      print('Firebase 인증 성공');
+
+      // 카카오 사용자 정보 가져오기
+      kUser.User kakaoUser = await kUser.UserApi.instance.me();
+
+      // Firestore에 사용자 정보 저장
+      await usersCollection.doc(firebaseUser!.uid).set({
+        'name': kakaoUser.kakaoAccount?.profile?.nickname ?? 'No Name',
+        'email': kakaoUser.kakaoAccount?.email ?? 'No Email',
+        'profileImage': kakaoUser.kakaoAccount?.profile?.profileImageUrl ?? '',
+        'isAdmin': false,
+      }, SetOptions(merge: true)); // 기존 데이터에 덮어쓰기하지 않고 병합
+
+      print('Firestore에 사용자 정보 저장 완료');
+    } catch (error) {
+      print('카카오 로그인 실패: $error');
+      throw handleException(error);
+    }
+  }
+
+  Future<void> logoutWithKakao() async {
+    try {
+      await kUser.UserApi.instance.logout();
+      print('로그아웃 성공, SDK에서 토큰 삭제');
+    } catch (error) {
+      print('로그아웃 실패, SDK에서 토큰 삭제 $error');
     }
   }
 
