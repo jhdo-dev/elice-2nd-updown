@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:up_down/component/form_fields.dart';
 
 import '../../../../component/error_dialog.dart';
@@ -85,7 +84,7 @@ class _SignUpDialogState extends ConsumerState<SignUpDialog> {
           Center(
               child: signupState.maybeWhen(
             loading: () => const CircularProgressIndicator(),
-            orElse: () => ElevatedButton(
+            orElse: () => TextButton(
               onPressed: _signUp,
               child: const Text('Sign Up'),
             ),
