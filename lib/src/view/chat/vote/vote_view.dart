@@ -108,6 +108,22 @@ class _VoteViewState extends ConsumerState<VoteView> {
     return guiltyCount / (guiltyCount + notGuiltyCount);
   }
 
+  String _formatDateTime(DateTime dateTime) {
+    // 12시간제를 위한 시간 계산
+    int hour = dateTime.hour > 12
+        ? dateTime.hour - 12
+        : dateTime.hour == 0
+            ? 12
+            : dateTime.hour;
+    String period = dateTime.hour >= 12 ? 'PM' : 'AM';
+    String minute = dateTime.minute.toString().padLeft(2, '0');
+
+    // 월, 일 형식
+    String date = '${dateTime.month}/${dateTime.day}';
+
+    return '$date $hour:$minute $period';
+  }
+
   @override
   Widget build(BuildContext context) {
     // `judgmentProvider`에서 투표와 메시지를 함께 가져옴
@@ -134,6 +150,12 @@ class _VoteViewState extends ConsumerState<VoteView> {
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerTop,
       appBar: AppBar(
+        actions: [
+          IconButton(
+            onPressed: () {},
+            icon: Icon(Icons.menu),
+          ),
+        ],
         title: Text('[${widget.personName}] ${widget.roomName}'),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(50.0),
@@ -200,11 +222,13 @@ class _VoteViewState extends ConsumerState<VoteView> {
                                   title: Text(message.name),
                                   subtitle: message.message.startsWith(
                                           'http') // 메시지가 URL이면 이미지로 렌더링
+                                      //이미지 크기 세팅
                                       ? Image.network(message.message)
                                       : Text(message.message), // 텍스트 메시지
 
-                                  trailing:
-                                      Text(message.sentAt.toDate().toString()),
+                                  trailing: Text(
+                                      _formatDateTime(message.sentAt.toDate())
+                                          .toString()),
                                 );
                               },
                             ),
