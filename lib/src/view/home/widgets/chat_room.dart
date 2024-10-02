@@ -13,7 +13,7 @@ class ChatRoom extends ConsumerWidget {
   final String roomStartDate;
   final String roomEndDate;
   final String imageUrl; // 추가된 부분: 이미지 URL
-  final List<String> participants; // 추가된 부분: 이미지 URL
+  final List<String> participants;
 
   const ChatRoom({
     super.key,
