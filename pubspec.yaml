@@ -58,6 +58,7 @@ dependencies:
   image_picker: ^1.1.2
   flutter_native_splash: ^2.4.1
   kakao_flutter_sdk_user: ^1.9.5 # 카카오 로그인 API 패키지
+  shared_preferences: ^2.3.2
 
 dev_dependencies:
   build_runner: ^2.4.12

@@ -1,11 +1,10 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:up_down/src/provider/auth_repository_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:up_down/src/view/auth/password_reset/password_reset_dialog.dart';
 
 import '../../../component/error_dialog.dart';
@@ -26,7 +25,7 @@ class _AuthViewState extends ConsumerState<AuthView> {
   AutovalidateMode _autovalidateMode = AutovalidateMode.disabled;
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  bool _rememberMe = false;
+  bool _rememberMe = true;
 
 //이메일 로그인
   Future<void> _signInWithEmail() async {
@@ -44,40 +43,12 @@ class _AuthViewState extends ConsumerState<AuthView> {
   }
 
 // 구글 로그인
-  final _googleSignIn = GoogleSignIn();
-  final _auth = FirebaseAuth.instance;
   Future<void> _signInWithGoogle() async {
     try {
-      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
-
-      if (googleUser == null) {
-        return;
-      }
-
-      final GoogleSignInAuthentication googleAuth =
-          await googleUser.authentication;
-
-      final credential = GoogleAuthProvider.credential(
-        accessToken: googleAuth.accessToken,
-        idToken: googleAuth.idToken,
-      );
-      final newUser = await _auth.signInWithCredential(credential);
-
-      await FirebaseFirestore.instance
-          .collection('users')
-          .doc(newUser.user!.uid)
-          .set({
-        'name': newUser.user!.displayName,
-        'email': newUser.user!.email,
-        // 'photo': photo.url,
-        'isAdmin': false,
-      });
-
-      if (!mounted) return;
-      context.go('/home');
+      await ref.read(signInProvider.notifier).signInWithGoogle();
     } catch (e) {
       print('Error signing in with Google: $e');
-
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Failed to sign in with Google: $e')),
       );
@@ -85,32 +56,32 @@ class _AuthViewState extends ConsumerState<AuthView> {
   }
 
   //페이스북 로그인
-  Future<void> _signInWithFacebook() async {
-    //^
-    try {
-      final LoginResult result = await FacebookAuth.instance.login();
+  // Future<void> _signInWithFacebook() async {
+  //   //^
+  //   try {
+  //     final LoginResult result = await FacebookAuth.instance.login();
 
-      if (result.status == LoginStatus.success) {
-        final AccessToken accessToken = result.accessToken!;
+  //     if (result.status == LoginStatus.success) {
+  //       final AccessToken accessToken = result.accessToken!;
 
-        final OAuthCredential credential =
-            FacebookAuthProvider.credential(accessToken.tokenString);
+  //       final OAuthCredential credential =
+  //           FacebookAuthProvider.credential(accessToken.tokenString);
 
-        final UserCredential userCredential =
-            await _auth.signInWithCredential(credential);
+  //       // final UserCredential userCredential =
+  //       //     await _auth.signInWithCredential(credential);
 
-        if (!mounted) return;
-        context.go('/home');
-      } else {
-        throw Exception('Facebook login failed');
-      }
-    } catch (e) {
-      print('Error signing in with Facebook: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to sign in with Facebook: $e')),
-      );
-    }
-  }
+  //       if (!mounted) return;
+  //       context.go('/home');
+  //     } else {
+  //       throw Exception('Facebook login failed');
+  //     }
+  //   } catch (e) {
+  //     print('Error signing in with Facebook: $e');
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       SnackBar(content: Text('Failed to sign in with Facebook: $e')),
+  //     );
+  //   }
+  // }
 
   @override
   void dispose() {
@@ -245,6 +216,15 @@ class _AuthViewState extends ConsumerState<AuthView> {
                     const SizedBox(
                       width: 20,
                     ),
+                    // OutlinedButton(
+                    //   onPressed: _signInWithFacebook,
+                    //   child: Image.asset(
+                    //     "assets/icons/facebook.png",
+                    //     width: 25,
+                    //     fit: BoxFit.fill,
+                    //     color: const Color(0xFF0966FF),
+                    //   ),
+                    // ),
                   ],
                 ),
                 Row(
