@@ -5,7 +5,10 @@ import 'package:up_down/src/model/room.dart';
 import 'package:up_down/src/provider/auth_repository_provider.dart';
 import 'package:up_down/src/provider/home_repository_provider.dart';
 import 'package:up_down/src/view/chat/vote/vote_provider.dart';
+import 'package:up_down/theme/colors.dart';
 import 'package:up_down/util/helper/firebase_helper.dart';
+
+import '../../../../component/chat_app_text_field.dart';
 
 class VoteView extends ConsumerStatefulWidget {
   final String roomId;
@@ -68,9 +71,9 @@ class _VoteViewState extends ConsumerState<VoteView> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text('투표하기'),
-          content: SingleChildScrollView(
+          content: const SingleChildScrollView(
             child: ListBody(
-              children: const <Widget>[
+              children: <Widget>[
                 Text('투표는 신중하게 딱 한번만 가능합니다.'),
                 SizedBox(height: 10),
                 Text('어느 쪽에 투표하시겠습니까?'),
@@ -153,6 +156,17 @@ class _VoteViewState extends ConsumerState<VoteView> {
     return '$date $hour:$minute $period';
   }
 
+  void _sendMessage() {
+    FocusScope.of(context).unfocus();
+    if (_messageController.text.isNotEmpty) {
+      ref.read(judgmentProvider(roomId: widget.roomId).notifier).sendMessage(
+            roomId: widget.roomId,
+            message: _messageController.text,
+          );
+    }
+    _messageController.clear();
+  }
+
   @override
   Widget build(BuildContext context) {
     // `judgmentProvider`에서 투표와 메시지를 함께 가져옴
@@ -163,7 +177,7 @@ class _VoteViewState extends ConsumerState<VoteView> {
         child: ListView(
           padding: EdgeInsets.zero,
           children: <Widget>[
-            DrawerHeader(
+            const DrawerHeader(
               decoration: BoxDecoration(
                 color: Colors.blue,
               ),
@@ -176,7 +190,7 @@ class _VoteViewState extends ConsumerState<VoteView> {
               ),
             ),
             if (participantNames.isEmpty)
-              ListTile(
+              const ListTile(
                 title: Text('참가자가 없습니다'),
               )
             else
@@ -202,15 +216,17 @@ class _VoteViewState extends ConsumerState<VoteView> {
             }
           });
         },
-        child: Icon(Icons.how_to_vote),
+        child: const Icon(Icons.how_to_vote),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerTop,
       appBar: AppBar(
+        centerTitle: true,
         actions: [
+          IconButton(onPressed: () {}, icon: const Icon(Icons.how_to_vote)),
           Builder(
             builder: (context) {
               return IconButton(
-                icon: Icon(Icons.menu),
+                icon: const Icon(Icons.menu),
                 onPressed: () {
                   _loadParticipantNames();
                   // Builder로 제공된 context를 사용하여 드로어를 엽니다
@@ -237,9 +253,9 @@ class _VoteViewState extends ConsumerState<VoteView> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text('잘못한 사람: ${vote.guiltyCount}',
-                            style: TextStyle(color: Colors.red)),
+                            style: const TextStyle(color: Colors.red)),
                         Text('잘못하지 않은 사람: ${vote.notGuiltyCount}',
-                            style: TextStyle(color: Colors.green)),
+                            style: const TextStyle(color: Colors.green)),
                       ],
                     ),
                   ),
@@ -248,9 +264,11 @@ class _VoteViewState extends ConsumerState<VoteView> {
                     padding: const EdgeInsets.symmetric(
                         horizontal: 16.0, vertical: 8.0),
                     child: LinearProgressIndicator(
+                      minHeight: 10,
                       value: voteRatio, // 투표 비율에 따라 프로그레스 바 업데이트
                       backgroundColor: Colors.green,
-                      valueColor: AlwaysStoppedAnimation<Color>(Colors.red),
+                      valueColor:
+                          const AlwaysStoppedAnimation<Color>(Colors.red),
                     ),
                   ),
                 ],
@@ -283,9 +301,11 @@ class _VoteViewState extends ConsumerState<VoteView> {
                               itemBuilder: (context, index) {
                                 final message = messages[index];
                                 return ListTile(
-                                  title: Text(message.name),
+                                  title: Text(
+                                    message.name,
+                                  ),
                                   subtitle: message.message.startsWith(
-                                          'http') // 메시지가 URL이면 이미지로 렌더링
+                                          'http') // 메시지가 UColor.fromARGB(255, 131, 32, 32)더링
                                       //이미지 크기 세팅
                                       ? Image.network(message.message)
                                       : Text(message.message), // 텍스트 메시지
@@ -330,18 +350,11 @@ class _VoteViewState extends ConsumerState<VoteView> {
               ),
             ),
           ),
+
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Row(
               children: [
-                Expanded(
-                  child: TextField(
-                    controller: _messageController,
-                    decoration: const InputDecoration(
-                      labelText: 'Enter message...',
-                    ),
-                  ),
-                ),
                 IconButton(
                   icon: const Icon(Icons.camera_alt), // 이미지 업로드 버튼
                   onPressed: () {
@@ -350,22 +363,12 @@ class _VoteViewState extends ConsumerState<VoteView> {
                         .sendImage(roomId: widget.roomId);
                   },
                 ),
-                IconButton(
-                  icon: const Icon(Icons.send),
-                  onPressed: () {
-                    // 메시지 전송
-                    if (_messageController.text.isNotEmpty) {
-                      ref
-                          .read(
-                              judgmentProvider(roomId: widget.roomId).notifier)
-                          .sendMessage(
-                            roomId: widget.roomId,
-                            message: _messageController.text,
-                          );
-                    }
-                    _messageController.clear();
-                  },
-                )
+                Expanded(
+                  child: ChatAppTextField(
+                    controller: _messageController,
+                    onPressed: _sendMessage,
+                  ),
+                ),
               ],
             ),
           ),

@@ -22,7 +22,10 @@ class ThemeToggle extends ConsumerWidget {
         thumbIcon:
             WidgetStateProperty.resolveWith<Icon?>((Set<WidgetState> states) {
           return !isDarkMode
-              ? const Icon(Icons.wb_sunny)
+              ? const Icon(
+                  Icons.wb_sunny,
+                  color: Colors.black,
+                )
               : const Icon(Icons.nightlight_round);
         }),
       ),
