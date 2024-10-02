@@ -48,13 +48,14 @@ class ChatRoom extends ConsumerWidget {
         padding: const EdgeInsets.all(14.0),
         margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 14.0),
         decoration: BoxDecoration(
-          color: Colors.white,
+          // color: Colors.white,
           borderRadius: BorderRadius.circular(12.0),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withOpacity(0.1),
+              blurStyle: BlurStyle.outer,
               spreadRadius: 2,
-              blurRadius: 5,
+              blurRadius: 8,
               offset: const Offset(0, 3),
             ),
           ],
@@ -98,7 +99,7 @@ class ChatRoom extends ConsumerWidget {
                     personName,
                     style: const TextStyle(
                       fontSize: 18.0,
-                      color: Colors.black,
+                      // color: Colors.black,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -106,7 +107,7 @@ class ChatRoom extends ConsumerWidget {
                     roomName,
                     style: const TextStyle(
                       fontSize: 15.0,
-                      color: Colors.black,
+                      // color: Colors.black,
                     ),
                   ),
                   const SizedBox(height: 5.0),

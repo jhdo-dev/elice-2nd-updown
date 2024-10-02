@@ -6,6 +6,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:up_down/services/fcm/fcm_service.dart';
+import 'package:up_down/theme/colors.dart';
 import 'package:up_down/util/router/route_path.dart';
 
 import 'firebase_options.dart';
@@ -119,11 +120,11 @@ class MyApp extends ConsumerWidget {
       theme: ThemeData(
         colorScheme: isDarkMode
             ? const ColorScheme.dark(
-                primary: Colors.deepPurple,
+                primary: AppColors.darkfocusColor,
                 secondary: Colors.deepPurpleAccent,
               )
             : const ColorScheme.light(
-                primary: Colors.deepPurple,
+                primary: AppColors.lightfocusColor,
                 secondary: Colors.deepPurpleAccent,
               ),
         useMaterial3: true,

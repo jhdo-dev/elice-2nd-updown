@@ -46,6 +46,7 @@ class HomeView extends ConsumerWidget {
         // 투표테스트
         data: (isAdmin) => isAdmin
             ? FloatingActionButton(
+                shape: const CircleBorder(),
                 onPressed: () {
                   context.go('/create-room');
                 },

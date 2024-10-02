@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:up_down/src/view/setting/change_name/change_name_dialog.dart';
 import 'package:up_down/src/view/setting/change_password/change_password_dialog.dart';
 import 'package:up_down/src/view/setting/push_notification_toggle/push_notification_toggle.dart';
@@ -46,9 +47,17 @@ class _SettingViewState extends ConsumerState<SettingView> {
             padding: const EdgeInsets.all(8.0),
             child: Column(
               children: [
-                const FlutterLogo(size: 72.0),
-                Text(appUser.name),
-                Text(appUser.email),
+                Card(
+                  child: ListTile(
+                    leading: const FlutterLogo(size: 72.0),
+                    title: Text(appUser.name),
+                    subtitle: Text(appUser.email),
+                    contentPadding: const EdgeInsets.all(20),
+                  ),
+                ),
+                // const FlutterLogo(size: 72.0),
+                // Text(appUser.name),
+                // Text(appUser.email),
                 ListTile(
                   title: const Text('Change Name'),
                   onTap: () => showDialog(
@@ -80,7 +89,28 @@ class _SettingViewState extends ConsumerState<SettingView> {
                 const PushNotificationToggle(),
                 const ThemeToggle(),
                 ElevatedButton(
-                  onPressed: _signOut,
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                        title: const Text('Sign Out'),
+                        content:
+                            const Text('Are you sure you want to sign out?'),
+                        actions: [
+                          TextButton(
+                            onPressed: () {
+                              context.pop();
+                            },
+                            child: const Text('Cancle'),
+                          ),
+                          TextButton(
+                            onPressed: () => _signOut(),
+                            child: const Text('Sign Out'),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
                   child: const Text('Sign out'),
                 ),
                 ElevatedButton(
