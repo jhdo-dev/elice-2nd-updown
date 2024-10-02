@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:up_down/src/model/custom_error.dart';
+import 'package:up_down/src/model/message.dart';
 import 'package:up_down/src/model/room.dart';
 import 'package:up_down/src/provider/auth_repository_provider.dart';
 import 'package:up_down/src/provider/home_repository_provider.dart';
@@ -28,6 +29,7 @@ class VoteView extends ConsumerStatefulWidget {
 
 class _VoteViewState extends ConsumerState<VoteView> {
   final TextEditingController _messageController = TextEditingController();
+  final userId = fbAuth.currentUser!.uid;
 
   @override
   void dispose() {
@@ -43,9 +45,9 @@ class _VoteViewState extends ConsumerState<VoteView> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text('투표하기'),
-          content: SingleChildScrollView(
+          content: const SingleChildScrollView(
             child: ListBody(
-              children: const <Widget>[
+              children: <Widget>[
                 Text('투표는 신중하게 딱 한번만 가능합니다.'),
                 SizedBox(height: 10),
                 Text('어느 쪽에 투표하시겠습니까?'),
@@ -112,31 +114,30 @@ class _VoteViewState extends ConsumerState<VoteView> {
     return guiltyCount / (guiltyCount + notGuiltyCount);
   }
 
-  String _formatDateTime(DateTime dateTime) {
-    // 12시간제를 위한 시간 계산
-    int hour = dateTime.hour > 12
-        ? dateTime.hour - 12
-        : dateTime.hour == 0
-            ? 12
-            : dateTime.hour;
-    String period = dateTime.hour >= 12 ? 'PM' : 'AM';
-    String minute = dateTime.minute.toString().padLeft(2, '0');
-
-    // 월, 일 형식
-    String date = '${dateTime.month}/${dateTime.day}';
-
-    return '$date $hour:$minute $period';
-  }
-
-  void _sendMessage() {
+  void _sendMessage(List<Message> messages) {
     FocusScope.of(context).unfocus();
     if (_messageController.text.isNotEmpty) {
       ref.read(judgmentProvider(roomId: widget.roomId).notifier).sendMessage(
             roomId: widget.roomId,
             message: _messageController.text,
+            isMyTurn: _checkMyTurn(messages),
           );
     }
     _messageController.clear();
+  }
+
+  // isMyTurn을 위한 함수; 말풍선 UI를 위해 사용;
+  bool _checkMyTurn(List<Message> messages) {
+    if (messages.isEmpty) {
+      // 첫 메시지는 무조건 false;
+      return false;
+    } else if (messages[0].userId != userId) {
+      // 이전 메시지가 내가 보낸 것이 아니면 무조건 false;
+      return false;
+    } else {
+      // 첫 메시지가 아니며 내가 보냈다면 true;
+      return true;
+    }
   }
 
   @override
@@ -150,7 +151,6 @@ class _VoteViewState extends ConsumerState<VoteView> {
         floatingActionButton: FloatingActionButton(
           onPressed: () {
             messageState.whenOrNull(data: (voteViewState) {
-              final userId = fbAuth.currentUser!.uid;
               final vote = voteViewState.vote;
 
               // 참가자에 대한 투표 정보를 확인하고 결과를 다이얼로그에 표시
@@ -163,14 +163,14 @@ class _VoteViewState extends ConsumerState<VoteView> {
               }
             });
           },
-          child: Icon(Icons.how_to_vote),
+          child: const Icon(Icons.how_to_vote),
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerTop,
         appBar: AppBar(
           actions: [
             IconButton(
               onPressed: () {},
-              icon: Icon(Icons.menu),
+              icon: const Icon(Icons.menu),
             ),
           ],
           title: Text('[${widget.personName}] ${widget.roomName}'),
@@ -190,9 +190,9 @@ class _VoteViewState extends ConsumerState<VoteView> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text('잘못한 사람: ${vote.guiltyCount}',
-                              style: TextStyle(color: Colors.red)),
+                              style: const TextStyle(color: Colors.red)),
                           Text('잘못하지 않은 사람: ${vote.notGuiltyCount}',
-                              style: TextStyle(color: Colors.green)),
+                              style: const TextStyle(color: Colors.green)),
                         ],
                       ),
                     ),
@@ -203,7 +203,8 @@ class _VoteViewState extends ConsumerState<VoteView> {
                       child: LinearProgressIndicator(
                         value: voteRatio, // 투표 비율에 따라 프로그레스 바 업데이트
                         backgroundColor: Colors.green,
-                        valueColor: AlwaysStoppedAnimation<Color>(Colors.red),
+                        valueColor:
+                            const AlwaysStoppedAnimation<Color>(Colors.red),
                       ),
                     ),
                   ],
@@ -216,15 +217,14 @@ class _VoteViewState extends ConsumerState<VoteView> {
             ),
           ),
         ),
-        body: Column(
-          children: [
-            // 메시지와 투표 상태를 동시에 처리
-            Expanded(
-              child: messageState.when(
-                data: (voteViewState) {
-                  final messages = voteViewState.messages;
-
-                  return Column(
+        body: messageState.when(
+          data: (voteViewState) {
+            final messages = voteViewState.messages;
+            return Column(
+              children: [
+                // 메시지와 투표 상태를 동시에 처리
+                Expanded(
+                  child: Column(
                     children: [
                       // 채팅 메시지 표시
                       Expanded(
@@ -235,6 +235,7 @@ class _VoteViewState extends ConsumerState<VoteView> {
                                 itemCount: messages.length,
                                 itemBuilder: (context, index) {
                                   final message = messages[index];
+                                  print('messages[0]: ${messages[0]}');
                                   // return ListTile(
                                   //   title: Text(message.name),
                                   //   subtitle: message.message.startsWith(
@@ -242,81 +243,76 @@ class _VoteViewState extends ConsumerState<VoteView> {
                                   //       //이미지 크기 세팅
                                   //       ? Image.network(message.message)
                                   //       : Text(message.message), // 텍스트 메시지
-
                                   //   trailing: Text(
                                   //       _formatDateTime(message.sentAt.toDate())
                                   //           .toString()),
                                   // );
                                   return MessageBubble(
-                                      name: message.name,
-                                      message: message.message.startsWith(
-                                              'http') // 메시지가 URL이면 이미지로 렌더링
-                                          //이미지 크기 세팅
-                                          ? Image.network(message.message)
-                                          : Text(message.message), // 텍스트 메시지
-                                      time: _formatDateTime(
-                                              message.sentAt.toDate())
-                                          .toString());
+                                    message: message,
+                                    myId: userId,
+                                  );
                                 },
                               ),
                       ),
                     ],
-                  );
-                },
-                error: (e, _) {
-                  if (e is CustomError) {
-                    return Center(
-                      child: Text(
-                        'code: ${e.code}\nplugin: ${e.plugin}\nmessage: ${e.message}',
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(
-                          color: Colors.red,
-                          fontSize: 18,
-                        ),
-                      ),
-                    );
-                  } else {
-                    return Center(
-                      child: Text(
-                        'Unexpected error: $e',
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(
-                          color: Colors.red,
-                          fontSize: 18,
-                        ),
-                      ),
-                    );
-                  }
-                },
-                loading: () => const Center(
-                  child: CircularProgressIndicator(),
+                  ),
                 ),
-              ),
-            ),
-
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Row(
-                children: [
-                  IconButton(
-                    icon: const Icon(Icons.camera_alt), // 이미지 업로드 버튼
-                    onPressed: () {
-                      ref
-                          .read(
-                              judgmentProvider(roomId: widget.roomId).notifier)
-                          .sendImage(roomId: widget.roomId);
-                    },
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Row(
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.camera_alt), // 이미지 업로드 버튼
+                        onPressed: () {
+                          ref
+                              .read(judgmentProvider(roomId: widget.roomId)
+                                  .notifier)
+                              .sendImage(
+                                roomId: widget.roomId,
+                                isMyTurn: _checkMyTurn(messages),
+                              );
+                        },
+                      ),
+                      Expanded(
+                        child: ChatAppTextField(
+                          controller: _messageController,
+                          onPressed: () => _sendMessage(messages),
+                        ),
+                      ),
+                    ],
                   ),
-                  Expanded(
-                    child: ChatAppTextField(
-                      controller: _messageController,
-                      onPressed: _sendMessage,
-                    ),
+                ),
+              ],
+            );
+          },
+          error: (e, _) {
+            if (e is CustomError) {
+              return Center(
+                child: Text(
+                  'code: ${e.code}\nplugin: ${e.plugin}\nmessage: ${e.message}',
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    color: Colors.red,
+                    fontSize: 18,
                   ),
-                ],
-              ),
-            ),
-          ],
+                ),
+              );
+            } else {
+              return Center(
+                child: Text(
+                  'Unexpected error: $e',
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    color: Colors.red,
+                    fontSize: 18,
+                  ),
+                ),
+              );
+            }
+          },
+          loading: () => const Center(
+            child: CircularProgressIndicator(),
+          ),
         ),
       ),
     );
