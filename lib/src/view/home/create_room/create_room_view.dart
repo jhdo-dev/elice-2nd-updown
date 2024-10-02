@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:up_down/services/fcm/fcm_service.dart';
 import 'package:up_down/src/view/home/create_room/create_room_view_model.dart';
+import 'package:up_down/theme/colors.dart';
 
 class CreateRoomView extends ConsumerStatefulWidget {
   const CreateRoomView({super.key});
@@ -44,6 +45,19 @@ class _CreateRoomViewState extends ConsumerState<CreateRoomView> {
           IconButton(
             icon: const Icon(Icons.check),
             onPressed: () async {
+              // 방 생성 로직
+              await viewModel.createRoom(
+                personNameController.text,
+                roomNameController.text,
+              );
+
+              // 입력 필드 초기화
+              personNameController.clear();
+              roomNameController.clear();
+
+              // 방 생성 후 홈으로 이동
+              context.go('/home');
+
               // if (personNameController.text.isNotEmpty &&
               //       roomNameController.text.isNotEmpty &&
               //       state.roomStartDate != null &&
@@ -54,6 +68,13 @@ class _CreateRoomViewState extends ConsumerState<CreateRoomView> {
               //         personNameController.text,
               //         roomNameController.text,
               //       );
+
+              //       // 입력 필드 초기화
+              //       personNameController.clear();
+              //       roomNameController.clear();
+
+              //       // 방 생성 후 홈으로 이동
+              //       context.go('/home');
 
               //       // FCM 서비스를 통해 알림 전송
               //       await fcmService.sendRoomCreationNotification(
@@ -77,13 +98,6 @@ class _CreateRoomViewState extends ConsumerState<CreateRoomView> {
               //       //   // TODO
               //       // }
 
-              //       // 입력 필드 초기화
-              //       personNameController.clear();
-              //       roomNameController.clear();
-
-              //       // 방 생성 후 홈으로 이동
-              //       context.go('/home');
-
               //       // 성공 메시지 표시
               //       ScaffoldMessenger.of(context).showSnackBar(
               //         const SnackBar(content: Text('방이 생성되었고 푸시 알림이 전송되었습니다.')),
@@ -100,47 +114,6 @@ class _CreateRoomViewState extends ConsumerState<CreateRoomView> {
               //       const SnackBar(content: Text('모든 필드를 입력해주세요.')),
               //     );
               //   }
-              // 입력 필드 및 날짜 선택 상태 확인
-              if (personNameController.text.isEmpty) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('인물 이름을 입력해주세요.')),
-                );
-                return;
-              }
-
-              if (roomNameController.text.isEmpty) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('논란 제목을 입력해주세요.')),
-                );
-                return;
-              }
-
-              if (state.roomStartDate == null) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('방 시작 날짜를 선택해주세요.')),
-                );
-                return;
-              }
-
-              if (state.roomEndDate == null) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('방 종료 날짜를 선택해주세요.')),
-                );
-                return;
-              }
-
-              // 모든 필드가 입력되었을 때 방 생성 로직 실행
-              await viewModel.createRoom(
-                personNameController.text,
-                roomNameController.text,
-              );
-
-              // 입력 필드 초기화
-              personNameController.clear();
-              roomNameController.clear();
-
-              // 방 생성 후 홈으로 이동
-              context.go('/home');
             },
           ),
         ],
@@ -167,7 +140,7 @@ class _CreateRoomViewState extends ConsumerState<CreateRoomView> {
                 padding:
                     const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
                 decoration: BoxDecoration(
-                  color: Colors.blue,
+                  color: AppColors.darkfocusColor,
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Center(
@@ -191,7 +164,7 @@ class _CreateRoomViewState extends ConsumerState<CreateRoomView> {
                 padding:
                     const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
                 decoration: BoxDecoration(
-                  color: Colors.blue,
+                  color: AppColors.darkfocusColor,
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Center(
@@ -217,7 +190,7 @@ class _CreateRoomViewState extends ConsumerState<CreateRoomView> {
                 padding:
                     const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
                 decoration: BoxDecoration(
-                  color: Colors.blue,
+                  color: AppColors.darkfocusColor,
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Center(
