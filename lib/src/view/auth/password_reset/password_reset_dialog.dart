@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:up_down/src/view/auth/password_reset/password_reset_provider.dart';
 
-import '../../../../util/router/route_names.dart';
 import '../../../model/custom_error.dart';
 import '../../../../component/error_dialog.dart';
 import '../../../../component/form_fields.dart';
@@ -79,7 +77,7 @@ class _PasswordResetDialogState extends ConsumerState<PasswordResetDialog> {
           Center(
               child: resetPwdState.maybeWhen(
             loading: () => const CircularProgressIndicator(),
-            orElse: () => ElevatedButton(
+            orElse: () => TextButton(
               onPressed: _sendPasswordResetEmail,
               child: const Text('Send'),
             ),
