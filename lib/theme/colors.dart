@@ -9,4 +9,6 @@ abstract class AppColors {
   static const darkfocusColor = Color(0xFFB20710);
   static const lightfocusColor = Color(0xffE50914);
   static const greyColor = Color(0xffbdbdbd);
+  static const sendMsgColor = Color(0xffcbc9c8);
+  static const receivedMsgColor = Color(0xff262828);
 }
