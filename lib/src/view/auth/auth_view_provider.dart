@@ -20,4 +20,12 @@ class SignIn extends _$SignIn {
           .signInWithEmail(email: email, password: password),
     );
   }
+
+  Future<void> signInWithGoogle() async {
+    state = const AsyncLoading<void>();
+
+    state = await AsyncValue.guard<void>(
+      () => ref.read(authRepositoryProvider).signInWithGoogle(),
+    );
+  }
 }
