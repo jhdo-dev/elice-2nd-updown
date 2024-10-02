@@ -43,93 +43,95 @@ class _SettingViewState extends ConsumerState<SettingView> {
       body: profileState.when(
         skipLoadingOnRefresh: false,
         data: (appUser) {
-          return Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              children: [
-                Card(
-                  child: ListTile(
-                    leading: const FlutterLogo(size: 72.0),
-                    title: Text(appUser.name),
-                    subtitle: Text(appUser.email),
-                    contentPadding: const EdgeInsets.all(20),
+          return SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                children: [
+                  Card(
+                    child: ListTile(
+                      leading: const FlutterLogo(size: 72.0),
+                      title: Text(appUser.name),
+                      subtitle: Text(appUser.email),
+                      contentPadding: const EdgeInsets.all(20),
+                    ),
                   ),
-                ),
-                ListTile(
-                  title: const Text('Change Name'),
-                  onTap: () => showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return const ChangeNameDialog();
+                  ListTile(
+                    title: const Text('Change Name'),
+                    onTap: () => showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return const ChangeNameDialog();
+                      },
+                    ),
+                  ),
+                  ListTile(
+                    title: const Text('Change Password'),
+                    onTap: () async {
+                      final result = await showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return const ReauthenticateDialog();
+                        },
+                      );
+                      if (result == 'success' && context.mounted) {
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return const ChangePasswordDialog();
+                          },
+                        );
+                      }
                     },
                   ),
-                ),
-                ListTile(
-                  title: const Text('Change Password'),
-                  onTap: () async {
-                    final result = await showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return const ReauthenticateDialog();
-                      },
-                    );
-                    if (result == 'success' && context.mounted) {
+                  const PushNotificationToggle(),
+                  const ThemeToggle(),
+                  ElevatedButton(
+                    onPressed: () {
                       showDialog(
                         context: context,
-                        builder: (BuildContext context) {
-                          return const ChangePasswordDialog();
-                        },
+                        builder: (context) => AlertDialog(
+                          title: const Text('Sign Out'),
+                          content:
+                              const Text('Are you sure you want to sign out?'),
+                          actions: [
+                            TextButton(
+                              onPressed: () {
+                                context.pop();
+                              },
+                              child: const Text('Cancle'),
+                            ),
+                            TextButton(
+                              onPressed: () => _signOut(),
+                              child: const Text('Sign Out'),
+                            ),
+                          ],
+                        ),
                       );
-                    }
-                  },
-                ),
-                const PushNotificationToggle(),
-                const ThemeToggle(),
-                ElevatedButton(
-                  onPressed: () {
-                    showDialog(
-                      context: context,
-                      builder: (context) => AlertDialog(
-                        title: const Text('Sign Out'),
-                        content:
-                            const Text('Are you sure you want to sign out?'),
-                        actions: [
-                          TextButton(
-                            onPressed: () {
-                              context.pop();
-                            },
-                            child: const Text('Cancle'),
-                          ),
-                          TextButton(
-                            onPressed: () => _signOut(),
-                            child: const Text('Sign Out'),
-                          ),
-                        ],
-                      ),
-                    );
-                  },
-                  child: const Text('Sign out'),
-                ),
-                ElevatedButton(
-                  onPressed: () async {
-                    final result = await showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return const ReauthenticateDialog();
-                      },
-                    );
-                    if (result == 'success' && context.mounted) {
-                      showDialog(
+                    },
+                    child: const Text('Sign out'),
+                  ),
+                  ElevatedButton(
+                    onPressed: () async {
+                      final result = await showDialog(
                         context: context,
                         builder: (BuildContext context) {
-                          return const DeleteAccountDialog();
+                          return const ReauthenticateDialog();
                         },
                       );
-                    }
-                  },
-                  child: const Text('Delete Account'),
-                ),
-              ],
+                      if (result == 'success' && context.mounted) {
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return const DeleteAccountDialog();
+                          },
+                        );
+                      }
+                    },
+                    child: const Text('Delete Account'),
+                  ),
+                ],
+              ),
             ),
           );
         },
