@@ -44,133 +44,135 @@ class _SettingViewState extends ConsumerState<SettingView> {
       body: profileState.when(
         skipLoadingOnRefresh: false,
         data: (appUser) {
-          return Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              children: [
-                Card(
-                  child: ListTile(
-                    leading: ClipOval(
-                        child: Image.asset(
-                            'assets/images/default_profile_black.png')),
-                    title: Text(appUser.name),
-                    subtitle: Text(appUser.email),
-                    contentPadding: const EdgeInsets.all(20),
+          return SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                children: [
+                  Card(
+                    child: ListTile(
+                      leading: ClipOval(
+                          child: Image.asset(
+                              'assets/images/default_profile_black.png')),
+                      title: Text(appUser.name),
+                      subtitle: Text(appUser.email),
+                      contentPadding: const EdgeInsets.all(20),
+                    ),
                   ),
-                ),
-                ListTile(
-                  title: const Text(
-                    '닉네임 변경',
-                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ListTile(
+                    title: const Text(
+                      '닉네임 변경',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    onTap: () => showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return const ChangeNameDialog();
+                      },
+                    ),
                   ),
-                  onTap: () => showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return const ChangeNameDialog();
+                  ListTile(
+                    title: const Text(
+                      '비밀번호 변경',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    onTap: () async {
+                      final result = await showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return const ReauthenticateDialog();
+                        },
+                      );
+                      if (result == 'success' && context.mounted) {
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return const ChangePasswordDialog();
+                          },
+                        );
+                      }
                     },
                   ),
-                ),
-                ListTile(
-                  title: const Text(
-                    '비밀번호 변경',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  onTap: () async {
-                    final result = await showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return const ReauthenticateDialog();
-                      },
-                    );
-                    if (result == 'success' && context.mounted) {
-                      showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return const ChangePasswordDialog();
-                        },
-                      );
-                    }
-                  },
-                ),
-                const PushNotificationToggle(),
-                const ThemeToggle(),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.grey.shade300,
-                    minimumSize: const Size(double.infinity, 70),
-                    shape: const RoundedRectangleBorder(
-                      // 모양을 네모로 설정
-                      borderRadius: BorderRadius.all(Radius.circular(8)),
-                      // 둥근 정도를 0으로 설정 (네모 모양)
-                    ),
-                  ),
-                  onPressed: () {
-                    showDialog(
-                      context: context,
-                      builder: (context) => AlertDialog(
-                        title: const Text('Sign Out'),
-                        content:
-                            const Text('Are you sure you want to sign out?'),
-                        actions: [
-                          TextButton(
-                            onPressed: () {
-                              context.pop();
-                            },
-                            child: const Text('Cancle'),
-                          ),
-                          TextButton(
-                            onPressed: () => _signOut(),
-                            child: const Text('Sign Out'),
-                          ),
-                        ],
+                  const PushNotificationToggle(),
+                  const ThemeToggle(),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.grey.shade300,
+                      minimumSize: const Size(double.infinity, 70),
+                      shape: const RoundedRectangleBorder(
+                        // 모양을 네모로 설정
+                        borderRadius: BorderRadius.all(Radius.circular(8)),
+                        // 둥근 정도를 0으로 설정 (네모 모양)
                       ),
-                    );
-                  },
-                  child: const Text(
-                    '로그아웃',
-                    style: TextStyle(
-                      color: Colors.redAccent,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
                     ),
-                  ),
-                ),
-                const SizedBox(height: 10),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.focusRedColor,
-                    minimumSize: const Size(double.infinity, 70),
-                    shape: const RoundedRectangleBorder(
-                      // 모양을 네모로 설정
-                      borderRadius: BorderRadius.all(Radius.circular(8)),
-                      // 둥근 정도를 0으로 설정 (네모 모양)
-                    ),
-                  ),
-                  onPressed: () async {
-                    final result = await showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return const ReauthenticateDialog();
-                      },
-                    );
-                    if (result == 'success' && context.mounted) {
+                    onPressed: () {
                       showDialog(
                         context: context,
+                        builder: (context) => AlertDialog(
+                          title: const Text('Sign Out'),
+                          content:
+                              const Text('Are you sure you want to sign out?'),
+                          actions: [
+                            TextButton(
+                              onPressed: () {
+                                context.pop();
+                              },
+                              child: const Text('Cancle'),
+                            ),
+                            TextButton(
+                              onPressed: () => _signOut(),
+                              child: const Text('Sign Out'),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                    child: const Text(
+                      '로그아웃',
+                      style: TextStyle(
+                        color: Colors.redAccent,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.focusRedColor,
+                      minimumSize: const Size(double.infinity, 70),
+                      shape: const RoundedRectangleBorder(
+                        // 모양을 네모로 설정
+                        borderRadius: BorderRadius.all(Radius.circular(8)),
+                        // 둥근 정도를 0으로 설정 (네모 모양)
+                      ),
+                    ),
+                    onPressed: () async {
+                      final result = await showDialog(
+                        context: context,
                         builder: (BuildContext context) {
-                          return const DeleteAccountDialog();
+                          return const ReauthenticateDialog();
                         },
                       );
-                    }
-                  },
-                  child: const Text(
-                    '계정 삭제',
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold),
+                      if (result == 'success' && context.mounted) {
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return const DeleteAccountDialog();
+                          },
+                        );
+                      }
+                    },
+                    child: const Text(
+                      '계정 삭제',
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold),
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           );
         },
