@@ -1,22 +1,21 @@
-import 'package:alarm_front/config/colors.dart';
-import 'package:alarm_front/config/text_styles.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-class MessageBubble/ extends StatelessWidget {
+class MessageBubble extends StatelessWidget {
   const MessageBubble({
     super.key,
-    required this.isMe,
-    required this.myTurn,
+    required this.name,
     required this.message,
+    required this.time,
   });
-
-  final bool isMe;
-  final bool myTurn;
-  final String message;
+  final String name;
+ final Widget message;
+  final String time;
 
   @override
   Widget build(BuildContext context) {
+    bool isMe = 
     return Padding(
       padding: isMe
           ? EdgeInsets.fromLTRB(100.w, 5.w, 0.w, 5.w)
