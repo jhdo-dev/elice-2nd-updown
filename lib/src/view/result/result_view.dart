@@ -34,7 +34,7 @@ class _ResultViewState extends ConsumerState<ResultView> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('투표 결과'),
-        backgroundColor: Colors.red,
+        // backgroundColor: Colors.red,
       ),
       body: state.when(
         loading: () => const Center(child: CircularProgressIndicator()),
