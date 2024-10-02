@@ -59,13 +59,16 @@ class EmailFormField extends StatelessWidget {
   const EmailFormField({
     super.key,
     required TextEditingController emailController,
+    this.enabled,
   }) : _emailController = emailController;
 
   final TextEditingController _emailController;
+  final bool? enabled;
 
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+      enabled: enabled ?? true,
       controller: _emailController,
       keyboardType: TextInputType.emailAddress,
       autocorrect: false,
