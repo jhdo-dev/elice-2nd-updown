@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:up_down/src/model/message.dart';
+import 'package:up_down/theme/colors.dart';
 
 class MessageBubble extends ConsumerWidget {
   const MessageBubble({
@@ -38,23 +39,43 @@ class MessageBubble extends ConsumerWidget {
           ? [
               Container(
                 margin: const EdgeInsets.only(top: 10),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Text(message.name),
-                    const SizedBox(width: 12),
-                    Text(
-                      _formatDateTime(message.sentAt.toDate()).toString(),
-                      style: TextStyle(
-                        fontSize: 10,
-                        color: Theme.of(context)
-                            .colorScheme
-                            .onSurface
-                            .withOpacity(0.5),
-                      ),
-                    ),
-                  ],
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: isMe
+                        ? [
+                            Text(
+                              _formatDateTime(message.sentAt.toDate())
+                                  .toString(),
+                              style: TextStyle(
+                                fontSize: 10,
+                                color: Colors.white.withOpacity(0.5),
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Text(
+                              message.name,
+                              style: const TextStyle(fontSize: 16),
+                            ),
+                          ]
+                        : [
+                            Text(
+                              message.name,
+                              style: const TextStyle(fontSize: 16),
+                            ),
+                            const SizedBox(width: 12),
+                            Text(
+                              _formatDateTime(message.sentAt.toDate())
+                                  .toString(),
+                              style: TextStyle(
+                                fontSize: 10,
+                                color: Colors.white.withOpacity(0.5),
+                              ),
+                            ),
+                          ],
+                  ),
                 ),
               ),
               Padding(
@@ -65,8 +86,8 @@ class MessageBubble extends ConsumerWidget {
                   decoration: BoxDecoration(
                     // 연속된 말풍선 색깔 설정
                     color: isMe
-                        ? Theme.of(context).colorScheme.primary
-                        : Theme.of(context).colorScheme.secondary,
+                        ? AppColors.sendMsgColor
+                        : AppColors.receivedMsgColor,
                     borderRadius: BorderRadius.only(
                       bottomRight: const Radius.circular(15),
                       bottomLeft: const Radius.circular(15),
@@ -87,7 +108,12 @@ class MessageBubble extends ConsumerWidget {
                       message.message.startsWith('http') // 메시지가 URL이면 이미지로 렌더링
                           //이미지 크기 세팅
                           ? Image.network(message.message)
-                          : Text(message.message), // 텍스트 메시지,
+                          : Text(
+                              message.message,
+                              style: TextStyle(
+                                color: isMe ? Colors.black : Colors.white,
+                              ),
+                            ), // 텍스트 메시지,
                 ),
               ),
             ]
@@ -100,8 +126,8 @@ class MessageBubble extends ConsumerWidget {
                   decoration: BoxDecoration(
                     // 연속된 말풍선 색깔 설정
                     color: isMe
-                        ? Theme.of(context).colorScheme.primary
-                        : Theme.of(context).colorScheme.secondary,
+                        ? AppColors.sendMsgColor
+                        : AppColors.receivedMsgColor,
                     borderRadius: const BorderRadius.all(Radius.circular(15)),
                   ),
                   padding:
@@ -113,7 +139,12 @@ class MessageBubble extends ConsumerWidget {
                       message.message.startsWith('http') // 메시지가 URL이면 이미지로 렌더링
                           //이미지 크기 세팅
                           ? Image.network(message.message)
-                          : Text(message.message), // 텍스트 메시지,
+                          : Text(
+                              message.message,
+                              style: TextStyle(
+                                color: isMe ? Colors.black : Colors.white,
+                              ),
+                            ), // 텍스트 메시지,
                 ),
               ),
             ],
