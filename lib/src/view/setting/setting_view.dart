@@ -46,9 +46,16 @@ class _SettingViewState extends ConsumerState<SettingView> {
             padding: const EdgeInsets.all(8.0),
             child: Column(
               children: [
-                const FlutterLogo(size: 72.0),
-                Text(appUser.name),
-                Text(appUser.email),
+                Card(
+                  child: ListTile(
+                    leading: FlutterLogo(size: 72.0),
+                    title: Text(appUser.name),
+                    subtitle: Text(appUser.email),
+                  ),
+                ),
+                // const FlutterLogo(size: 72.0),
+                // Text(appUser.name),
+                // Text(appUser.email),
                 ListTile(
                   title: const Text('Change Name'),
                   onTap: () => showDialog(

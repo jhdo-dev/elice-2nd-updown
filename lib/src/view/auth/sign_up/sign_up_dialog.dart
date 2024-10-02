@@ -84,7 +84,7 @@ class _SignUpDialogState extends ConsumerState<SignUpDialog> {
           Center(
               child: signupState.maybeWhen(
             loading: () => const CircularProgressIndicator(),
-            orElse: () => ElevatedButton(
+            orElse: () => TextButton(
               onPressed: _signUp,
               child: const Text('Sign Up'),
             ),
