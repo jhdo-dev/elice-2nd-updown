@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:up_down/src/model/message.dart';
 import 'package:up_down/util/helper/firebase_helper.dart';
 import 'package:up_down/util/helper/handle_exception.dart';
@@ -43,6 +44,7 @@ class MessageRepository {
     required String name,
     required String message,
     required Timestamp sentAt,
+    required bool isMyTurn,
   }) async {
     try {
       await roomsCollection.doc(roomId).collection('messages').add({
@@ -50,27 +52,10 @@ class MessageRepository {
         'name': name,
         'message': message,
         'sentAt': sentAt,
+        'isMyTurn': isMyTurn,
       });
     } catch (e) {
       throw handleException(e);
     }
-  }
-
-  Future<bool> isCurrentUserMessage() async {
-    // 현재 인증된 사용자 가져오기
-    User? currentUser = fbAuth.currentUser;
-    if (currentUser == null) {
-      return false;
-    }
-
-    // Firestore에서 messageId에 해당하는 문서 가져오기
-    DocumentSnapshot messageSnapshot = await FirebaseFirestore.instance
-        .collection('message')
-        .doc(messageId)
-        .get();
-
-    // message의 userId와 현재 사용자의 uid 비교
-    String userId = messageSnapshot['userId'];
-    return userId == currentUser.uid;
   }
 }
