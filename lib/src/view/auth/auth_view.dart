@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:up_down/src/view/auth/password_reset/password_reset_dialog.dart';
 
 import '../../../component/error_dialog.dart';
