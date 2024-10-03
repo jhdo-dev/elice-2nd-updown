@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:up_down/src/provider/auth_repository_provider.dart';
 import 'package:up_down/src/view/auth/password_reset/password_reset_dialog.dart';
+import 'package:up_down/src/view/setting/theme_toggle/theme_provider.dart';
 
 import '../../../component/error_dialog.dart';
 import '../../../component/form_fields.dart';
@@ -83,13 +84,11 @@ class _AuthViewState extends ConsumerState<AuthView> {
     });
 
     final signinState = ref.watch(signInProvider);
+    final isDarkMode = ref.watch(themeProvider);
 
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
-        appBar: AppBar(
-          title: const Text('Auth View'),
-        ),
         body: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Form(
@@ -98,6 +97,15 @@ class _AuthViewState extends ConsumerState<AuthView> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
+                isDarkMode
+                    ? Image.asset(
+                        'assets/images/up_down_text_logo_white.png',
+                        width: 150,
+                      )
+                    : Image.asset(
+                        'assets/images/up_down_text_logo.png',
+                        width: 150,
+                      ),
                 EmailFormField(emailController: _emailController),
                 PasswordFormField(passwordController: _passwordController),
                 Row(
@@ -114,7 +122,7 @@ class _AuthViewState extends ConsumerState<AuthView> {
                       onTap: () => setState(() {
                         _rememberMe = !_rememberMe;
                       }),
-                      child: const Text('Remember Me'),
+                      child: const Text('자동 로그인'),
                     ),
                   ],
                 ),
@@ -122,20 +130,22 @@ class _AuthViewState extends ConsumerState<AuthView> {
                   loading: () => const CircularProgressIndicator(),
                   orElse: () => ElevatedButton(
                     onPressed: _signInWithEmail,
-                    child: const Text('SIGN IN'),
+                    child: const Text(
+                      '로그인하기',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
                   ),
                 ),
                 TextButton(
-                  onPressed: () {
-                    showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return const PasswordResetDialog();
-                      },
-                    );
-                  },
-                  child: const Text('Forgot your password?'),
-                ),
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return const PasswordResetDialog();
+                        },
+                      );
+                    },
+                    child: const Text('비밀번호를 잊으셨나요?')),
                 const Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -151,6 +161,9 @@ class _AuthViewState extends ConsumerState<AuthView> {
                       ),
                     ),
                   ],
+                ),
+                const Text(
+                  'SNS계정으로 간편하게 로그인하세요',
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -206,7 +219,7 @@ class _AuthViewState extends ConsumerState<AuthView> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text('Don\'t have an account?'),
+                    const Text('계정이 없으신가요?'),
                     TextButton(
                       onPressed: () {
                         showDialog(
@@ -216,7 +229,7 @@ class _AuthViewState extends ConsumerState<AuthView> {
                           },
                         );
                       },
-                      child: const Text('Get Started'),
+                      child: const Text('가입하기'),
                     ),
                   ],
                 )
