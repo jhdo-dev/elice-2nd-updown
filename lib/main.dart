@@ -118,14 +118,17 @@ class MyApp extends ConsumerWidget {
       title: 'UP DOWN',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
+        appBarTheme: AppBarTheme(
+          surfaceTintColor: isDarkMode ? Colors.black : Colors.white,
+        ),
         colorScheme: isDarkMode
             ? const ColorScheme.dark(
                 primary: AppColors.darkfocusColor,
-                secondary: AppColors.darkfocusColor,
+                // secondary: AppColors.darkfocusColor,
               )
             : const ColorScheme.light(
                 primary: AppColors.lightfocusColor,
-                secondary: AppColors.lightfocusColor,
+                // secondary: AppColors.lightfocusColor,
               ),
         useMaterial3: true,
       ),
