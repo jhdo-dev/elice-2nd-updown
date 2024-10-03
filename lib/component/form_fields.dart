@@ -14,7 +14,7 @@ class ConfirmPasswordFormField extends StatelessWidget {
     return TextFormField(
       obscureText: true,
       decoration: const InputDecoration(
-        labelText: 'Confirm password',
+        labelText: '비밀번호 확인',
       ),
       validator: (String? value) {
         if (_passwordController.text != value) {
@@ -105,7 +105,7 @@ class NameFormField extends StatelessWidget {
     return TextFormField(
       controller: _nameController,
       decoration: const InputDecoration(
-        labelText: 'Name',
+        labelText: '닉네임',
       ),
       validator: (String? value) {
         if (value == null || value.trim().isEmpty) {
