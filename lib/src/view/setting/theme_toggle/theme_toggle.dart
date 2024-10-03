@@ -12,8 +12,11 @@ class ThemeToggle extends ConsumerWidget {
     final themeNotifier = ref.read(themeProvider.notifier);
 
     return ListTile(
-      title: Text(isDarkMode ? 'Dark Mode' : 'Light Mode'),
-      subtitle: const Text('Switch between dark and light themes'),
+      title: Text(
+        isDarkMode ? '다크 모드' : '라이트 모드',
+        style: const TextStyle(fontWeight: FontWeight.bold),
+      ),
+      subtitle: const Text('어두운 모드와 밝은 모드 전환'),
       trailing: Switch(
         onChanged: (bool? value) {
           themeNotifier.toggleTheme();
@@ -22,7 +25,10 @@ class ThemeToggle extends ConsumerWidget {
         thumbIcon:
             WidgetStateProperty.resolveWith<Icon?>((Set<WidgetState> states) {
           return !isDarkMode
-              ? const Icon(Icons.wb_sunny)
+              ? const Icon(
+                  Icons.wb_sunny,
+                  color: Colors.black,
+                )
               : const Icon(Icons.nightlight_round);
         }),
       ),

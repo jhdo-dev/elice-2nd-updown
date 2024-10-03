@@ -11,13 +11,6 @@ class PushNotificationToggleState extends State<PushNotificationToggle> {
   bool _pushNotificationToggle = true;
 
   void _togglePushNotifications(bool enable) {
-    // if (enable) {
-    //   // 푸쉬 알림 활성화
-    //   FirebaseMessaging.instance.subscribeToTopic('all');
-    // } else {
-    //   // 푸쉬 알림 비활성화
-    //   FirebaseMessaging.instance.unsubscribeFromTopic('all');
-    // }
     setState(() {
       _pushNotificationToggle = enable;
     });
@@ -27,8 +20,13 @@ class PushNotificationToggleState extends State<PushNotificationToggle> {
   Widget build(BuildContext context) {
     return ListTile(
       enabled: _pushNotificationToggle,
-      title: const Text('Push Notification'),
-      subtitle: Text('Enabled: $_pushNotificationToggle'),
+      title: const Text(
+        '푸쉬 알림 설정',
+        style: TextStyle(fontWeight: FontWeight.bold),
+      ),
+      subtitle: _pushNotificationToggle
+          ? const Text('허용 여부: 켜짐')
+          : const Text('허용 여부: 꺼짐'),
       trailing: Switch(
         onChanged: (bool? value) {
           _togglePushNotifications(value!);

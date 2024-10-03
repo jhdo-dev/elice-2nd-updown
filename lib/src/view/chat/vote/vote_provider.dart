@@ -111,8 +111,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:up_down/src/model/vote.dart';
-import 'package:up_down/src/model/message.dart';
 import 'package:up_down/src/provider/home_repository_provider.dart';
 import 'package:up_down/src/provider/image_repository_provider.dart';
 import 'package:up_down/src/provider/message_repository_provider.dart';
@@ -152,6 +150,7 @@ class Judgment extends _$Judgment {
   /// 이미지 전송 함수
   Future<void> sendImage({
     required String roomId,
+    required bool isMyTurn,
   }) async {
     try {
       // ImagePicker로 사용자에게 이미지 선택
@@ -176,6 +175,7 @@ class Judgment extends _$Judgment {
                 name: userName,
                 message: downloadUrl, // 이미지 URL을 메시지로 전송
                 sentAt: Timestamp.now(),
+                isMyTurn: isMyTurn,
               );
         }
       }
@@ -191,6 +191,7 @@ class Judgment extends _$Judgment {
     String? name,
     required String message,
     Timestamp? sentAt,
+    required bool isMyTurn,
   }) async {
     try {
       // ProfileRepository에서 사용자 이름 가져오기
@@ -207,6 +208,7 @@ class Judgment extends _$Judgment {
             name: userName, // 가져온 사용자 이름을 메시지에 포함
             message: message,
             sentAt: sentAt ?? Timestamp.now(),
+            isMyTurn: isMyTurn,
           );
     } catch (e) {
       throw handleException(e);
