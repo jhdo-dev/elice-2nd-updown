@@ -28,4 +28,6 @@ class SignIn extends _$SignIn {
       () => ref.read(authRepositoryProvider).signInWithGoogle(),
     );
   }
+
+  signInWithFacebook() {}
 }

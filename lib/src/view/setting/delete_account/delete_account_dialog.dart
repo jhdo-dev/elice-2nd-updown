@@ -40,25 +40,22 @@ class _DeleteAccountDialogState extends ConsumerState<DeleteAccountDialog> {
       },
     );
 
-    return GestureDetector(
-      onTap: () => FocusScope.of(context).unfocus(),
-      child: AlertDialog(
-        title: const Text('Delete Account'),
-        content: const Text(
-            'Are you sure you want to delete your account?\nThis action cannot be undone.'),
-        actions: [
-          ElevatedButton(
-            onPressed: () {
-              GoRouter.of(context).pop();
-            },
-            child: const Text('Cancle'),
-          ),
-          ElevatedButton(
-            onPressed: () => _deleteAccount(),
-            child: const Text('Delete'),
-          ),
-        ],
-      ),
+    return AlertDialog(
+      title: const Text('Delete Account'),
+      content: const Text(
+          'Are you sure you want to delete your account? This action cannot be undone.'),
+      actions: [
+        TextButton(
+          onPressed: () {
+            GoRouter.of(context).pop();
+          },
+          child: const Text('Cancle'),
+        ),
+        TextButton(
+          onPressed: () => _deleteAccount(),
+          child: const Text('Delete'),
+        ),
+      ],
     );
   }
 }

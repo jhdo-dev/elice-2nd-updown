@@ -5,6 +5,9 @@ import 'package:up_down/component/form_fields.dart';
 import 'package:up_down/src/model/custom_error.dart';
 import 'package:up_down/src/provider/auth_repository_provider.dart';
 
+import '../../../../util/helper/firebase_helper.dart';
+import '../setting_provider.dart';
+
 class ReauthenticateDialog extends ConsumerStatefulWidget {
   const ReauthenticateDialog({super.key});
 
@@ -19,6 +22,17 @@ class _ReauthenticateDialogState extends ConsumerState<ReauthenticateDialog> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool submitting = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // 초기 상태 설정
+    final uid = fbAuth.currentUser!.uid;
+    final profileState = ref.read(profileProvider(uid));
+    profileState.whenData((profile) {
+      _emailController.text = profile.email;
+    });
+  }
 
   @override
   void dispose() {
@@ -75,7 +89,10 @@ class _ReauthenticateDialogState extends ConsumerState<ReauthenticateDialog> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
-              EmailFormField(emailController: _emailController),
+              EmailFormField(
+                emailController: _emailController,
+                enabled: false,
+              ),
               PasswordFormField(passwordController: _passwordController),
             ],
           ),
@@ -84,7 +101,7 @@ class _ReauthenticateDialogState extends ConsumerState<ReauthenticateDialog> {
           Center(
             child: submitting
                 ? const CircularProgressIndicator()
-                : ElevatedButton(
+                : TextButton(
                     onPressed: _submit,
                     child: const Text('Submit'),
                   ),
