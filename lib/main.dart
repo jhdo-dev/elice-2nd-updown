@@ -4,7 +4,9 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:up_down/services/fcm/fcm_service.dart';
+import 'package:up_down/theme/colors.dart';
 import 'package:up_down/util/router/route_path.dart';
 
 import 'firebase_options.dart';
@@ -80,6 +82,11 @@ void main() async {
     },
   );
 
+  KakaoSdk.init(
+    nativeAppKey: '8651f6dc6fc750797c43905375bead6e',
+    javaScriptAppKey: '5990f0f6119e8cad08a8141738412106',
+  );
+
   runApp(
     const ProviderScope(
       child: MyApp(),
@@ -110,11 +117,18 @@ class MyApp extends ConsumerWidget {
     return MaterialApp.router(
       title: 'UP DOWN',
       debugShowCheckedModeBanner: false,
-      // theme: ThemeData(
-      //   colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-      //   useMaterial3: true,
-      // ),
-      theme: isDarkMode ? ThemeData.dark() : ThemeData.light(),
+      theme: ThemeData(
+        colorScheme: isDarkMode
+            ? const ColorScheme.dark(
+                primary: AppColors.darkfocusColor,
+                secondary: AppColors.darkfocusColor,
+              )
+            : const ColorScheme.light(
+                primary: AppColors.lightfocusColor,
+                secondary: AppColors.lightfocusColor,
+              ),
+        useMaterial3: true,
+      ),
       routerConfig: router,
     );
   }

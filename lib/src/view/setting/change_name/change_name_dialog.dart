@@ -88,7 +88,7 @@ class _ProfileEditDialogState extends ConsumerState<ChangeNameDialog> {
           Center(
               child: changeNameState.maybeWhen(
             loading: () => const CircularProgressIndicator(),
-            orElse: () => ElevatedButton(
+            orElse: () => TextButton(
               onPressed: _submit,
               child: const Text('Save'),
             ),
