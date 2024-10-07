@@ -43,3 +43,6 @@ app.*.map.json
 /android/app/release
 
 /functions/node_modules
+
+# Firebase options
+lib/firebase_options.dart
